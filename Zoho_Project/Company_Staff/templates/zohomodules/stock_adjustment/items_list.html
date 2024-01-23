@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<style>
+
+</style>
+<div class="body-wrapper">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}"
+                        class="text-warning-emphasis">Dashboard</a></li>
+                <li class="breadcrumb-item" aria-current="page">Stock adjustment</li>
+            </ol>
+        </nav>
+
+        <!-- Responsive container for the content -->
+        <div class="container mt-3" style="background-color: black;">
+            <h1 style="color: white;">Adjustments</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="input-group" style="width: 300px;">
+                    <input type="text" class="form-control" placeholder="Search..." aria-label="Search"
+                        aria-describedby="basic-addon2" style="background-color: white; border-radius: 10px;">
+
+                    <!-- Dropdown for sorting -->
+                    <div class="input-group-prepend" style="margin-left: 10px;">
+                        <button class="btn btn-outline-warning">
+                            <i class="fas fa-sort text-warning"></i> Sort
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">All</a>
+                            <a class="dropdown-item" href="#">Date</a>
+                            <a class="dropdown-item" href="#">Reference Number</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons aligned to the right -->
+                <div class="ml-auto">
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-sign-out-alt text-warning"></i> Export
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-sign-in-alt text-warning"></i> Import
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-filter text-warning"></i> Filter
+                    </button>
+                    <a href="{% url 'create_adjustment' %}">
+                        <button class="btn btn-outline-warning">
+                            <i class="fas fa-plus text-warning"></i> Add
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 bg-black table-striped">
+                    <thead class="bg-black text-light">
+                        <tr>
+                            <th scope="col">Sl.No</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Reason</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Ref.No</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Your table body content goes here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -156,11 +156,11 @@
                 <hr>
                 {% endif %}
                 {% if allmodules.stock_adjustment == 1  %}
-                <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                <a href="{% url 'items_list' %}" class="d-flex align-items-center gap-2 dropdown-item">
                   
                   <div class="d-flex">
                     <p class="mb-0 fs-3">Stock Adjustment</p>
-                    <a href=""><i class="fa fa-plus text-white" ></i></a>
+                    <a href="{% url 'create_adjustment' %}"><i class="fa fa-plus text-white" ></i></a>
                   </div>
                 </a>
                 <hr>

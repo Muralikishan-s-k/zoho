@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<style>
+    .btn-warning {
+        color: black;
+    }
+
+    .dropdown-heading {
+        font-weight: bold;
+        color: white;
+        margin-bottom: 5px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        // Set today's date in the date field
+        var today = new Date().toISOString().split('T')[0];
+        $("#dateInput").val(today);
+    });
+</script>
+
+<div class="body-wrapper">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}"
+                        class="text-warning-emphasis">Dashboard</a></li>
+                <li class="breadcrumb-item" aria-current="page">Create adjustment</li>
+            </ol>
+        </nav>
+
+        <!-- Responsive container for the content -->
+        <div class="container mt-3" style="background-color: black;">
+            <h1 style="color: white;" class="text-center">Create Adjustments</h1>
+
+            <!-- Dropdown for adjustment type -->
+            <div class="dropdown">
+                <div class="dropdown-heading">
+                    Mode of Adjustment
+                </div>
+                <button id="adjustmentModeDropdown" class="btn btn-warning dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown" aria-expanded="false" style="width: 200px;">
+                    Choose..
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Quantity adjustment</a></li>
+                    <li><a class="dropdown-item" href="#">Value adjustment</a></li>
+                </ul>
+            </div>
+
+            <!-- Reference Number field -->
+            <div class="mt-3">
+                <label for="referenceNumberInput" style="color: white; font-weight: bold;">Reference Number</label>
+                <input type="text" class="form-control" style="width: 200px; color: white;">
+            </div>
+
+            <!-- Date field -->
+            <div class="mt-3 row">
+                <div class="col-md-4">
+                    <label for="dateInput" style="color: white; font-weight: bold;">Date</label>
+                    <input type="date" class="form-control" id="dateInput" style="width: 150px; color: white;">
+                </div>
+                <div class="col-md-4">
+                    <label for="accountsDropdown"
+                        style="color: white; font-weight: bold; margin-left: 20px;">Accounts</label>
+                    <select class="form-control" id="accountsDropdown" style="width: 150px; color: white;">
+                        <option value="account1">Account 1</option>
+                        <option value="account2">Account 2</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="reasonDropdown"
+                        style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
+                    <div class="input-group">
+                        <select class="form-control" id="reasonDropdown" style="width: 100px; color: white;">
+                            <option value="reason1">Reason 1</option>
+                            <option value="reason2">Reason 2</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                        <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
+                                class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <script>
+                    $(document).ready(function () {
+                        // Add new reason on button click
+                        $('#addReasonBtn').on('click', function () {
+                            var newReason = prompt("Enter the new reason:");
+                            if (newReason) {
+                                // Create a new option and append it to the dropdown
+                                $('#reasonDropdown').append($('<option>', {
+                                    value: newReason,
+                                    text: newReason
+                                }));
+                            }
+                        });
+                    });
+                </script>
+
+                <div class="col-md-12 mt-3">
+                    <label for="descriptionBox" style="color: white; font-weight: bold;">Description</label>
+                    <textarea class="form-control" id="descriptionBox" style="width: 70%; color: white;"
+                        rows="4"></textarea>
+                </div>
+
+
+                <div class="container mt-3" style="background-color: black;">                   
+                    <div class="col-md-10">
+                        <!-- Table for item transactions -->
+                        <table class="table" id="itemTransactionsTable">
+                            <thead>
+                                <tr>
+                                    <th style="color:white ;font-weight:bold;">#</th>
+                                    <th style="color:white ;font-weight:bold;">Item Details</th>
+                                    <th style="color:white ;font-weight:bold;">Quantity Available</th>
+                                    <th style="color:white ;font-weight:bold;">New Quantity on Hand</th>
+                                    <th style="color:white ;font-weight:bold;">Quantity Adjusted</th>
+                                    <th style="color:white ;font-weight:bold;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rows will be dynamically added here -->
+                                <tr>
+                                    <td class="index"></td>
+                                    <td class="item-details">
+                                        <select class="form-control item-dropdown"></select>
+                                    </td>
+                                    <td class="quantity-available"></td>
+                                    <td class="new-quantity">
+                                        <input type="text" class="form-control">
+                                    </td>
+                                    <td class="quantity-adjusted"></td>
+                                    <td>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-danger remove-row"><i class="fas fa-minus"></i></button>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-success add-row"><i class="fas fa-plus"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- JavaScript to handle dynamic row addition and removal -->
+                <script>
+                    $(document).ready(function () {
+                        // Function to add a new row to the table
+                        function addRow() {
+                            var newRow = "<tr>" +
+                                "<td class='index'></td>" +
+                                "<td class='item-details'><select class='form-control item-dropdown'></select></td>" +
+                                "<td class='quantity-available'></td>" +
+                                "<td class='new-quantity'><input type='text' class='form-control'></td>" +
+                                "<td class='quantity-adjusted'></td>" +
+                                "<td><div class='col-md-1'><button type='button' class='btn btn-danger remove-row'><i class='fas fa-minus'></i></button></div><div class='col-md-1'><button type='button' class='btn btn-success add-row'><i class='fas fa-plus'></i></button></div></td>" +
+                                "</tr>";
+                
+                            $("#itemTransactionsTable tbody").append(newRow);
+                            updateIndex();
+                            populateItemDropdown();
+                        }
+                
+                        // Function to update the index in the table
+                        function updateIndex() {
+                            $("#itemTransactionsTable tbody tr").each(function (index) {
+                                $(this).find('.index').text(index + 1);
+                            });
+                        }
+                
+                        // Function to populate the item dropdown dynamically
+                        function populateItemDropdown() {
+                            // Replace this with actual data fetching logic based on modeOfAdjustment
+                            var items = ["Item 1", "Item 2", "Item 3"];
+                
+                            $(".item-dropdown").empty();
+                            $.each(items, function (index, value) {
+                                $(".item-dropdown").append('<option value="' + value + '">' + value + '</option>');
+                            });
+                        }
+                
+                        // Event handler for adding a new row
+                        $("#itemTransactionsTable").on('click', '.add-row', function () {
+                            addRow();
+                        });
+                
+                        // Event handler for removing a row
+                        $("#itemTransactionsTable").on('click', '.remove-row', function () {
+                            $(this).closest('tr').remove();
+                            updateIndex();
+                        });
+                
+                        // Add initial row
+                        updateIndex();
+                        populateItemDropdown();
+                    });
+                </script>
+                
+
+
+
+            </div>
+
+
+            <!-- Other content goes here -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from datetime import date
 from datetime import datetime, timedelta
+from Company_Staff.models import Items
 
 # Create your views here.
 
@@ -487,3 +488,58 @@ def staff_password_change(request):
 
 
 # -------------------------------Zoho Modules section--------------------------------
+    
+def items_list(request):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            context = {
+                    'details': dash_details,
+                    'item': item,
+                    'allmodules': allmodules,
+            }
+        return render(request,'zohomodules/stock_adjustment/items_list.html',context) 
+
+
+def create_adjustment(request):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            context = {
+                    'details': dash_details,
+                    'item': item,
+                    'allmodules': allmodules,
+            }
+        return render(request,'zohomodules/stock_adjustment/create_adjustment.html',context)
