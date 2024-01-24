@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from datetime import date
 from datetime import datetime, timedelta
-from Company_Staff.models import Items
+from Company_Staff.models import Items,Chart_of_Accounts
 
 # Create your views here.
 
@@ -533,13 +533,111 @@ def create_adjustment(request):
                         'allmodules': allmodules,
                 }
                 return render(request,'zohomodules/items/items_list.html',context)
-        if log_details.user_type == 'Company':
+        if log_details.user_type == 'Company':            
+            accounts=Chart_of_Accounts.objects.all()
             dash_details = CompanyDetails.objects.get(login_details=log_details)
-            item=Items.objects.filter(company=dash_details)
+            item=Items.objects.filter(company=dash_details,activation_tag='active')
             allmodules= ZohoModules.objects.get(company=dash_details,status='New')
             context = {
                     'details': dash_details,
                     'item': item,
                     'allmodules': allmodules,
+                    'account':accounts,
             }
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html',context)
+     
+
+def create_adjustment_value(request):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company,activation_tag='active')
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            accounts=Chart_of_Accounts.objects.all()
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details,activation_tag='active')
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            context = {
+                    'details': dash_details,
+                    'item': item,
+                    'allmodules': allmodules,
+                    'account':accounts,
+            }
+        return render(request,'zohomodules/stock_adjustment/create_adjustment_value.html',context)
+
+
+def create_adjustment_itemvalue(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company,activation_tag='active')
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            accounts=Chart_of_Accounts.objects.all()
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item_instance = Items.objects.get(id=pk)
+
+            # Calculate stock value
+            stock_value = item_instance.current_stock * item_instance.purchase_price
+            
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            context = {
+                    'details': dash_details,
+                    'item': item_instance,
+                    'allmodules': allmodules,
+                    'account':accounts,
+                    'stock_value': stock_value,
+                    
+            }
+        return render(request,'zohomodules/stock_adjustment/create_adjustment_itemvalue.html',context) 
+
+
+def create_adjustment_itemquantity(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company,activation_tag='active')
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            accounts=Chart_of_Accounts.objects.all()
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(id=pk)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            context = {
+                    'details': dash_details,
+                    'item': item,
+                    'allmodules': allmodules,
+                    'account':accounts,
+            }
+        return render(request,'zohomodules/stock_adjustment/create_adjustment_itemquantity.html',context)              

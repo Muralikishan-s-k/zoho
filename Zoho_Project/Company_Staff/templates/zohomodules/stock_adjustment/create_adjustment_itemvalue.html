@@ -4,11 +4,6 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-H+K7U5CnXl1zQDycExUcchX2AeLgDuU66JECGMW2FXE=" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy7BikI5XDN+tdHsEDFou1fuqtqpi7ci1N"
-    crossorigin="anonymous"></script>
 
 <style>
     .btn-warning {
@@ -49,8 +44,8 @@
             <h1 style="color: white;" class="text-center">Create Adjustments</h1>
             <form action="" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
-
                 <!-- Dropdown for adjustment type -->
+
                 <div class="container mt-3">
                     <div class="row">
                         <div class="col-md-6">
@@ -61,17 +56,13 @@
                                 </div>
                                 <select class="form-control" onchange="window.location.href=this.value"
                                     style="background-color: white;width: 200px;">
+                                    <option value="" selected>Value adjustment</option>
 
-                                    <option value="" style="color: black;" selected>Quantity adjustment</option>
-                                    <option value="{% url 'create_adjustment_value' %}" style="color: black;">Value
-                                        adjustment</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
 
 
                 <!-- Reference Number field -->
@@ -166,76 +157,86 @@
 
 
                     <div class="container mt-3" style="background-color: black;">
-                        <div class="col-md-10">
-                            <!-- Table for item transactions -->
-                            <table class="table" id="itemTransactionsTable">
-                                <thead>
-                                    <tr>
-                                        <th style="color:white ;font-weight:bold;">#</th>
-                                        <th style="color:white ;font-weight:bold;">Item Details</th>
-                                        <th style="color:white ;font-weight:bold;">Quantity Available</th>
-                                        <th style="color:white ;font-weight:bold;">New Quantity on Hand</th>
-                                        <th style="color:white ;font-weight:bold;">Quantity Adjusted</th>
-                                        <th style="color:white ;font-weight:bold;"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Rows will be dynamically added here -->
-                                    <tr>
-                                        {% if item %}
-                                        <td class="index">1</td>
-                                        <td class="item-details">
-                                            <div class="dropdown">
-                                                <select class="form-control" onchange="navigateToUrl(this)"
-                                                    style="background-color: white;">
-                                                    <option value="" selected disabled>Select item</option>
-                                                    {% for c in item %}
-                                                    <option value="{{c.id}}"
-                                                        data-url="{% url 'create_adjustment_itemquantity' c.id %}"
-                                                        style="color: black;">
-                                                        {{c.item_name}}
-                                                    </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </td>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <!-- Make the table responsive -->
+                                <div class="table-responsive">
+                                    <!-- Table for item transactions -->
+                                    <table class="table" id="itemTransactionsTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="color:white ;font-weight:bold;">#</th>
+                                                <th style="color:white ;font-weight:bold;">Item</th>
+                                                <th style="color:white ;font-weight:bold;">Current Value</th>
+                                                <th style="color:white ;font-weight:bold;">Changed Value</th>
+                                                <th style="color:white ;font-weight:bold;">Adjusted Value</th>
+                                                <th style="color:white ;font-weight:bold;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Rows will be dynamically added here -->
+                                            <tr>
+                                                <td class="index">1</td>
+                                                <td class="item-details">
+                                                    <div class="dropdown">
+                                                        <select class="form-control" onchange="navigateToUrl(this)"
+                                                            style="background-color: white;">
+                                                            <option value="" selected>{{item.item_name}}</option>
+                                                        </select>
+                                                    </div>
+                                                </td>
 
-                                        <script>
-                                            function navigateToUrl(select) {
-                                                var selectedOption = select.options[select.selectedIndex];
-                                                if (selectedOption.value !== "") {
-                                                    var url = selectedOption.getAttribute("data-url");
-                                                    window.location.href = url;
-                                                }
-                                            }
-                                        </script>
-                                        <td class="quantity-available">
-                                            <input type="number" class="form-control" value="">
-                                        </td>
-                                        <td class="new-quantity">
-                                            <input type="number" class="form-control">
-                                        </td>
-                                        <td class="quantity-adjusted">
-                                            <input type="number" class="form-control">
-                                        </td>
-                                        <td>
-                                            <div class="col-md-1">
-                                                <button type="button" class="btn btn-danger remove-row"><i
-                                                        class="fas fa-minus"></i></button>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <button type="button" class="btn btn-success add-row"><i
-                                                        class="fas fa-plus"></i></button>
-                                            </div>
-                                        </td>
-                                        {% endif %}
-                                    </tr>
-                                </tbody>
-                            </table>
+                                                <script>
+                                                    function navigateToUrl(select) {
+                                                        var selectedOption = select.options[select.selectedIndex];
+                                                        if (selectedOption.value !== "") {
+                                                            var url = selectedOption.getAttribute("data-url");
+                                                            window.location.href = url;
+                                                        }
+                                                    }
+                                                </script>
+
+                                                <td class="quantity-available">
+                                                    <input type="number" class="form-control" value="{{stock_value}}"
+                                                        style="color: white;" readonly>
+                                                </td>
+                                                <td class="new-quantity">
+                                                    <input type="number" class="form-control" id="changedValue"
+                                                        oninput="updateAdjustedValue()">
+                                                </td>
+                                                <td class="quantity-adjusted">
+                                                    <input type="number" class="form-control" id="adjustedValue"
+                                                        readonly>
+                                                </td>
+                                                <td>
+                                                    <div class="col-md-1">
+                                                        <button type="button" class="btn btn-danger remove-row"><i
+                                                                class="fas fa-minus"></i></button>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <button type="button" class="btn btn-success add-row"><i
+                                                                class="fas fa-plus"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <script>
+                                        function updateAdjustedValue() {
+                                            var currentValue = parseInt(document.querySelector(".quantity-available input").value);
+                                            var changedValue = parseInt(document.getElementById("changedValue").value);
+                                            var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
+                                            document.getElementById("adjustedValue").value = adjustedValue;
+                                        }
+                                    </script>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- JavaScript to handle dynamic row addition and removal -->
+                    <!-- Bootstrap and Font Awesome scripts -->
                     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
                     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
                     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -250,9 +251,9 @@
                                     '<div class="dropdown">' +
                                     '<select class="form-control" onchange="window.location.href=this.value" style="background-color: white;width: 200px;">' +
                                     '<option value="" selected disabled>Select item</option>' +
-                                    '{% for c in item %}' +
-                                    '<option value="{{c.id}}" style="color: black;">{{c.item_name}}</option>' +
-                                    '{% endfor %}' +
+                                    +
+                                    '<option value="{{c.id}}" style="color: black;">{{item.item_name}}</option>' +
+                                    +
                                     '</select>' +
                                     '</div>' +
                                     '</td>' +
@@ -279,9 +280,7 @@
                     </script>
 
 
-
-
-
+                    <!-- JavaScript to handle dynamic row addition and removal -->
 
                 </div>
                 <div class="row mt-3">
