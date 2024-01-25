@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from datetime import date
 from datetime import datetime, timedelta
-from Company_Staff.models import Items,Chart_of_Accounts
+from Company_Staff.models import Items,Chart_of_Accounts,Inventory_adjustment,Inventory_adjustment_items
 
 # Create your views here.
 
@@ -640,4 +640,43 @@ def create_adjustment_itemquantity(request,pk):
                     'allmodules': allmodules,
                     'account':accounts,
             }
-        return render(request,'zohomodules/stock_adjustment/create_adjustment_itemquantity.html',context)              
+        return render(request,'zohomodules/stock_adjustment/create_adjustment_itemquantity.html',context)
+
+
+def quantity(request):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company':            
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            if request.method =='POST':
+                mode1=request.POST.get('mode1')
+                ref1=request.POST.get('ref1')
+                date1=request.POST.get('date1')
+                account1=request.POST.get('account1')
+                reason1=request.POST.get('reason1')
+                desc1=request.POST.get('desc1')
+                item1=request.POST['item1']
+                item=Items.objects.get(item_name=item1)
+                currentstock=request.POST.get('current_stock')
+                newquantity=request.POST.get('new_quantity')
+                quantityadjusted=request.POST.get('quantity_adjusted')
+                file1 = request.FILES.get('file1')
+                adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
+                                             Reason=reason1,Description=desc1,Attach_file=file1,Status='adjusted',company=dash_details,
+                                             login_details=log_details)
+                adjustment2=Inventory_adjustment_items(items=item,Quantity_available=currentstock,New_quantity_inhand=newquantity,
+                                                   Quantity_adjusted=quantityadjusted,company=dash_details,
+                                                   login_details=log_details,inventory_adjustment=adjustment1)
+                adjustment1.save()
+                adjustment2.save()               
+                return redirect('items_list')
+            return render(request,"zohomodules/stock_adjustment/create_adjustment_itemquantity.html")
+        return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+     
+
+
+     
+                        

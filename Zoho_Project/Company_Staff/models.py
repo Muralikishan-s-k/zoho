@@ -73,7 +73,12 @@ class Inventory_adjustment(models.Model):
     Reason=models.CharField(max_length=255,null=True)
     Description=models.CharField(max_length=255,null=True)
     Attach_file = models.FileField(upload_to='inventory_attachments/', null=True, blank=True)
-    Status=models.CharField(max_length=255,null=True)
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('adjusted', 'Adjusted'),
+    ]
+
+    Status = models.CharField(max_length=255, choices=STATUS_CHOICES, null=True)
     company=models.ForeignKey(CompanyDetails,on_delete=models.CASCADE)
     login_details=models.ForeignKey(LoginDetails,on_delete=models.CASCADE)
 

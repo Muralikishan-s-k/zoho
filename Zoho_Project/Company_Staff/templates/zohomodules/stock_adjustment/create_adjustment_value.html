@@ -152,134 +152,141 @@
                         });
                     </script>
 
-                    <div class="col-md-12 mt-3">
-                        <label for="descriptionBox" style="color: white; font-weight: bold;">Description</label>
-                        <textarea class="form-control" id="descriptionBox" style="width: 70%; color: white;"
-                            rows="4"></textarea>
-                    </div>
+                </div>
+
+                <div class="col-md-12 mt-3">
+                    <label for="descriptionBox" style="color: white; font-weight: bold;">Description</label>
+                    <textarea class="form-control" id="descriptionBox" style="width: 70%; color: white;"
+                        rows="4"></textarea>
+                </div>
 
 
-                    <div class="container mt-3" style="background-color: black;">
-                        <div class="row">
-                            <div class="col-md-10">
-                                <!-- Make the table responsive -->
-                                <div class="table-responsive">
-                                    <!-- Table for item transactions -->
-                                    <table class="table" id="itemTransactionsTable">
-                                        <thead>
-                                            <tr>
-                                                <th style="color:white ;font-weight:bold;">#</th>
-                                                <th style="color:white ;font-weight:bold;">Item</th>
-                                                <th style="color:white ;font-weight:bold;">Current Value</th>
-                                                <th style="color:white ;font-weight:bold;">Changed Value</th>
-                                                <th style="color:white ;font-weight:bold;">Adjusted Value</th>
-                                                <th style="color:white ;font-weight:bold;"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Rows will be dynamically added here -->
-                                            <tr>
-                                                {% if item %}
-                                                <td class="index">1</td>
-                                                <td class="item-details">
-                                                    <div class="dropdown">
-                                                        <select class="form-control" onchange="navigateToUrl(this)"
-                                                            style="background-color: white;">
-                                                            <option value="" selected disabled>Select item</option>
-                                                            {% for c in item %}
-                                                            <option value="{{c.id}}"
-                                                                data-url="{% url 'create_adjustment_itemvalue' c.id %}"
-                                                                style="color: black;">
-                                                                {{c.item_name}}
-                                                            </option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    </div>
-                                                </td>
+                <div class="container mt-3" style="background-color: black;">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <!-- Make the table responsive -->
+                            <div class="table-responsive">
+                                <!-- Table for item transactions -->
+                                <table class="table" id="itemTransactionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="color:white ;font-weight:bold;">#</th>
+                                            <th style="color:white ;font-weight:bold;">Item</th>
+                                            <th style="color:white ;font-weight:bold;">Current Value</th>
+                                            <th style="color:white ;font-weight:bold;">Changed Value</th>
+                                            <th style="color:white ;font-weight:bold;">Adjusted Value</th>
+                                            <th style="color:white ;font-weight:bold;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Rows will be dynamically added here -->
+                                        <tr>
+                                            {% if item %}
+                                            <td class="index">1</td>
+                                            <td class="item-details">
+                                                <div class="dropdown">
+                                                    <select class="form-control" onchange="navigateToUrl(this)"
+                                                        style="background-color: white;">
+                                                        <option value="" selected disabled>Select item</option>
+                                                        {% for c in item %}
+                                                        <option value="{{c.id}}"
+                                                            data-url="{% url 'create_adjustment_itemvalue' c.id %}"
+                                                            style="color: black;">
+                                                            {{c.item_name}}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </td>
 
-                                                <script>
-                                                    function navigateToUrl(select) {
-                                                        var selectedOption = select.options[select.selectedIndex];
-                                                        if (selectedOption.value !== "") {
-                                                            var url = selectedOption.getAttribute("data-url");
-                                                            window.location.href = url;
-                                                        }
+                                            <script>
+                                                function navigateToUrl(select) {
+                                                    var selectedOption = select.options[select.selectedIndex];
+                                                    if (selectedOption.value !== "") {
+                                                        var url = selectedOption.getAttribute("data-url");
+                                                        window.location.href = url;
                                                     }
-                                                </script>
-                                                <td class="quantity-available">
-                                                    <input type="number" class="form-control" value="">
-                                                </td>
-                                                <td class="new-quantity">
-                                                    <input type="number" class="form-control">
-                                                </td>
-                                                <td class="quantity-adjusted">
-                                                    <input type="number" class="form-control">
-                                                </td>
-                                                <td>
-                                                    <div class="col-md-1">
-                                                        <button type="button" class="btn btn-danger remove-row"><i
-                                                                class="fas fa-minus"></i></button>
-                                                    </div>
-                                                    <div class="col-md-1">
-                                                        <button type="button" class="btn btn-success add-row"><i
-                                                                class="fas fa-plus"></i></button>
-                                                    </div>
-                                                </td>
-                                                {% endif %}
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                }
+                                            </script>
+                                            <td class="quantity-available">
+                                                <input type="number" class="form-control" value="">
+                                            </td>
+                                            <td class="new-quantity">
+                                                <input type="number" class="form-control">
+                                            </td>
+                                            <td class="quantity-adjusted">
+                                                <input type="number" class="form-control">
+                                            </td>
+                                            <td>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-danger remove-row"><i
+                                                            class="fas fa-minus"></i></button>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-success add-row"><i
+                                                            class="fas fa-plus"></i></button>
+                                                </div>
+                                            </td>
+                                            {% endif %}
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Bootstrap and Font Awesome scripts -->
-                    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
-                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-                    <script>
-                        $(document).ready(function () {
-                            // Add row
-                            $(document).on("click", ".add-row", function () {
-                                var index = $(".index").length + 1;
-                                var newRow = '<tr>' +
-                                    '<td class="index">' + index + '</td>' +
-                                    '<td class="item-details">' +
-                                    '<div class="dropdown">' +
-                                    '<select class="form-control" onchange="window.location.href=this.value" style="background-color: white;width: 200px;">' +
-                                    '<option value="" selected disabled>Select item</option>' +
-                                    '{% for c in item %}' +
-                                    '<option value="{{c.id}}" style="color: black;">{{c.item_name}}</option>' +
-                                    '{% endfor %}' +
-                                    '</select>' +
-                                    '</div>' +
-                                    '</td>' +
-                                    '<td class="quantity-available"><input type="number" class="form-control"></td>' +
-                                    '<td class="new-quantity"><input type="number" class="form-control"></td>' +
-                                    '<td class="quantity-adjusted"><input type="number" class="form-control"></td>' +
-                                    '<td>' +
-                                    '<div class="col-md-1">' +
-                                    '<button type="button" class="btn btn-danger remove-row"><i class="fas fa-minus"></i></button>' +
-                                    '</div>' +
-                                    '<div class="col-md-1">' +
-                                    '<button type="button" class="btn btn-success add-row"><i class="fas fa-plus"></i></button>' +
-                                    '</div>' +
-                                    '</td>' +
-                                    '</tr>';
-                                $("#itemTransactionsTable tbody").append(newRow);
-                            });
-
-                            // Remove row
-                            $(document).on("click", ".remove-row", function () {
-                                $(this).closest("tr").remove();
-                            });
+                <!-- Bootstrap and Font Awesome scripts -->
+                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                <script>
+                    $(document).ready(function () {
+                        // Add row
+                        $(document).on("click", ".add-row", function () {
+                            var index = $(".index").length + 1;
+                            var newRow = '<tr>' +
+                                '<td class="index">' + index + '</td>' +
+                                '<td class="item-details">' +
+                                '<div class="dropdown">' +
+                                '<select class="form-control" onchange="window.location.href=this.value" style="background-color: white;width: 200px;">' +
+                                '<option value="" selected disabled>Select item</option>' +
+                                '{% for c in item %}' +
+                                '<option value="{{c.id}}" style="color: black;">{{c.item_name}}</option>' +
+                                '{% endfor %}' +
+                                '</select>' +
+                                '</div>' +
+                                '</td>' +
+                                '<td class="quantity-available"><input type="number" class="form-control"></td>' +
+                                '<td class="new-quantity"><input type="number" class="form-control"></td>' +
+                                '<td class="quantity-adjusted"><input type="number" class="form-control"></td>' +
+                                '<td>' +
+                                '<div class="col-md-1">' +
+                                '<button type="button" class="btn btn-danger remove-row"><i class="fas fa-minus"></i></button>' +
+                                '</div>' +
+                                '<div class="col-md-1">' +
+                                '<button type="button" class="btn btn-success add-row"><i class="fas fa-plus"></i></button>' +
+                                '</div>' +
+                                '</td>' +
+                                '</tr>';
+                            $("#itemTransactionsTable tbody").append(newRow);
                         });
-                    </script>
+
+                        // Remove row
+                        $(document).on("click", ".remove-row", function () {
+                            $(this).closest("tr").remove();
+                        });
+                    });
+                </script>
 
 
-                    <!-- JavaScript to handle dynamic row addition and removal -->
+                <!-- JavaScript to handle dynamic row addition and removal -->
 
+
+
+                <div class="mt-3">
+                    <label for="fileInput" style="color: white; font-weight: bold;">Upload Files</label>
+                    <input type="file" name="file" multiple class="form-control-file" id="fileInput">
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-2">
