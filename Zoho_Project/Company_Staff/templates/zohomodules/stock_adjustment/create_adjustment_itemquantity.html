@@ -61,7 +61,7 @@
                                 </div>
                                 <select class="form-control" name="mode1" onchange="window.location.href=this.value"
                                     style="background-color: white;width: 200px;">
-                                    <option value="" selected>Quantity adjustment</option>
+                                    <option value="Quantity adjustment" selected>Quantity adjustment</option>
 
                                 </select>
                             </div>
@@ -131,10 +131,10 @@
                         <div class="input-group">
                             <select class="form-control" name="reason1" id="reasonDropdown"
                                 style="width: 100px; color: white;">
-                                <option value="reason1" style="color:black ;">High Demand Goods</option>
-                                <option value="reason2" style="color:black ;">Stock Written Off</option>
-                                <option value="reason2" style="color:black ;">Inventory Revaluation</option>
-                                <option value="reason2" style="color:black ;">Stock on Fire</option>
+                                <option value="High Demand Goods" style="color:black ;">High Demand Goods</option>
+                                <option value="Stock Written Off" style="color:black ;">Stock Written Off</option>
+                                <option value="Inventory Revaluation" style="color:black ;">Inventory Revaluation</option>
+                                <option value="Stock on Fire" style="color:black ;">Stock on Fire</option>
                                 <!-- Add more options as needed -->
                             </select>
                             <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
@@ -182,15 +182,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Rows will be dynamically added here -->
-                                {% for c in item %}
+                                
+                                
                                 <tr>
                                     <td class="index">1</td>
+                                    
                                     <td class="item-details">
                                         <div class="dropdown">
                                             <select class="form-control" name="item1" onchange="navigateToUrl(this)"
                                                 style="background-color: white;">
-                                                <option value="" selected>{{c.item_name}}</option>
+                                                {% for c in item %}
+                                                <option value="{{c.id}}" selected>{{c.item_name}}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                     </td>
@@ -199,6 +202,7 @@
                                             value="{{c.current_stock}}" style="color: white;" readonly>
                                             
                                     </td>
+                                    
                                     <td class="new-quantity">
                                         <input type="number" name="new-quantity" class="form-control" id="newQuantity"
                                             oninput="updateQuantityAdjusted()" style="color: white;">
@@ -219,7 +223,8 @@
                                     </td>
                                 </tr>
                                 
-                                {% endfor %}
+                                
+                         
                             </tbody>
                         </table>
                     </div>

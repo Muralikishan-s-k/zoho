@@ -42,7 +42,7 @@
         <!-- Responsive container for the content -->
         <div class="container mt-3" style="background-color: black;">
             <h1 style="color: white;" class="text-center">Create Adjustments</h1>
-            <form action="" enctype="multipart/form-data" method="post">
+            <form action="{% url 'value' %}" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
                 <!-- Dropdown for adjustment type -->
 
@@ -56,7 +56,7 @@
                                 </div>
                                 <select class="form-control" name="mode2" onchange="window.location.href=this.value"
                                     style="background-color: white;width: 200px;">
-                                    <option value="" selected>Value adjustment</option>
+                                    <option value="Value adjustment" selected>Value adjustment</option>
 
                                 </select>
                             </div>
@@ -122,10 +122,10 @@
                             style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
                         <div class="input-group">
                             <select class="form-control" name="reason2" id="reasonDropdown" style="width: 100px; color: white;">
-                                <option value="reason1" style="color:black ;">High Demand Goods</option>
-                                <option value="reason2" style="color:black ;">Stock Written Off</option>
-                                <option value="reason2" style="color:black ;">Inventory Revaluation</option>
-                                <option value="reason2" style="color:black ;">Stock on Fire</option>
+                                <option value="High Demand Goods" style="color:black ;">High Demand Goods</option>
+                                <option value="Stock Written Off" style="color:black ;">Stock Written Off</option>
+                                <option value="Inventory Revaluation" style="color:black ;">Inventory Revaluation</option>
+                                <option value="Stock on Fire" style="color:black ;">Stock on Fire</option>
                                 <!-- Add more options as needed -->
                             </select>
                             <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
@@ -182,7 +182,7 @@
                                                 <div class="dropdown">
                                                     <select class="form-control" name="item2" onchange="navigateToUrl(this)"
                                                         style="background-color: white;">
-                                                        <option value="" selected>{{item.item_name}}</option>
+                                                        <option value="{{item.item_name}}" selected>{{item.item_name}}</option>
                                                     </select>
                                                 </div>
                                             </td>

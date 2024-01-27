@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import export_to_excel, import_from_excel
 
 urlpatterns = [
     # -------------------------------Company section--------------------------------
@@ -40,6 +41,10 @@ urlpatterns = [
     path('zohomodules/stock_adjustment/create_adjustment_itemquantity/<int:pk>',views.create_adjustment_itemquantity,name='create_adjustment_itemquantity'),
     path('zohomodules/stock_adjustment/create_adjustment_itemvalue/<int:pk>',views.create_adjustment_itemvalue,name='create_adjustment_itemvalue'),
     path('zohomodules/stock_adjustment/quantity',views.quantity,name='quantity'),
+    path('zohomodules/stock_adjustment/value',views.value,name='value'),
+    path('export_to_excel',views.export_to_excel,name='export_to_excel'),
+    path('import_from_excel',views.import_from_excel,name='import_from_excel'),
+    path('zohomodules/stock_adjustment/items_list/adjustment_overview',views.adjustment_overview,name='adjustment_overview')
     
   
     

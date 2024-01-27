@@ -6,6 +6,9 @@ from django.conf import settings
 from datetime import date
 from datetime import datetime, timedelta
 from Company_Staff.models import Items,Chart_of_Accounts,Inventory_adjustment,Inventory_adjustment_items
+from openpyxl import Workbook
+from django.http import HttpResponse
+from openpyxl import load_workbook
 
 # Create your views here.
 
@@ -509,10 +512,14 @@ def items_list(request):
             dash_details = CompanyDetails.objects.get(login_details=log_details)
             item=Items.objects.filter(company=dash_details)
             allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            adjustment1=Inventory_adjustment.objects.all()
+            adjustment2=Inventory_adjustment_items.objects.all()
             context = {
                     'details': dash_details,
                     'item': item,
                     'allmodules': allmodules,
+                    'adjustment1':adjustment1,
+                    'adjustment2':adjustment2
             }
         return render(request,'zohomodules/stock_adjustment/items_list.html',context) 
 
@@ -658,8 +665,8 @@ def quantity(request):
                 account1=request.POST.get('account1')
                 reason1=request.POST.get('reason1')
                 desc1=request.POST.get('desc1')
-                item1=request.POST['item1']
-                item=Items.objects.get(item_name=item1)
+                item=request.POST.get('item1')
+                item1=Items.objects.get(item_type=item)
                 currentstock=request.POST.get('current_stock')
                 newquantity=request.POST.get('new_quantity')
                 quantityadjusted=request.POST.get('quantity_adjusted')
@@ -667,7 +674,7 @@ def quantity(request):
                 adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
                                              Reason=reason1,Description=desc1,Attach_file=file1,Status='adjusted',company=dash_details,
                                              login_details=log_details)
-                adjustment2=Inventory_adjustment_items(items=item,Quantity_available=currentstock,New_quantity_inhand=newquantity,
+                adjustment2=Inventory_adjustment_items(items=item1,Quantity_available=currentstock,New_quantity_inhand=newquantity,
                                                    Quantity_adjusted=quantityadjusted,company=dash_details,
                                                    login_details=log_details,inventory_adjustment=adjustment1)
                 adjustment1.save()
@@ -677,6 +684,112 @@ def quantity(request):
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
      
 
+def value(request):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company':            
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            if request.method =='POST':
+                mode1=request.POST.get('mode2')
+                ref1=request.POST.get('ref2')
+                date1=request.POST.get('date2')
+                account1=request.POST.get('account2')
+                reason1=request.POST.get('reason2')
+                desc1=request.POST.get('desc2')
+                item=request.POST.get('item2')
+                item1=Items.objects.get(item_type=item) 
+                print('item',item)              
+                currentstock=request.POST.get('stock_value')
+                newquantity=request.POST.get('changedvalue')
+                quantityadjusted=request.POST.get('adjustedvalue')
+                file1 = request.FILES.get('file2')
+                adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
+                                             Reason=reason1,Description=desc1,Attach_file=file1,Status='adjusted',company=dash_details,
+                                             login_details=log_details)
+                adjustment2=Inventory_adjustment_items(items=item1,Quantity_available=currentstock,New_quantity_inhand=newquantity,
+                                                   Quantity_adjusted=quantityadjusted,company=dash_details,
+                                                   login_details=log_details,inventory_adjustment=adjustment1)
+                adjustment1.save()
+                adjustment2.save()               
+                return redirect('items_list')
+            return render(request,"zohomodules/stock_adjustment/create_adjustment_itemvalue.html")
+        return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+          
 
+def export_to_excel(request):
+    adjustment_data = Inventory_adjustment.objects.all()  # Adjust this based on your actual model
+    workbook = Workbook()
+    sheet = workbook.active
+
+    # Write headers
+    headers = ["Sl.No", "Date", "Reason", "Description", "Ref.No", "Type", "Status"]
+    sheet.append(headers)
+
+    # Write data
+    for index, s in enumerate(adjustment_data, start=1):
+        row_data = [index, s.Adjusting_date, s.Reason, s.Description, s.Reference_number, s.Mode_of_adjustment, s.Status]
+        sheet.append(row_data)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=adjustment_data.xlsx'
+    workbook.save(response)
+
+    return response
      
-                        
+def import_from_excel(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        excel_file = request.FILES['file']
+        workbook = load_workbook(excel_file)
+        sheet = workbook.active
+
+        # Assuming the structure is the same as the export
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            _, adjusting_date, reason, description, reference_number, mode_of_adjustment, status = row
+
+            # Create or update your model instance here
+            adjustment_instance, created = Inventory_adjustment.objects.update_or_create(
+                adjusting_date=adjusting_date,
+                reason=reason,
+                description=description,
+                reference_number=reference_number,
+                mode_of_adjustment=mode_of_adjustment,
+                status=status,
+            )
+
+        return redirect('items_list')
+
+    return render(request, 'zohomodules/stock_adjustment/items_list.html')
+
+def adjustment_overview(request):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            adjustment1=Inventory_adjustment.objects.all()
+            adjustment2=Inventory_adjustment_items.objects.all()
+            context = {
+                    'details': dash_details,
+                    'item': item,
+                    'allmodules': allmodules,
+                    'adjustment1':adjustment1,
+                    'adjustment2':adjustment2
+            }
+        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html',context)                         
