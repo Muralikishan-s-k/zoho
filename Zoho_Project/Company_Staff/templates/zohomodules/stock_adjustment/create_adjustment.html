@@ -123,7 +123,7 @@
                             <option value="{{c.id}}" style="color: black;">{{c.account_name}}</option>
                             {% endfor %}
 
-                            <!-- Add more options as needed -->
+
                         </select>
                     </div>
                     <div class="col-md-4">
@@ -135,7 +135,7 @@
                                 <option value="reason2" style="color:black ;">Stock Written Off</option>
                                 <option value="reason2" style="color:black ;">Inventory Revaluation</option>
                                 <option value="reason2" style="color:black ;">Stock on Fire</option>
-                                <!-- Add more options as needed -->
+
                             </select>
                             <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
                                     class="fas fa-plus"></i></button>
@@ -169,7 +169,7 @@
 
                 <div class="container mt-3" style="background-color: black;">
                     <div class="col-md-10">
-                        <!-- Table for item transactions -->
+
                         <table class="table" id="itemTransactionsTable">
                             <thead>
                                 <tr>
@@ -184,7 +184,7 @@
                             <tbody>
                                 <!-- Rows will be dynamically added here -->
                                 <tr>
-                                    {% if item %}
+
                                     <td class="index">1</td>
                                     <td class="item-details">
                                         <div class="dropdown">
@@ -194,14 +194,13 @@
                                                 {% for c in item %}
                                                 <option value="{{c.id}}"
                                                     data-url="{% url 'create_adjustment_itemquantity' c.id %}"
-                                                    style="color: black;">
+                                                    style="color: black;" >
                                                     {{c.item_name}}
                                                 </option>
                                                 {% endfor %}
                                             </select>
                                         </div>
                                     </td>
-
                                     <script>
                                         function navigateToUrl(select) {
                                             var selectedOption = select.options[select.selectedIndex];
@@ -211,8 +210,9 @@
                                             }
                                         }
                                     </script>
+
                                     <td class="quantity-available">
-                                        <input type="number"  class="form-control" value="">
+                                        <input type="number" class="form-control" value="">
                                     </td>
                                     <td class="new-quantity">
                                         <input type="number" class="form-control">
@@ -230,18 +230,12 @@
                                                     class="fas fa-plus"></i></button>
                                         </div>
                                     </td>
-                                    {% endif %}
+
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-                <!-- JavaScript to handle dynamic row addition and removal -->
-                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
-                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-                
                 <script>
                     $(document).ready(function () {
                         // Add row
@@ -280,6 +274,9 @@
                         });
                     });
                 </script>
+
+
+
 
 
 

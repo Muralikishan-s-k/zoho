@@ -4,8 +4,35 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 <style>
+    .message-container {
+        position: relative;
+        display: inline-block;
+    }
 
+    .message-icon {
+        cursor: pointer;
+        font-size: 18px;
+        margin-right: 5px;
+    }
+
+    .message-content {
+        display: none;
+        position: absolute;
+        top: -30px; /* Adjust the distance above the icon */
+        left: 0;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+    }
+
+    .message-container:hover .message-content {
+        display: block;
+    }
 </style>
+
 <div class="body-wrapper">
     <div class="container-fluid">
         <nav aria-label="breadcrumb">
@@ -80,17 +107,24 @@
                     </thead>
                     <tbody style="background-color: black;">
                         {% for s in adjustment1 %}
-                        
-                            <tr>
-                                <td><a href="{% url 'adjustment_overview' %}"></a></td>
-                                <td><a href="{% url 'adjustment_overview' %}">{{ s.Adjusting_date}}</a></td>
-                                <td><a href="{% url 'adjustment_overview' %}">{{ s.Reason }}</a></td>
-                                <td><a href="{% url 'adjustment_overview' %}">{{ s.Description }}</a></td>
-                                <td><a href="{% url 'adjustment_overview' %}">{{ s.Reference_number }}</a></td>
-                                <td><a href="{% url 'adjustment_overview' %}">{{ s.Mode_of_adjustment }}</a></td>
-                                <td><a href="{% url 'adjustment_overview' %}">{{ s.Status }}</a></td>
-                            </tr>
-                        
+
+                        <tr>
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{ forloop.counter }}</a></td>
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{ s.Adjusting_date}}</a></td>
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{ s.Reason }}</a></td>
+                            <td>
+                                <div class="message-container">
+                                    <span class="message-icon"><i class="fas fa-comment text-warning"></i></span>
+                                    <div class="message-content">
+                                        <a href="{% url 'adjustment_overview' %}">{{ s.Description }}</a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{ s.Reference_number }}</a></td>
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{ s.Mode_of_adjustment }}</a></td>
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{ s.Status }}</a></td>
+                        </tr>
+
                         {% endfor %}
                     </tbody>
                 </table>

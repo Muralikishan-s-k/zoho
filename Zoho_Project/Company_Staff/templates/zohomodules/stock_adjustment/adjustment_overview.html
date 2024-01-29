@@ -2,10 +2,18 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .white-divider {
+        width: 2px;
+        background-color: white;
+        height: 100%;
+        margin-right: 20px;
+        margin-top: -200px;
+    }
+</style>
 <div class="body-wrapper">
-    <div class="container-fluid" style="height: 100%;">
-        <div class="row" style="height: 100%;">
-            <!-- Breadcrumb -->
+    <div class="container-fluid">
+        <div class="row">
             <nav aria-label="breadcrumb" class="col-12">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}" class="text-warning-emphasis">Dashboard</a></li>
@@ -14,23 +22,126 @@
                 </ol>
             </nav>
 
-            <div class="col-2" style="width: 400px; background-color: black; height: 800px;">
+            <!-- Left Container -->
+            <div class="col-md-3" style="background-color: black;height:800px;" >
                 <!-- Responsive buttons on the same line -->
                 <div class="d-flex justify-content-around mt-3">
-                    <button type="button" class="btn btn-warning">Button 1</button>
-                    <button type="button" class="btn btn-warning">Button 2</button>
-                    <button type="button" class="btn btn-warning">Button 3</button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-sort text-warning"></i> Sort
+                    </button>
+                    <button class="btn btn-outline-warning mb-2 mb-md-0">
+                        <i class="fas fa-filter text-warning"></i> Filter
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-plus text-warning"></i> Add
+                    </button>
                 </div>
                 <div class="mt-3">
                     <form class="form-inline">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
+                            <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="button-addon2" style="background-color: white;">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+                                <button class="btn btn-outline-warning" type="button" id="button-addon2">Search</button>
                             </div>
                         </div>
                     </form>
+                
+                    {% for s in adjustment2 %}
+                    <div class="mt-3">
+                        <div class="divider" style="border-top: 1px solid white; margin-top: 10px; margin-bottom: 10px;"></div>
+                        <a href="{% url 'itemdetail' s.items.id %}">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- First item on the top row -->
+                                        <div class="item" style="color: white; margin-left: 40px; font-weight: bold;">
+                                            {{ s.items.item_name }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- Second item on the top row -->
+                                        <div class="item" style="color: white; margin-left: 40px; font-weight: bold;">
+                                            {{ s.inventory_adjustment.Mode_of_adjustment }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- Third item on the bottom row -->
+                                        <div class="item" style="color: white; margin-left: 40px; font-weight: bold;">
+                                            {{ s.inventory_adjustment.Adjusting_date }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- Fourth item on the bottom row -->
+                                        <div class="item" style="color: white; margin-left: 40px; font-weight: bold;">
+                                            {{ s.inventory_adjustment.Status }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
                 </div>
+                
+            </div>
+
+            <!-- Right Container -->
+            <div class="col-md-9" style="background-color: black;">
+                <div class="container mt-3 p-4" style="color: white; border: 2px solid white; border-radius: 8px;">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Mode of Adjustment:</strong>
+                            {{ adjustments.inventory_adjustment.Mode_of_adjustment }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Reference Number:</strong>
+                            {{ adjustments.inventory_adjustment.Reference_number }}
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Adjusting Date:</strong>
+                            {{ adjustments.inventory_adjustment.Adjusting_date }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Account:</strong>
+                            {{ adjustments.inventory_adjustment.Account }}
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Reason:</strong>
+                            {{ adjustments.inventory_adjustment.Reason }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Description:</strong>
+                            {{ adjustments.inventory_adjustment.Description }}
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Status:</strong>
+                            {{ adjustments.inventory_adjustment.Status }}
+                        </div>
+                        <!-- Add more rows as needed -->
+                    </div>
+
+                </div>
+
+                <div class="white-divider"></div>
             </div>
         </div>
     </div>

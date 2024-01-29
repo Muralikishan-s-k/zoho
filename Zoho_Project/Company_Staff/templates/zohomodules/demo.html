@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    
+</style>
+<div class="body-wrapper">
+    <div class="container-fluid" style="height: 100%;">
+        <div class="row" style="height: 100%;">
+            <nav aria-label="breadcrumb" class="col-12">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}"
+                            class="text-warning-emphasis">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'items_list' %}" class="text-warning-emphasis">Stock
+                            Adjustment</a></li>
+                    <li class="breadcrumb-item" aria-current="page">Adjustment Overview</li>
+                </ol>
+            </nav>
+
+            <!-- Left Container -->
+            <div class="col-3" style="background-color: black; height: 800px;">
+                <!-- Responsive buttons on the same line -->
+                <div class="d-flex justify-content-around mt-3">
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-sort text-warning"></i> Sort
+                    </button>
+                    <button class="btn btn-outline-warning mb-2 mb-md-0">
+                        <i class="fas fa-filter text-warning"></i> Filter
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-plus text-warning"></i> Add
+                    </button>
+                </div>
+                <div class="mt-3">
+                    <form class="form-inline">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search" aria-label="Search"
+                                aria-describedby="button-addon2" style="background-color: white;">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-warning" type="button" id="button-addon2">Search</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% for s in adjustment2 %}
+                    <div class="mt-3">
+                        <div class="divider"
+                            style="border-top: 1px solid white; margin-top: 10px; margin-bottom: 10px;"></div>
+                        <a href="{% url 'itemdetail' s.items.id %}">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- First item on the top row -->
+                                        <div class="item" style="color: white;margin-left: 40px;font-weight: bold;">
+                                            {{s.items.item_name}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- Second item on the top row -->
+                                        <div class="item" style="color: white;margin-left: 40px;font-weight: bold;">
+                                            {{s.inventory_adjustment.Mode_of_adjustment}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- Third item on the next row -->
+                                        <div class="item" style="color: white;margin-left: 40px;font-weight: bold;">
+                                            {{s.inventory_adjustment.Adjusting_date}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="item-container">
+                                        <!-- Fourth item on the next row -->
+                                        <div class="item" style="color: white;margin-left: 40px;font-weight: bold;">
+                                            {{s.inventory_adjustment.Status}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+            </div>
+
+            <!-- Right Container -->
+            {% block content %}
+
+            {% endblock %}
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

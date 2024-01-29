@@ -191,16 +191,15 @@
                                         <div class="dropdown">
                                             <select class="form-control" name="item1" onchange="navigateToUrl(this)"
                                                 style="background-color: white;">
-                                                {% for c in item %}
-                                                <option value="{{c.id}}" selected>{{c.item_name}}</option>
-                                                {% endfor %}
+                                                
+                                                <option value="{{item.id}}" selected>{{item.item_name}}</option>
+                                                
                                             </select>
                                         </div>
                                     </td>
                                     <td class="quantity-available">
                                         <input type="number" name="current_stock" class="form-control"
-                                            value="{{c.current_stock}}" style="color: white;" readonly>
-                                            
+                                            value="{{item.current_stock}}" style="color: white;" readonly>                                           
                                     </td>
                                     
                                     <td class="new-quantity">
@@ -261,9 +260,7 @@
                                 '<div class="dropdown">' +
                                 '<select class="form-control" onchange="window.location.href=this.value" style="background-color: white;width: 200px;">' +
                                 '<option value="" selected disabled>Select item</option>' +
-                                '{% for c in item %}' +
-                                '<option value="{{c.id}}" style="color: black;">{{c.item_name}}</option>' +
-                                '{% endfor %}' +
+                                +
                                 '</select>' +
                                 '</div>' +
                                 '</td>' +
