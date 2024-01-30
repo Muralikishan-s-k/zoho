@@ -52,16 +52,20 @@
                         aria-describedby="basic-addon2" style="background-color: white; border-radius: 10px;">
 
                     <!-- Dropdown for sorting -->
-                    <div class="input-group-prepend" style="margin-left: 10px;">
-                        <button class="btn btn-outline-warning">
+                    
+
+                    <div class="dropdown">
+                        <button class="btn btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-sort text-warning"></i> Sort
                         </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">All</a>
-                            <a class="dropdown-item" href="#">Date</a>
-                            <a class="dropdown-item" href="#">Reference Number</a>
-                        </div>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="date">Date</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="reference_number">Reference Number</a></li>
+                        </ul>
                     </div>
+
+
                 </div>
 
                 <!-- Buttons aligned to the right -->
@@ -96,13 +100,13 @@
                 <table class="table align-middle mb-0 " style="background-color: black; color: white;">
                     <thead class="bg-black text-light">
                         <tr>
-                            <th scope="col">Sl.No</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Reason</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Ref.No</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Status</th>
+                            <th scope="col" id="sort-sl">Sl.No</th>
+                            <th scope="col" id="sort-date">Date</th>
+                            <th scope="col" id="sort-reason">Reason</th>
+                            <th scope="col" id="sort-description">Description</th>
+                            <th scope="col" id="sort-refno">Ref.No</th>
+                            <th scope="col" id="sort-type">Type</th>
+                            <th scope="col" id="sort-status">Status</th>
                         </tr>
                     </thead>
                     <tbody style="background-color: black;">

@@ -1,0 +1,99 @@
+{% extends 'overviewnavbar.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .white-divider {
+        width: 2px;
+        background-color: white;
+        height: 100%;
+        margin-right: 20px;
+        margin-top: -420px;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Assuming the first column (left column) is for navigation or other content -->
+
+        </div>
+        <div class="col-md-9">
+            <div class="container mt-3 p-4" style="color: white; border: 2px solid white; border-radius: 8px;">
+
+                <div class="row mb-3">
+                    
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-outline-warning btn-lg">Attach File</button>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-outline-warning btn-lg"><i
+                                class="fas fa-pencil-alt text-warning"></i></button>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-outline-warning btn-lg"><i
+                                class="fas fa-share text-warning"></i></button>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-outline-warning btn-lg"><i
+                                class="fas fa-print text-warning"></i></button>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-outline-warning btn-lg"><i
+                                class="fas fa-trash text-warning"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-outline-warning btn-lg"><i
+                                class="fas fa-comment text-warning"></i></button>
+                    </div>
+                </div>
+
+                <!-- Your content rows -->
+                <div class="row">
+                    <div class="col-md-6" style="margin-top: 30px;">
+                        <strong>Mode of Adjustment:</strong>
+                        {{ adjustments.inventory_adjustment.Mode_of_adjustment }}
+                    </div>
+                    <div class="col-md-6" style="margin-top: 30px;">
+                        <strong>Reference Number:</strong>
+                        {{ adjustments.inventory_adjustment.Reference_number }}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6" style="margin-top: 30px;">
+                        <strong>Adjusting Date:</strong>
+                        {{ adjustments.inventory_adjustment.Adjusting_date }}
+                    </div>
+                    <div class="col-md-6" style="margin-top: 30px;">
+                        <strong>Account:</strong>
+                        {{ adjustments.inventory_adjustment.Account }}
+                    </div>
+                    
+                </div>
+        
+                <div class="row mt-3">
+                    <div class="col-md-6" style="margin-top: 30px;">
+                        <strong>Reason:</strong>
+                        {{ adjustments.inventory_adjustment.Reason }}
+                    </div>
+                    <div class="col-md-6" style="margin-top: 30px;">
+                        <strong>Description:</strong>
+                        {{ adjustments.inventory_adjustment.Description }}
+                    </div>
+                </div>
+        
+                <div class="row mt-3">
+                    <div class="col-md-6" style="margin-top: 30px;">
+                        <strong>Status:</strong>
+                        {{ adjustments.inventory_adjustment.Status }}
+                    </div>
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="white-divider"></div>
+</div>
+
+{% endblock %}

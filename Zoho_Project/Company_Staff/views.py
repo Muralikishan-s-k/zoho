@@ -816,12 +816,15 @@ def itemdetail(request,pk):
             item=Items.objects.filter(company=dash_details)
             allmodules= ZohoModules.objects.get(company=dash_details,status='New')
             adjustment1=Inventory_adjustment.objects.all()
-            adjustment2=Inventory_adjustment_items.objects.get(id=pk)
+            adjustment2=Inventory_adjustment_items.objects.all()
+            adjustments=Inventory_adjustment_items.objects.get(id=pk)
             context = {
                     'details': dash_details,
                     'item': item,
                     'allmodules': allmodules,
                     'adjustment1':adjustment1,
-                    'adjustments':adjustment2
+                    'adjustments':adjustments,
+                    'adjustment2':adjustment2
+
             }
         return render(request,'zohomodules/stock_adjustment/adjustment_overview.html',context)                              
