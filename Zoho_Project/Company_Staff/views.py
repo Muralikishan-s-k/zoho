@@ -5,10 +5,11 @@ from django.contrib import messages
 from django.conf import settings
 from datetime import date
 from datetime import datetime, timedelta
-from Company_Staff.models import Items,Chart_of_Accounts,Inventory_adjustment,Inventory_adjustment_items
+from Company_Staff.models import Items,Chart_of_Accounts,Inventory_adjustment,Inventory_adjustment_items,Inventory_adjustment_history
 from openpyxl import Workbook
 from django.http import HttpResponse
 from openpyxl import load_workbook
+from django.db.models import Max
 
 # Create your views here.
 
@@ -650,6 +651,13 @@ def create_adjustment_itemquantity(request,pk):
         return render(request,'zohomodules/stock_adjustment/create_adjustment_itemquantity.html',context)
 
 
+def generate_unique_reference_number():
+    latest_reference_number = Inventory_adjustment.objects.all().aggregate(Max('Reference_number'))['Reference_number__max']
+    if latest_reference_number:
+        return str(int(latest_reference_number) + 1)
+    else:
+        return '1'
+
 def quantity(request):
      if 'login_id' in request.session:
         log_id = request.session['login_id']
@@ -660,14 +668,13 @@ def quantity(request):
             dash_details = CompanyDetails.objects.get(login_details=log_details)
             if request.method =='POST':
                 mode1=request.POST.get('mode1')
-                ref1=request.POST.get('ref1')
+                ref1 = generate_unique_reference_number()
                 date1=request.POST.get('date1')
                 account1=request.POST.get('account1')
                 reason1=request.POST.get('reason1')
                 desc1=request.POST.get('desc1')
                 item=request.POST.get('item1')
-                item1=Items.objects.get(id=item)
-                print('item1',item1)
+                item1=Items.objects.get(id=item)                
                 currentstock=request.POST.get('current_stock')
                 newquantity=request.POST.get('new-quantity')
                 quantityadjusted=request.POST.get('quantity-adjusted')
@@ -678,8 +685,12 @@ def quantity(request):
                 adjustment2=Inventory_adjustment_items(items=item1,Quantity_available=currentstock,New_quantity_inhand=newquantity,
                                                    Quantity_adjusted=quantityadjusted,company=dash_details,
                                                    login_details=log_details,inventory_adjustment=adjustment1)
+                adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
+                                                   login_details=log_details,inventory_adjustment=adjustment1)
                 adjustment1.save()
-                adjustment2.save()               
+                
+                adjustment2.save()
+                adjustment3.save()               
                 return redirect('items_list')
             return render(request,"zohomodules/stock_adjustment/create_adjustment_itemquantity.html")
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
@@ -695,14 +706,13 @@ def value(request):
             dash_details = CompanyDetails.objects.get(login_details=log_details)
             if request.method =='POST':
                 mode1=request.POST.get('mode2')
-                ref1=request.POST.get('ref2')
+                ref1=generate_unique_reference_number()
                 date1=request.POST.get('date2')
                 account1=request.POST.get('account2')
                 reason1=request.POST.get('reason2')
                 desc1=request.POST.get('desc2')
                 item=request.POST.get('item2')
-                item1=Items.objects.get(id=item) 
-                print('item',item)              
+                item1=Items.objects.get(id=item)               
                 currentstock=request.POST.get('stock_value')
                 newquantity=request.POST.get('changedvalue')
                 quantityadjusted=request.POST.get('adjustedvalue')
@@ -713,8 +723,11 @@ def value(request):
                 adjustment2=Inventory_adjustment_items(items=item1,Current_value=currentstock,Changed_value=newquantity,
                                                    Adjusted_value=quantityadjusted,company=dash_details,
                                                    login_details=log_details,inventory_adjustment=adjustment1)
+                adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
+                                                   login_details=log_details,inventory_adjustment=adjustment1)
                 adjustment1.save()
-                adjustment2.save()               
+                adjustment2.save()   
+                adjustment3.save()            
                 return redirect('items_list')
             return render(request,"zohomodules/stock_adjustment/create_adjustment_itemvalue.html")
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
@@ -817,14 +830,54 @@ def itemdetail(request,pk):
             allmodules= ZohoModules.objects.get(company=dash_details,status='New')
             adjustment1=Inventory_adjustment.objects.all()
             adjustment2=Inventory_adjustment_items.objects.all()
-            adjustments=Inventory_adjustment_items.objects.get(id=pk)
+            adjustments=Inventory_adjustment_items.objects.get(id=pk)           
+            adjustment3 = Inventory_adjustment_history.objects.all()
             context = {
                     'details': dash_details,
                     'item': item,
                     'allmodules': allmodules,
                     'adjustment1':adjustment1,
                     'adjustments':adjustments,
-                    'adjustment2':adjustment2
+                    'adjustment2':adjustment2,
+                    'adjustment3':adjustment3
 
             }
-        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html',context)                              
+        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html',context)  
+
+
+def stockedit(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            adjustment1=Inventory_adjustment.objects.all()
+            adjustment2=Inventory_adjustment_items.objects.get(id=pk)
+            itemz=Items.objects.filter(activation_tag='active')
+            stock_value = adjustment2.items.current_stock * adjustment2.items.purchase_price
+            accounts=Chart_of_Accounts.objects.all()
+            context = {
+                    'details': dash_details,
+                    'item': item,
+                    'itemz':itemz,
+                    'allmodules': allmodules,
+                    'adjustment1':adjustment1,
+                    'adjustment2':adjustment2,
+                    'account':accounts,
+                    'stock_value': stock_value,
+            }
+        return render(request,'zohomodules/stock_adjustment/stockedit.html',context)

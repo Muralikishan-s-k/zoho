@@ -812,27 +812,46 @@
                     <div class="col-md-3" style="background-color: black;height:800px;">
                         <!-- Responsive buttons on the same line -->
                         <div class="d-flex justify-content-around mt-3">
-                            <button class="btn btn-outline-warning">
-                                <i class="fas fa-sort text-warning"></i> Sort
-                            </button>
-                            <button class="btn btn-outline-warning mb-2 mb-md-0">
-                                <i class="fas fa-filter text-warning"></i> Filter
-                            </button>
+
+                            <div class="dropdown">
+                                <button class="btn btn-outline-warning dropdown-toggle" id="sortDropdown" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-sort text-warning"></i> Sort
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            onclick="sortItems('all')">All</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            onclick="sortItems('date')">Date</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            onclick="sortItems('reference')">Reference Number</a></li>
+                                </ul>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-warning mb-2 mb-md-0 dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="fas fa-filter text-warning"></i> Filter
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="save">Save</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="draft">Draft</a>
+                                    </li>
+                                </ul>
+                            </div>
                             <a href="{% url 'create_adjustment' %}">
                                 <button class="btn btn-outline-warning">
                                     <i class="fas fa-plus text-warning"></i> Add
                                 </button>
                             </a>
                         </div>
-                        <div class="mt-3">
+                        <div id="adjustmentContainer" class="mt-3">
                             <form class="form-inline">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search" aria-label="Search"
-                                        aria-describedby="button-addon2" style="background-color: white;">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-warning" type="button"
-                                            id="button-addon2">Search</button>
-                                    </div>
+                                    <input type="text" id="myInput" onkeyup="filterContainers()" class="form-control"
+                                        placeholder="Search" aria-label="Search" aria-describedby="button-addon2"
+                                        style="background-color: white;">
+                                    
                                 </div>
                             </form>
 
@@ -886,6 +905,71 @@
                             </div>
                             {% endfor %}
                         </div>
+                        <script>
+                            function filterContainers() {
+                              var input, filter, containers, container, items, item, i, j, txtValue;
+                              input = document.getElementById("myInput");
+                              filter = input.value.toUpperCase();
+                              containers = document.querySelectorAll('.item-container'); // Assuming your containers have the 'item-container' class
+                            
+                              for (i = 0; i < containers.length; i++) {
+                                container = containers[i];
+                                items = container.getElementsByClassName("item");
+                            
+                                // Flag to determine if any item within the container matches the search criteria
+                                var found = false;
+                            
+                                for (j = 0; j < items.length; j++) {
+                                  item = items[j];
+                                  txtValue = item.textContent || item.innerText;
+                                  
+                                  if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    found = true;
+                                    break; // Break the loop if a match is found in any item
+                                  }
+                                }
+                            
+                                // Set the display property of the container based on the flag
+                                container.style.display = found ? "" : "none";
+                              }
+                            }
+                            </script>
+                        <script>
+                            function sortItems(criteria) {
+                                var container = $('#adjustmentContainer');
+                                var items = container.find('.mt-3');
+
+                                // Sort items based on the selected criteria
+                                switch (criteria) {
+                                    case 'all':
+                                        items.sort(function (a, b) {
+                                            // Your sorting logic for 'all' criteria here
+                                            return 0;
+                                        });
+                                        break;
+                                    case 'date':
+                                        items.sort(function (a, b) {
+                                            // Assuming your date is in a specific format, adjust the parsing accordingly
+                                            var dateA = new Date($(a).find('.item').eq(2).text());
+                                            var dateB = new Date($(b).find('.item').eq(2).text());
+                                            return dateA - dateB;
+                                        });
+                                        break;
+                                    case 'reference':
+                                        items.sort(function (a, b) {
+                                            // Assuming your reference is numeric, adjust the parsing accordingly
+                                            var referenceA = parseInt($(a).find('.item').eq(0).text());
+                                            var referenceB = parseInt($(b).find('.item').eq(0).text());
+                                            return referenceA - referenceB;
+                                        });
+                                        break;
+                                }
+
+                                // Clear existing items and append the sorted items to the container
+                                container.empty().append(items);
+                            }
+                        </script>
+
 
                     </div>
 

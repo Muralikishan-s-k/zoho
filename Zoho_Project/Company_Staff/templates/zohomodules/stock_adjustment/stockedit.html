@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="body-wrapper">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb" class="col-12">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}"
+                        class="text-warning-emphasis">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'items_list' %}" class="text-warning-emphasis">Stock
+                        Adjustment</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'adjustment_overview' %}"
+                        class="text-warning-emphasis">Adjustment overview</a></li>
+                <li class="breadcrumb-item" aria-current="page">Edit Overview</li>
+            </ol>
+        </nav>
+        <div class="container" style="background-color: black; border-radius: 20px; padding: 20px;">
+            <h1 class="text-warning" style="color: white;"><strong>EDIT:</strong></h1>
+            <form action="">
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-md-6">
+                        <div class="dropdown">
+                            <div class="dropdown-heading" style="color: white;">
+                                Item:
+                            </div>
+                            <select class="form-control" style="background-color: white;">
+                                <option value="{{adjustment2.items.item_name}}" selected>{{adjustment2.items.item_name}}
+                                </option>
+                                {% for c in itemz %}
+                                <option value="{{c.id}}" style="color: black;">
+                                    {{c.item_name}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Field 2 -->
+                        <div class="dropdown">
+                            <div class="dropdown-heading" style="color: white;">
+                                Mode of Adjustment:
+                            </div>
+                            <select class="form-control" style="background-color: white;width: 200px;">
+
+                                <option value="Quantity adjustment" style="color: black;" selected>Quantity adjustment
+                                </option>
+                                <option value=">Value
+                                adjustment" style="color: black;">Value
+                                    adjustment</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repeat the above pattern for the next 10 fields -->
+                <div class="row" style="margin-bottom: 20px;">
+                    <!-- Field 3 -->
+                    <div class="col-md-6" style="color: white;">
+                        <label for="reasonDropdown"
+                            style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
+                        <div class="input-group">
+                            <select class="form-control" id="reasonDropdown" style="width: 100px; color: white;">
+                                <option value="reason1" style="color:black ;">High Demand Goods</option>
+                                <option value="reason2" style="color:black ;">Stock Written Off</option>
+                                <option value="reason2" style="color:black ;">Inventory Revaluation</option>
+                                <option value="reason2" style="color:black ;">Stock on Fire</option>
+
+                            </select>
+                            <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
+                                    class="fas fa-plus"></i></button>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                // Add new reason on button click
+                                $('#addReasonBtn').on('click', function () {
+                                    var newReason = prompt("Enter the new reason:");
+                                    if (newReason) {
+                                        // Create a new option, set its text and value, and append it to the dropdown
+                                        var newOption = $('<option>', {
+                                            value: newReason,
+                                            text: newReason
+                                        }).css('color', 'black'); // Set the text color to black
+                                        $('#reasonDropdown').append(newOption);
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+
+                    <!-- Field 4 -->
+                    <div class="col-md-6" style="color: white;">
+                        <label for="accountsDropdown"
+                            style="color: white; font-weight: bold; margin-left: 20px;">Accounts</label>
+                        <select class="form-control" id="accountsDropdown" style="width: 150px; color: white;">
+                            <option value="">Select Category</option>
+                            {% for c in account %}
+                            <option value="{{c.id}}" style="color: black;">{{c.account_name}}</option>
+                            {% endfor %}
+
+
+                        </select>
+                    </div>
+
+                    <!-- Repeat the above pattern for the next 8 fields -->
+                </div>
+
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-md-6" style="color: white;">
+                        <!-- Field 1 -->
+                        <label for="field1">Description:</label>
+                        <input type="text" class="form-control" id="field1" name="field1" style="color: white;"
+                            value="{{adjustment2.inventory_adjustment.Description}}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Field 2 -->
+                        <label for="dateInput" class="text-white font-weight-bold">Date</label>
+                        <input type="date" class="form-control text-black bg-white" id="dateInput" style="width: 150px;"
+                            value="{{adjustment2.inventory_adjustment.Adjusting_date}}">
+                    </div>
+                </div>
+
+                <!-- Repeat the above pattern for the next 10 fields -->
+                <div class="row" style="margin-bottom: 20px;">
+                    <!-- Field 3 -->
+                    <div class="col-md-4" style="color: white;">
+                        <label for="field3">Quantity available:</label>
+                        <input type="number" class="form-control" id="field3" name="field3" style="color: white;"
+                            value="{{adjustment2.items.current_stock}}">
+                    </div>
+
+                    <!-- Field 4 -->
+                    <div class="col-md-4" style="color: white;">
+                        <label for="field4">New quantity in hand:</label>
+                        <input type="number" class="form-control" id="field4" name="field4" style="color: white;">
+                    </div>
+
+                    <div class="col-md-4" style="color: white;">
+                        <label for="field4">Quantity adjusted:</label>
+                        <input type="number" class="form-control" id="field4" name="field4" style="color: white;">
+                    </div>
+
+                    <!-- Repeat the above pattern for the next 8 fields -->
+                </div>
+
+                <div class="row" style="margin-bottom: 20px;">
+                    <!-- Field 3 -->
+                    <div class="col-md-4" style="color: white;">
+                        <label for="field3">Current value:</label>
+                        <input type="number" class="form-control" id="field3" name="field3" style="color: white;"
+                            value="{{stock_value}}">
+                    </div>
+
+                    <!-- Field 4 -->
+                    <div class="col-md-4" style="color: white;">
+                        <label for="field4">Changed value:</label>
+                        <input type="number" class="form-control" id="field4" name="field4" style="color: white;">
+                    </div>
+
+                    <div class="col-md-4" style="color: white;">
+                        <label for="field4">Adjusted value:</label>
+                        <input type="number" class="form-control" id="field4" name="field4" style="color: white;">
+                    </div>
+
+                    <!-- Repeat the above pattern for the next 8 fields -->
+                </div>
+
+                <!-- Repeat the above pattern for the next 10 fields -->
+                <div class="row" style="margin-bottom: 20px;">
+                    <!-- Field 3 -->
+
+                    <div class="col-md-12" style="color: white;margin-top:20px;">
+                        <button class="btn btn-outline-warning mb-2 mb-md-0">
+                            <i class="fas fa-save text-warning"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

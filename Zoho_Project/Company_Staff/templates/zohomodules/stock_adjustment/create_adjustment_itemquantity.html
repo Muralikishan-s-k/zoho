@@ -79,32 +79,7 @@
                         style="width: 200px; color: white;">
                 </div>
 
-                <script>
-                    $(document).ready(function () {
-                        // Function to generate a serial number
-                        function generateSerialNumber() {
-                            // You can replace this with your logic to fetch the latest reference number from the server/database
-                            // For now, let's assume a counter variable
-                            var counter = 1;
-
-                            // Update the reference number input field
-                            $("#referenceNumberInput").val(counter);
-                        }
-
-                        // Call the function to generate the initial serial number
-                        generateSerialNumber();
-
-                        // Event handler for deletion or any other event triggering the need for a new serial number
-                        // You may replace this with the actual event that requires updating the serial number
-                        $("#deleteRecordButton").on("click", function () {
-                            // Replace this with logic to handle deletion
-                            // For now, let's assume the record is deleted
-                            // Increment the counter and update the reference number
-                            counter++;
-                            generateSerialNumber();
-                        });
-                    });
-                </script>
+                
                 <!-- Date field -->
                 <div class="mt-3 row">
                     <div class="col-md-4">

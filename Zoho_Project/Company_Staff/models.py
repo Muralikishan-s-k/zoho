@@ -1,5 +1,6 @@
 from django.db import models
 from Register_Login.models import *
+from datetime import date
 
 # Create your models here.
 
@@ -67,7 +68,7 @@ class Items(models.Model):
 
 class Inventory_adjustment(models.Model):
     Mode_of_adjustment=models.CharField(max_length=255,null=True)
-    Reference_number=models.CharField(max_length=255,null=True)
+    Reference_number = models.CharField(max_length=255, null=True, unique=True)
     Adjusting_date=models.DateField(max_length=255,null=True,blank=True)  
     Account=models.CharField(max_length=100,null=True,blank=True)  
     Reason=models.CharField(max_length=255,null=True)
@@ -98,9 +99,14 @@ class Inventory_adjustment_items(models.Model):
 class Inventory_adjustment_history(models.Model):
     company=models.ForeignKey(CompanyDetails,on_delete=models.CASCADE)
     login_details=models.ForeignKey(LoginDetails,on_delete=models.CASCADE)
-    inventory_adjustment=models.ForeignKey(Inventory_adjustment,on_delete=models.CASCADE)
-    Date=models.DateField(max_length=255,null=True,blank=True)
-    Action=models.CharField(max_length=255,null=True)
+    inventory_adjustment=models.ForeignKey(Inventory_adjustment,on_delete=models.CASCADE)    
+    Date = models.DateField(null=True, blank=True, default=date.today)
+    ACTION_CHOICES = [
+        ('created', 'Created'),
+        ('edited', 'Edited'),
+    ]
+
+    Action = models.CharField(max_length=255, choices=ACTION_CHOICES, null=True)
 
 
 
