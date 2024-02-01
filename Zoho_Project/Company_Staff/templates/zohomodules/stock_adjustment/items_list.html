@@ -57,15 +57,13 @@
 
 
                     <div class="dropdown">
-                        <button class="btn btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                        <button class="btn btn-outline-warning dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-sort text-warning"></i> Sort
                         </button>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu" aria-labelledby="sortDropdown">
                             <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a></li>
                             <li><a class="dropdown-item" href="#" style="color: black;" data-sort="date">Date</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;"
-                                    data-sort="reference_number">Reference Number</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="reference_number">Reference Number</a></li>
                         </ul>
                     </div>
 
@@ -146,6 +144,60 @@
                     </tbody>
                 </table>
             </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Get the dropdown items
+                    var dropdownItems = document.querySelectorAll('.dropdown-item');
+            
+                    // Attach click event listener to each dropdown item
+                    dropdownItems.forEach(function (item) {
+                        item.addEventListener('click', function (event) {
+                            event.preventDefault();
+            
+                            // Get the selected sort option
+                            var sortOption = item.getAttribute('data-sort');
+            
+                            // Get the table body
+                            var tableBody = document.querySelector(".table tbody");
+            
+                            // Get all rows in the tbody
+                            var rows = Array.from(tableBody.querySelectorAll('tr'));
+            
+                            // Call the sortTable function with the selected sort option and ascending order
+                            sortTable(rows, sortOption, 'asc');
+            
+                            // Append the sorted rows back to the table body
+                            rows.forEach(function (row) {
+                                tableBody.appendChild(row);
+                            });
+                        });
+                    });
+                });
+            
+                function sortTable(rows, sortOption, sortOrder) {
+                    rows.sort(function (a, b) {
+                        var xCell = a.querySelector('[data-sort="' + sortOption + '"]');
+                        var yCell = b.querySelector('[data-sort="' + sortOption + '"]');
+            
+                        // Get text content from the cells
+                        var x = xCell.textContent.trim();
+                        var y = yCell.textContent.trim();
+            
+                        if (sortOption === 'date') {
+                            // If sorting by date, convert the date strings to Date objects for comparison
+                            x = new Date(x);
+                            y = new Date(y);
+                        }
+            
+                        if (sortOrder === 'asc') {
+                            return x > y ? 1 : -1;
+                        } else {
+                            return x < y ? 1 : -1;
+                        }
+                    });
+                }
+            </script>
+            
             <script>
                 $(document).ready(function() {
                     $(".dropdown-menu a").on("click", function() {

@@ -46,7 +46,11 @@ urlpatterns = [
     path('import_from_excel',views.import_from_excel,name='import_from_excel'),
     path('zohomodules/stock_adjustment/items_list/adjustment_overview',views.adjustment_overview,name='adjustment_overview'),
     path('itemdetail/<int:pk>',views.itemdetail,name='itemdetail'),
-    path('stockedit/<int:pk>',views.stockedit,name='stockedit')
+    path('stockedit/<int:pk>',views.stockedit,name='stockedit'),
+    path('stockdelete/<int:pk>',views.stockdelete,name='stockdelete'),
+    path('add_comment/<int:pk>',views.add_comment,name='add_comment'),
+    path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb')
+    
     
   
     

@@ -56,12 +56,61 @@
                         class="fas fa-print text-warning"></i></button>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm"><i class="fas fa-trash text-warning"></i>
-                </button>
+                {% if adjustments.id %}
+                <a href="{% url 'stockdelete' adjustments.id %}">
+                    {% endif %}
+                    <button type="button" class="btn btn-outline-warning btn-sm"><i
+                            class="fas fa-trash text-warning"></i>
+                    </button>
+                </a>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm"><i
-                        class="fas fa-comment text-warning"></i></button>
+                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#commentModal">
+                    <i class="fas fa-comment text-warning"></i>
+                </button>
+            </div>
+            <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="commentModalLabel" style="color: white;">
+                                <strong>Comments</strong></h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Display existing comments here -->
+
+                            {% if adjustments.id %}
+                            <form method="post" action="{% url 'add_comment' adjustments.id %}">
+                                {% csrf_token %}
+
+                                <div class="mb-3">
+                                    <label for="commentText" class="form-label" style="color: white;">Add
+                                        Comment:</label>
+                                    <textarea class="form-control" id="commentText" name="commentText" rows="3"
+                                        style="color: white;"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-outline-warning btn-sm">Add</button>
+                            </form>
+                            {% endif %}
+                            <div class="row" style="margin-top: 20px;">
+                                <!-- Field 3 -->
+                                <div class="col-md-6">
+                                    <label for="field3" style="color: white;"><strong>Comments:</strong></label>
+                                    <input type="text" class="form-control" name="comment" style="color: white;"
+                                        value="{{adjustments.Comment}}">
+                                </div>                           
+
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-md-1 text-center">
                 <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"

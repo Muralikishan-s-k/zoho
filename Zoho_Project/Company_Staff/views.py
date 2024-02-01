@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from openpyxl import load_workbook
 from django.db.models import Max
 
+
 # Create your views here.
 
 
@@ -679,8 +680,12 @@ def quantity(request):
                 newquantity=request.POST.get('new-quantity')
                 quantityadjusted=request.POST.get('quantity-adjusted')
                 file1 = request.FILES.get('file1')
+                if 'draft' in request.POST:
+                    status = 'draft'
+                else:
+                    status = 'adjusted'
                 adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
-                                             Reason=reason1,Description=desc1,Attach_file=file1,Status='adjusted',company=dash_details,
+                                             Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
                                              login_details=log_details)
                 adjustment2=Inventory_adjustment_items(items=item1,Quantity_available=currentstock,New_quantity_inhand=newquantity,
                                                    Quantity_adjusted=quantityadjusted,company=dash_details,
@@ -717,8 +722,12 @@ def value(request):
                 newquantity=request.POST.get('changedvalue')
                 quantityadjusted=request.POST.get('adjustedvalue')
                 file1 = request.FILES.get('file2')
+                if 'draft' in request.POST:
+                    status = 'draft'
+                else:
+                    status = 'adjusted'
                 adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
-                                             Reason=reason1,Description=desc1,Attach_file=file1,Status='adjusted',company=dash_details,
+                                             Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
                                              login_details=log_details)
                 adjustment2=Inventory_adjustment_items(items=item1,Current_value=currentstock,Changed_value=newquantity,
                                                    Adjusted_value=quantityadjusted,company=dash_details,
@@ -881,3 +890,82 @@ def stockedit(request,pk):
                     'stock_value': stock_value,
             }
         return render(request,'zohomodules/stock_adjustment/stockedit.html',context)
+     
+def stockdelete(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')            
+            adjustment2=Inventory_adjustment_items.objects.get(id=pk)            
+            if adjustment2.inventory_adjustment:
+                adjustment2.inventory_adjustment.delete()
+            adjustment2.delete()           
+            return redirect('adjustment_overview')
+        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')     
+
+
+def add_comment(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company':
+            adjustment2=Inventory_adjustment_items.objects.get(id=pk)                       
+            if request.method =='POST':
+                comment=request.POST.get('commentText')
+                adjustment2.Comment=comment
+                adjustment2.save()                                                  
+                return redirect('adjustment_overview')
+            return render(request,"zohomodules/stock_adjustment/adjustment_overview.html")
+        return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+     
+
+def stockeditdb(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company':            
+            
+            if request.method =='POST':
+                edit=Inventory_adjustment_items.objects.get(id=pk)
+                edit2 = edit.inventory_adjustment
+                item=request.POST.get('item')
+                item1=Items.objects.get(id=item)
+                edit.items=item1             
+                edit2.Mode_of_adjustment=request.POST.get('mode')
+                edit2.Reason=request.POST.get('reason')
+                edit2.Account=request.POST.get('account')
+                edit2.Description=request.POST.get('description')                                               
+                edit.Quantity_available=request.POST.get('quantity-available')
+                edit.New_quantity_inhand=request.POST.get('quantity-inhand')
+                edit.Quantity_adjusted=request.POST.get('quantity-adjusted')
+                edit.Current_value=request.POST.get('currentvalue')
+                edit.Changed_value=request.POST.get('changedvalue')
+                edit.Adjusted_value=request.POST.get('adjustedvalue')
+                edit2.Status=request.POST.get('status')             
+                                
+                edit.save()
+                edit2.save()
+                                            
+                return redirect('adjustment_overview')
+            return render(request,"zohomodules/stock_adjustment/adjustment_overview.html")
+        return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+               

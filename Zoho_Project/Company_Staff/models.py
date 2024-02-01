@@ -94,6 +94,7 @@ class Inventory_adjustment_items(models.Model):
     inventory_adjustment=models.ForeignKey(Inventory_adjustment,on_delete=models.CASCADE)
     company=models.ForeignKey(CompanyDetails,on_delete=models.CASCADE)
     login_details=models.ForeignKey(LoginDetails,on_delete=models.CASCADE)
+    Comment=models.CharField(max_length=255,null=True)
 
 
 class Inventory_adjustment_history(models.Model):
