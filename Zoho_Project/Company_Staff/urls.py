@@ -37,9 +37,9 @@ urlpatterns = [
     # -------------------------------Zoho Modules section--------------------------------
     path('zohomodules/stock_adjustment/items_list',views.items_list,name='items_list'),
     path('zohomodules/stock_adjustment/create_adjustment',views.create_adjustment,name='create_adjustment'),
+    path('get-item-stock/', views.get_item_stock, name='get_item_stock'),
     path('zohomodules/stock_adjustment/create_adjustment_value',views.create_adjustment_value,name='create_adjustment_value'),
-    path('zohomodules/stock_adjustment/create_adjustment_itemquantity/<int:pk>',views.create_adjustment_itemquantity,name='create_adjustment_itemquantity'),
-    path('zohomodules/stock_adjustment/create_adjustment_itemvalue/<int:pk>',views.create_adjustment_itemvalue,name='create_adjustment_itemvalue'),
+    path('get-item-price/', views.get_item_price, name='get_item_price'),    
     path('zohomodules/stock_adjustment/quantity',views.quantity,name='quantity'),
     path('zohomodules/stock_adjustment/value',views.value,name='value'),
     path('export_to_excel',views.export_to_excel,name='export_to_excel'),

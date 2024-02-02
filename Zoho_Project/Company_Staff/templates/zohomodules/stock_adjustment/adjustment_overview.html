@@ -7,11 +7,37 @@
         background-color: white;
         height: 100%;
         margin-right: 20px;
-        margin-top: -360px;
+        margin-top: -405px;
+    }
+
+    .container.mt-3.p-4 {
+
+        color: white;
+        border: 2px solid white;
+        border-radius: 8px;
+        width: 600px;
+
+    }
+
+    @media screen and (max-width: 768px) {
+        .container.mt-3.p-4 {
+
+            width: 300px;
+
+        }
+
+        .col-md-1.text-center {
+            flex-direction: row;
+        }
+
+
+
+
     }
 </style>
-<div class="col-md-9" style="background-color: black;">
-    <div class="container mt-3 p-4" style="color: white; border: 2px solid white; border-radius: 8px;width: 700px;">
+<div class="col-md-7" style="background-color: black;">
+    
+    <div class="container mt-3 p-4">
 
         <div class="row mb-3">
             <div class="col-md-5 text-center">
@@ -76,32 +102,36 @@
                     <div class="modal-content bg-dark">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="commentModalLabel" style="color: white;">
-                                <strong>Comments</strong></h1>
+                                <strong>Comments</strong>
+                            </h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <!-- Display existing comments here -->
 
                             {% if adjustments.id %}
-                            <form method="post" action="{% url 'add_comment' adjustments.id %}">
+                            <form id="commentForm" method="post" action="{% url 'add_comment' adjustments.id %}">
                                 {% csrf_token %}
-
                                 <div class="mb-3">
                                     <label for="commentText" class="form-label" style="color: white;">Add
                                         Comment:</label>
                                     <textarea class="form-control" id="commentText" name="commentText" rows="3"
                                         style="color: white;"></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-outline-warning btn-sm">Add</button>
+                                <button type="button" id="addCommentBtn"
+                                    class="btn btn-outline-warning btn-sm">Add</button>
                             </form>
                             {% endif %}
+                            <div class="row comments-section" style="margin-top: 20px;">
+                                <!-- Existing comments will be dynamically added here -->
+                            </div>
                             <div class="row" style="margin-top: 20px;">
                                 <!-- Field 3 -->
                                 <div class="col-md-6">
                                     <label for="field3" style="color: white;"><strong>Comments:</strong></label>
                                     <input type="text" class="form-control" name="comment" style="color: white;"
                                         value="{{adjustments.Comment}}">
-                                </div>                           
+                                </div>
 
                             </div>
 
@@ -112,6 +142,32 @@
                     </div>
                 </div>
             </div>
+
+            <script>
+                $(document).ready(function () {
+                    $('#addCommentBtn').on('click', function () {
+                        var form = $('#commentForm');
+                        $.ajax({
+                            type: form.attr('method'),
+                            url: form.attr('action'),
+                            data: form.serialize(),
+                            success: function (response) {
+                                // Handle the response, e.g., update comments section or close modal
+                                updateComments(response.newComment);
+                                $('#commentModal').modal('hide');
+                            }
+                        });
+                    });
+
+                    function updateComments(newComment) {
+                        // Update the comments section with the new comment
+                        var commentsSection = $('.comments-section');
+                        var newCommentElement = $('<div class="comment-item">' + newComment + '</div>');
+                        commentsSection.append(newCommentElement);
+                    }
+                });
+            </script>
+
             <div class="col-md-1 text-center">
                 <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">
@@ -206,13 +262,17 @@
                     <strong>Status:</strong>
                     {{ adjustments.inventory_adjustment.Status }}
                 </div>
+                <div class="col-md-6" style="margin-top: 30px;color: black;">
+                    <strong>File:</strong>
+                    {{ adjustments.inventory_adjustment.Attach_file }}
+                </div>
 
             </div>
         </div>
 
     </div>
 
-    <div class="white-divider"></div>
+
 </div>
 
 {% endblock %}

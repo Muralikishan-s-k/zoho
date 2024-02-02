@@ -57,13 +57,16 @@
 
 
                     <div class="dropdown">
-                        <button class="btn btn-outline-warning dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-warning dropdown-toggle" type="button" id="sortDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-sort text-warning"></i> Sort
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="sortDropdown">
                             <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="date">Date</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="reference_number">Reference Number</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;"
+                                    onclick="sortTable('sort-reason')" data-sort="date">Reason</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;"
+                                    data-sort="reference_number">Reference Number</a></li>
                         </ul>
                     </div>
 
@@ -86,15 +89,14 @@
                         </button>
                     </form>
                     <div class="dropdown">
-                        <button class="btn btn-outline-warning mb-2 mb-md-0 dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                        <button class="btn btn-outline-warning mb-2 mb-md-0 dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-filter text-warning"></i> Filter
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="save">Save</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="draft">Draft</a>
-                            </li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" data-status="all">All</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" data-status="adjusted">Save</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" data-status="draft">Draft</a></li>
                         </ul>
                     </div>
                     <a href="{% url 'create_adjustment' %}" class="text-decoration-none">
@@ -113,7 +115,7 @@
                         <tr>
                             <th scope="col" id="sort-sl">Sl.No</th>
                             <th scope="col" id="sort-date">Date</th>
-                            <th scope="col" id="sort-reason">Reason</th>
+                            <th scope="col" id="sort-reason" >Reason</th>
                             <th scope="col" id="sort-description">Description</th>
                             <th scope="col" id="sort-refno">Ref.No</th>
                             <th scope="col" id="sort-type">Type</th>
@@ -123,9 +125,11 @@
                     <tbody style="background-color: black;">
                         {% for s in adjustment1 %}
 
-                        <tr data-status="{{ s.Status | lower }}">
-                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{forloop.counter}}</a></td>
-                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Adjusting_date}}</a></td>
+                        <tr data-status="{{s.Status | lower}}">
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{forloop.counter}}</a>
+                            </td>
+                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Adjusting_date}}</a>
+                            </td>
                             <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Reason}}</a></td>
                             <td>
                                 <div class="message-container">
@@ -135,8 +139,10 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Reference_number}}</a></td>
-                            <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Mode_of_adjustment}}</a></td>
+                            <td><a href="{% url 'adjustment_overview' %}"
+                                    style="color: white;">{{s.Reference_number}}</a></td>
+                            <td><a href="{% url 'adjustment_overview' %}"
+                                    style="color: white;">{{s.Mode_of_adjustment}}</a></td>
                             <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Status}}</a></td>
                         </tr>
 
@@ -144,79 +150,14 @@
                     </tbody>
                 </table>
             </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    // Get the dropdown items
-                    var dropdownItems = document.querySelectorAll('.dropdown-item');
             
-                    // Attach click event listener to each dropdown item
-                    dropdownItems.forEach(function (item) {
-                        item.addEventListener('click', function (event) {
-                            event.preventDefault();
+
             
-                            // Get the selected sort option
-                            var sortOption = item.getAttribute('data-sort');
+
+
             
-                            // Get the table body
-                            var tableBody = document.querySelector(".table tbody");
-            
-                            // Get all rows in the tbody
-                            var rows = Array.from(tableBody.querySelectorAll('tr'));
-            
-                            // Call the sortTable function with the selected sort option and ascending order
-                            sortTable(rows, sortOption, 'asc');
-            
-                            // Append the sorted rows back to the table body
-                            rows.forEach(function (row) {
-                                tableBody.appendChild(row);
-                            });
-                        });
-                    });
-                });
-            
-                function sortTable(rows, sortOption, sortOrder) {
-                    rows.sort(function (a, b) {
-                        var xCell = a.querySelector('[data-sort="' + sortOption + '"]');
-                        var yCell = b.querySelector('[data-sort="' + sortOption + '"]');
-            
-                        // Get text content from the cells
-                        var x = xCell.textContent.trim();
-                        var y = yCell.textContent.trim();
-            
-                        if (sortOption === 'date') {
-                            // If sorting by date, convert the date strings to Date objects for comparison
-                            x = new Date(x);
-                            y = new Date(y);
-                        }
-            
-                        if (sortOrder === 'asc') {
-                            return x > y ? 1 : -1;
-                        } else {
-                            return x < y ? 1 : -1;
-                        }
-                    });
-                }
-            </script>
-            
-            <script>
-                $(document).ready(function() {
-                    $(".dropdown-menu a").on("click", function() {
-                        var selectedStatus = $(this).data("sort");
-                        filterTable(selectedStatus);
-                    });
-                
-                    function filterTable(status) {
-                        $(".table tbody tr").each(function() {
-                            var rowStatus = $(this).data("status");
-                            if (status === "all" || (status === "save" && rowStatus === "adjusted") || (status === "draft" && rowStatus === "draft")) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    }
-                });
-                </script>
+
+
             <script>
                 function filterTable() {
                     var input, filter, table, tr, td, i, j, txtValue;

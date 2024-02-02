@@ -554,7 +554,16 @@ def create_adjustment(request):
                     'account':accounts,
             }
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html',context)
-     
+
+from django.http import JsonResponse
+
+def get_item_stock(request):
+    if request.method == 'GET':
+        item_id = request.GET.get('id')
+        item=Items.objects.get(id=item_id)
+        stock = item.current_stock  # Implement this function as needed
+        return JsonResponse({'stock': stock})
+    return JsonResponse({'error': 'Invalid request'})     
 
 def create_adjustment_value(request):
      if 'login_id' in request.session:
@@ -585,72 +594,15 @@ def create_adjustment_value(request):
             }
         return render(request,'zohomodules/stock_adjustment/create_adjustment_value.html',context)
 
+def get_item_price(request):
+    if request.method == 'GET':
+        item_id = request.GET.get('id')
+        item=Items.objects.get(id=item_id)       
+        price = item.current_stock * item.purchase_price
+        return JsonResponse({'price': price})
+    return JsonResponse({'error': 'Invalid request'})
 
-def create_adjustment_itemvalue(request,pk):
-     if 'login_id' in request.session:
-        log_id = request.session['login_id']
-        if 'login_id' not in request.session:
-            return redirect('/')
-        log_details= LoginDetails.objects.get(id=log_id)
-        if log_details.user_type == 'Staff':
-                dash_details = StaffDetails.objects.get(login_details=log_details)
-                item=Items.objects.filter(company=dash_details.company,activation_tag='active')
-                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-                context = {
-                        'details': dash_details,
-                        'item':item,
-                        'allmodules': allmodules,
-                }
-                return render(request,'zohomodules/items/items_list.html',context)
-        if log_details.user_type == 'Company':
-            accounts=Chart_of_Accounts.objects.all()
-            dash_details = CompanyDetails.objects.get(login_details=log_details)
-            item_instance = Items.objects.get(id=pk)
-
-            # Calculate stock value
-            stock_value = item_instance.current_stock * item_instance.purchase_price
-            
-            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-            context = {
-                    'details': dash_details,
-                    'item': item_instance,
-                    'allmodules': allmodules,
-                    'account':accounts,
-                    'stock_value': stock_value,
-                    
-            }
-        return render(request,'zohomodules/stock_adjustment/create_adjustment_itemvalue.html',context) 
-
-
-def create_adjustment_itemquantity(request,pk):
-     if 'login_id' in request.session:
-        log_id = request.session['login_id']
-        if 'login_id' not in request.session:
-            return redirect('/')
-        log_details= LoginDetails.objects.get(id=log_id)
-        if log_details.user_type == 'Staff':
-                dash_details = StaffDetails.objects.get(login_details=log_details)
-                item=Items.objects.filter(company=dash_details.company,activation_tag='active')
-                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-                context = {
-                        'details': dash_details,
-                        'item':item,
-                        'allmodules': allmodules,
-                }
-                return render(request,'zohomodules/items/items_list.html',context)
-        if log_details.user_type == 'Company':
-            accounts=Chart_of_Accounts.objects.all()
-            dash_details = CompanyDetails.objects.get(login_details=log_details)
-            item=Items.objects.get(id=pk)
-            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-            context = {
-                    'details': dash_details,
-                    'item': item,
-                    'allmodules': allmodules,
-                    'account':accounts,
-            }
-        return render(request,'zohomodules/stock_adjustment/create_adjustment_itemquantity.html',context)
-
+ 
 
 def generate_unique_reference_number():
     latest_reference_number = Inventory_adjustment.objects.all().aggregate(Max('Reference_number'))['Reference_number__max']

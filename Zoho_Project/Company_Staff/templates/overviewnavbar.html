@@ -809,9 +809,10 @@
                     </nav>
 
                     <!-- Left Container -->
-                    <div class="col-md-3" style="background-color: black;height:800px;">
-                        <!-- Responsive buttons on the same line -->
+                    <div class="col-md-5" style="background-color: black;">
+                        <h1 class="text-warning">Adjustments:</h1>
                         <div class="d-flex justify-content-around mt-3">
+
 
                             <div class="dropdown">
                                 <button class="btn btn-outline-warning dropdown-toggle" id="sortDropdown" type="button"
@@ -819,23 +820,24 @@
                                     <i class="fas fa-sort text-warning"></i> Sort
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" style="color: black;"
-                                            onclick="sortItems('all')">All</a></li>
-                                    <li><a class="dropdown-item" href="#" style="color: black;"
-                                            onclick="sortItems('date')">Date</a></li>
-                                    <li><a class="dropdown-item" href="#" style="color: black;"
-                                            onclick="sortItems('reference')">Reference Number</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;">All</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;">Date</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;">Reference Number</a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="dropdown">
-                                <button class="btn btn-outline-warning mb-2 mb-md-0 dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                <button class="btn btn-outline-warning mb-2 mb-md-0 dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-filter text-warning"></i> Filter
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a></li>
-                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="save">Save</a></li>
-                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="draft">Draft</a>
+                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            data-sort="save">Save</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            data-sort="draft">Draft</a>
                                     </li>
                                 </ul>
                             </div>
@@ -848,127 +850,65 @@
                         <div id="adjustmentContainer" class="mt-3">
                             <form class="form-inline">
                                 <div class="input-group">
-                                    <input type="text" id="myInput" onkeyup="filterContainers()" class="form-control"
+                                    <input type="text" id="myInput" onkeyup="filterTable()" class="form-control"
                                         placeholder="Search" aria-label="Search" aria-describedby="button-addon2"
                                         style="background-color: white;">
-                                    
+
                                 </div>
                             </form>
 
-                            {% for s in adjustment2 %}
-                            <div class="mt-3">
-                                <div class="divider"
-                                    style="border-top: 1px solid white; margin-top: 10px; margin-bottom: 10px;"></div>
-
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="item-container">
-                                            <!-- First item on the top row -->
-                                            <div class="item"
-                                                style="color: white; margin-left: 40px; font-weight: bold;">
-                                                <a href="{% url 'itemdetail' s.id %}"> {{ s.items.item_name }}</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="item-container">
-                                            <!-- Second item on the top row -->
-                                            <div class="item"
-                                                style="color: white; margin-left: 40px; font-weight: bold;">
-                                                {{ s.inventory_adjustment.Mode_of_adjustment }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-6">
-                                        <div class="item-container">
-                                            <!-- Third item on the bottom row -->
-                                            <div class="item"
-                                                style="color: white; margin-left: 40px; font-weight: bold;">
-                                                {{ s.inventory_adjustment.Adjusting_date }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="item-container">
-                                            <!-- Fourth item on the bottom row -->
-                                            <div class="item"
-                                                style="color: white; margin-left: 40px; font-weight: bold;">
-                                                {{ s.inventory_adjustment.Status }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-warning">Item Name</th>
+                                            <th class="text-warning">Mode of Adjustment</th>
+                                            <th class="text-warning">Adjusting Date</th>
+                                            <th class="text-warning">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for s in adjustment2 %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'itemdetail' s.id %}">{{ s.items.item_name }}</a>
+                                            </td>
+                                            <td style="color: white;">{{ s.inventory_adjustment.Mode_of_adjustment }}
+                                            </td>
+                                            <td style="color: white;">{{ s.inventory_adjustment.Adjusting_date }}</td>
+                                            <td style="color: white;">{{ s.inventory_adjustment.Status }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
-                            {% endfor %}
+
                         </div>
                         <script>
-                            function filterContainers() {
-                              var input, filter, containers, container, items, item, i, j, txtValue;
-                              input = document.getElementById("myInput");
-                              filter = input.value.toUpperCase();
-                              containers = document.querySelectorAll('.item-container'); // Assuming your containers have the 'item-container' class
-                            
-                              for (i = 0; i < containers.length; i++) {
-                                container = containers[i];
-                                items = container.getElementsByClassName("item");
-                            
-                                // Flag to determine if any item within the container matches the search criteria
-                                var found = false;
-                            
-                                for (j = 0; j < items.length; j++) {
-                                  item = items[j];
-                                  txtValue = item.textContent || item.innerText;
-                                  
-                                  if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                                    found = true;
-                                    break; // Break the loop if a match is found in any item
-                                  }
-                                }
-                            
-                                // Set the display property of the container based on the flag
-                                container.style.display = found ? "" : "none";
-                              }
-                            }
-                            </script>
-                        <script>
-                            function sortItems(criteria) {
-                                var container = $('#adjustmentContainer');
-                                var items = container.find('.mt-3');
+                            function filterTable() {
+                                var input, filter, table, tr, td, i, j, txtValue;
+                                input = document.getElementById("myInput");
+                                filter = input.value.toUpperCase();
+                                table = document.querySelector(".table"); // Assuming your table has the 'table' class
+                                tr = table.getElementsByTagName("tr");
 
-                                // Sort items based on the selected criteria
-                                switch (criteria) {
-                                    case 'all':
-                                        items.sort(function (a, b) {
-                                            // Your sorting logic for 'all' criteria here
-                                            return 0;
-                                        });
-                                        break;
-                                    case 'date':
-                                        items.sort(function (a, b) {
-                                            // Assuming your date is in a specific format, adjust the parsing accordingly
-                                            var dateA = new Date($(a).find('.item').eq(2).text());
-                                            var dateB = new Date($(b).find('.item').eq(2).text());
-                                            return dateA - dateB;
-                                        });
-                                        break;
-                                    case 'reference':
-                                        items.sort(function (a, b) {
-                                            // Assuming your reference is numeric, adjust the parsing accordingly
-                                            var referenceA = parseInt($(a).find('.item').eq(0).text());
-                                            var referenceB = parseInt($(b).find('.item').eq(0).text());
-                                            return referenceA - referenceB;
-                                        });
-                                        break;
+                                for (i = 0; i < tr.length; i++) {
+                                    var found = false;
+                                    for (j = 0; j < tr[i].cells.length; j++) {
+                                        td = tr[i].cells[j];
+                                        if (td) {
+                                            txtValue = td.textContent || td.innerText;
+                                            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                found = true;
+                                                break;  // Break the inner loop if a match is found in any column
+                                            }
+                                        }
+                                    }
+                                    tr[i].style.display = found ? "" : "none";
                                 }
-
-                                // Clear existing items and append the sorted items to the container
-                                container.empty().append(items);
                             }
                         </script>
+
 
 
                     </div>
