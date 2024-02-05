@@ -1,277 +1,88 @@
-{% extends 'base.html' %}
-{% load static %}
+<div class="container mt-3" style="background-color: black;">
+    <div class="row">
+        <div class="col-md-10">
+            <!-- Make the table responsive -->
+            <div class="table-responsive">
+                <!-- Table for item transactions -->
+                <table class="table" id="itemTransactionsTable">
+                    <thead>
+                        <tr>
+                            <th style="color:white ;font-weight:bold;">#</th>
+                            <th style="color:white ;font-weight:bold;">Item</th>
+                            <th style="color:white ;font-weight:bold;">Current Value</th>
+                            <th style="color:white ;font-weight:bold;">Changed Value</th>
+                            <th style="color:white ;font-weight:bold;">Adjusted Value</th>
+                            <th style="color:white ;font-weight:bold;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be dynamically added here -->
+                        <tr>
 
-{% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<style>
-    .btn-warning {
-        color: black;
-    }
-
-    .dropdown-heading {
-        font-weight: bold;
-        color: white;
-        margin-bottom: 5px;
-    }
-
-    input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-    }
-</style>
-
-<script>
-    $(document).ready(function () {
-        // Set today's date in the date field
-        var today = new Date().toISOString().split('T')[0];
-        $("#dateInput").val(today);
-    });
-</script>
-
-<div class="body-wrapper">
-    <div class="container-fluid">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}"
-                        class="text-warning-emphasis">Dashboard</a></li>
-                <li class="breadcrumb-item" aria-current="page">Create adjustment</li>
-            </ol>
-        </nav>
-
-        <!-- Responsive container for the content -->
-        <div class="container mt-3" style="background-color: black;">
-            <h1 style="color: white;" class="text-center">Create Adjustments</h1>
-            <form action="{% url 'value' %}" enctype="multipart/form-data" method="post">
-                {% csrf_token %}
-                <!-- Dropdown for adjustment type -->
-
-                <div class="container mt-3">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <!-- Make the dropdown responsive -->
-                            <div class="dropdown">
-                                <div class="dropdown-heading">
-                                    Mode of Adjustment
+                            <td class="index">1</td>
+                            <td class="item-details">
+                                <div class="dropdown">
+                                    <select class="form-control item-dropdown" name="item2"
+                                        style="background-color: white;">
+                                        <option value="" selected disabled>Select item</option>
+                                        {% for c in item %}
+                                        <option value="{{c.id}}" style="color: black;">{{c.item_name}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                                <select class="form-control" name="mode2" onchange="window.location.href=this.value"
-                                    style="background-color: white;width: 200px;">
-                                    <option value="Value adjustment" selected>Value adjustment</option>
+                            </td>
+                            <script>
+                                $('.item-dropdown').on('change', function () {
+                                    var selectedOption = $(this).find(':selected');
+                                    var itemId = selectedOption.val();
+                                    var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
 
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "{% url 'get_item_price' %}",
+                                        data: { id: itemId },
+                                    }).done(function (response) {
+                                        // Update the quantity-available input field with the current stock
+                                        quantityAvailableField.val(response.price);
+                                    });
+                                });
+                            </script>
 
 
-                <!-- Reference Number field -->
-                <div class="mt-3">
-                    <label for="referenceNumberInput" style="color: white; font-weight: bold;">Reference Number</label>
-                    <input type="text" name="ref2" class="form-control" id="referenceNumberInput"
-                        style="width: 200px; color: white;">
-                </div>
-
+                            <td class="quantity-available">
+                                <input type="number" name="stock_value" class="form-control item-quantity"
+                                    value="" style="color: white;">
+                            </td>
+                            <td class="new-quantity">
+                                <input type="number" name="changedvalue" class="form-control" id="changedValue"
+                                    oninput="updateAdjustedValue()" style="color: white;">
+                            </td>
+                            <td class="quantity-adjusted">
+                                <input type="number" name="adjustedvalue" class="form-control"
+                                id="adjustedValue"  style="color: white;" readonly>
+                            </td>
+                            <td>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger remove-row"><i
+                                            class="fas fa-minus"></i></button>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-success add-row"><i
+                                            class="fas fa-plus"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <script>
-                    $(document).ready(function () {
-                        // Function to generate a serial number
-                        function generateSerialNumber() {
-                            // You can replace this with your logic to fetch the latest reference number from the server/database
-                            // For now, let's assume a counter variable
-                            var counter = 1;
-
-                            // Update the reference number input field
-                            $("#referenceNumberInput").val(counter);
-                        }
-
-                        // Call the function to generate the initial serial number
-                        generateSerialNumber();
-
-                        // Event handler for deletion or any other event triggering the need for a new serial number
-                        // You may replace this with the actual event that requires updating the serial number
-                        $("#deleteRecordButton").on("click", function () {
-                            // Replace this with logic to handle deletion
-                            // For now, let's assume the record is deleted
-                            // Increment the counter and update the reference number
-                            counter++;
-                            generateSerialNumber();
-                        });
-                    });
+                    function updateAdjustedValue() {
+                        var currentValue = parseInt(document.querySelector(".quantity-available input").value);
+                        var changedValue = parseInt(document.getElementById("changedValue").value);
+                        var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
+                        document.getElementById("adjustedValue").value = adjustedValue;
+                    }
                 </script>
-
-                <!-- Date field -->
-                <div class="mt-3 row">
-                    <div class="col-md-4">
-                        <label for="dateInput" style="color: white; font-weight: bold;">Date</label>
-                        <input type="date" name="date2" class="form-control" id="dateInput"
-                            style="width: 150px; color: white;">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="accountsDropdown"
-                            style="color: white; font-weight: bold; margin-left: 20px;">Accounts</label>
-                        <select class="form-control" name="account2" id="accountsDropdown"
-                            style="width: 150px; color: white;">
-                            <option value="">Select Category</option>
-                            {% for c in account %}
-                            <option value="{{c.id}}" style="color: black;">{{c.account_name}}</option>
-                            {% endfor %}
-
-                            <!-- Add more options as needed -->
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="reasonDropdown"
-                            style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
-                        <div class="input-group">
-                            <select class="form-control" name="reason2" id="reasonDropdown"
-                                style="width: 100px; color: white;">
-                                <option value="High Demand Goods" style="color:black ;">High Demand Goods</option>
-                                <option value="Stock Written Off" style="color:black ;">Stock Written Off</option>
-                                <option value="Inventory Revaluation" style="color:black ;">Inventory Revaluation
-                                </option>
-                                <option value="Stock on Fire" style="color:black ;">Stock on Fire</option>
-                                <!-- Add more options as needed -->
-                            </select>
-                            <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
-                                    class="fas fa-plus"></i></button>
-                        </div>
-                    </div>
-
-                    <script>
-                        $(document).ready(function () {
-                            // Add new reason on button click
-                            $('#addReasonBtn').on('click', function () {
-                                var newReason = prompt("Enter the new reason:");
-                                if (newReason) {
-                                    // Create a new option and append it to the dropdown
-                                    $('#reasonDropdown').append($('<option>', {
-                                        value: newReason,
-                                        text: newReason
-                                    }));
-                                }
-                            });
-                        });
-                    </script>
-                </div>
-
-                <div class="col-md-12 mt-3">
-                    <label for="descriptionBox" style="color: white; font-weight: bold;">Description</label>
-                    <textarea class="form-control" name="desc2" id="descriptionBox" style="width: 70%; color: white;"
-                        rows="4"></textarea>
-                </div>
-
-
-                <div class="container mt-3" style="background-color: black;">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <!-- Make the table responsive -->
-                            <div class="table-responsive">
-                                <!-- Table for item transactions -->
-                                <table class="table" id="itemTransactionsTable">
-                                    <thead>
-                                        <tr>
-                                            <th style="color:white ;font-weight:bold;">#</th>
-                                            <th style="color:white ;font-weight:bold;">Item</th>
-                                            <th style="color:white ;font-weight:bold;">Current Value</th>
-                                            <th style="color:white ;font-weight:bold;">Changed Value</th>
-                                            <th style="color:white ;font-weight:bold;">Adjusted Value</th>
-                                            <th style="color:white ;font-weight:bold;"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Rows will be dynamically added here -->
-                                        <tr>
-                                            <td class="index">1</td>
-                                            <td class="item-details">
-                                                <div class="dropdown">
-                                                    <select class="form-control" name="item2"
-                                                        onchange="navigateToUrl(this)" style="background-color: white;">
-                                                        <option value="{{item.id}}" selected>{{item.item_name}}</option>
-                                                    </select>
-                                                </div>
-                                            </td>
-
-                                            <script>
-                                                function navigateToUrl(select) {
-                                                    var selectedOption = select.options[select.selectedIndex];
-                                                    if (selectedOption.value !== "") {
-                                                        var url = selectedOption.getAttribute("data-url");
-                                                        window.location.href = url;
-                                                    }
-                                                }
-                                            </script>
-
-                                            <td class="quantity-available">
-                                                <input type="number" name="stock_value" class="form-control"
-                                                    value="{{stock_value}}" style="color: white;" readonly>
-                                            </td>
-                                            <td class="new-quantity">
-                                                <input type="number" name="changedvalue" class="form-control"
-                                                    id="changedValue" oninput="updateAdjustedValue()"
-                                                    style="color: white;">
-                                            </td>
-                                            <td class="quantity-adjusted">
-                                                <input type="number" name="adjustedvalue" class="form-control"
-                                                    id="adjustedValue" style="color: white;" readonly>
-                                            </td>
-                                            <td>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-danger remove-row"><i
-                                                            class="fas fa-minus"></i></button>
-                                                </div>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-success add-row"><i
-                                                            class="fas fa-plus"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <script>
-                                    function updateAdjustedValue() {
-                                        var currentValue = parseInt(document.querySelector(".quantity-available input").value);
-                                        var changedValue = parseInt(document.getElementById("changedValue").value);
-                                        var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
-                                        document.getElementById("adjustedValue").value = adjustedValue;
-                                    }
-                                </script>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                
-
-
-               
-
-
-
-                <div class="mt-3">
-                    <label for="fileInput" style="color: white; font-weight: bold;">Upload Files</label>
-                    <input type="file" name="file2" multiple class="form-control-file" id="fileInput">
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary" name="save" id="saveBtn">Save</button>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-warning" name="draft" id="draftBtn">Draft</button>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="{% url 'items_list' %}"> <button type="button" class="btn btn-danger"
-                                id="cancelBtn">Cancel</button></a>
-                    </div>
-                </div>
-
-            </form>
-
-            <!-- Other content goes here -->
+            </div>
         </div>
     </div>
 </div>
-
-{% endblock %}

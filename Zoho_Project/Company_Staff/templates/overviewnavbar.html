@@ -820,9 +820,12 @@
                                     <i class="fas fa-sort text-warning"></i> Sort
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" style="color: black;">All</a></li>
-                                    <li><a class="dropdown-item" href="#" style="color: black;">Date</a></li>
-                                    <li><a class="dropdown-item" href="#" style="color: black;">Reference Number</a>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            onclick="resetTable()">All</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            onclick="sortTable('Reason')">Reason</a></li>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            onclick="sortTable('Reference number')">Reference Number</a>
                                     </li>
                                 </ul>
                             </div>
@@ -832,12 +835,13 @@
                                     <i class="fas fa-filter text-warning"></i> Filter
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a>
+                                    <li><a class="dropdown-item" href="#" style="color: black;"
+                                            onclick="filterByStatus('all')">All</a>
                                     </li>
                                     <li><a class="dropdown-item" href="#" style="color: black;"
-                                            data-sort="save">Save</a></li>
+                                            onclick="filterByStatus('adjusted')">Save</a></li>
                                     <li><a class="dropdown-item" href="#" style="color: black;"
-                                            data-sort="draft">Draft</a>
+                                            onclick="filterByStatus('draft')">Draft</a>
                                     </li>
                                 </ul>
                             </div>
@@ -858,12 +862,12 @@
                             </form>
 
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table" id="myTable">
                                     <thead>
                                         <tr>
                                             <th class="text-warning">Item Name</th>
-                                            <th class="text-warning">Mode of Adjustment</th>
-                                            <th class="text-warning">Adjusting Date</th>
+                                            <th class="text-warning">Reference number</th>
+                                            <th class="text-warning">Reason</th>
                                             <th class="text-warning">Status</th>
                                         </tr>
                                     </thead>
@@ -873,9 +877,9 @@
                                             <td>
                                                 <a href="{% url 'itemdetail' s.id %}">{{ s.items.item_name }}</a>
                                             </td>
-                                            <td style="color: white;">{{ s.inventory_adjustment.Mode_of_adjustment }}
+                                            <td style="color: white;">{{ s.inventory_adjustment.Reference_number }}
                                             </td>
-                                            <td style="color: white;">{{ s.inventory_adjustment.Adjusting_date }}</td>
+                                            <td style="color: white;">{{ s.inventory_adjustment.Reason }}</td>
                                             <td style="color: white;">{{ s.inventory_adjustment.Status }}</td>
                                         </tr>
                                         {% endfor %}
@@ -884,6 +888,81 @@
                             </div>
 
                         </div>
+
+                        <script>
+                            var originalTable = document.getElementById("myTable").innerHTML;
+
+                            function sortTable(columnName) {
+                                var table, rows, switching, i, x, y, shouldSwitch;
+                                table = document.getElementById("myTable");
+                                switching = true;
+
+                                while (switching) {
+                                    switching = false;
+                                    rows = table.rows;
+
+                                    for (i = 1; i < rows.length - 1; i++) {
+                                        shouldSwitch = false;
+                                        x = rows[i].getElementsByTagName("TD")[getColumnIndex(columnName)];
+
+                                        if (i < rows.length - 1) {
+                                            y = rows[i + 1].getElementsByTagName("TD")[getColumnIndex(columnName)];
+
+                                            if (getColumnValue(x) > getColumnValue(y)) {
+                                                shouldSwitch = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (shouldSwitch) {
+                                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                        switching = true;
+                                    }
+                                }
+                            }
+
+                            function resetTable() {
+                                document.getElementById("myTable").innerHTML = originalTable;
+                            }
+
+                            function getColumnIndex(columnName) {
+                                var headers = document.querySelectorAll("#myTable th");
+                                for (var i = 0; i < headers.length; i++) {
+                                    if (headers[i].innerText.trim() === columnName.trim()) {
+                                        return i;
+                                    }
+                                }
+                                return -1;
+                            }
+
+                            function getColumnValue(cell) {
+                                return isNaN(parseInt(cell.innerHTML)) ? cell.innerHTML.toLowerCase() : parseInt(cell.innerHTML);
+                            }
+                        </script>
+                        <script>
+                            function filterByStatus(status) {
+                                var table, tr, i;
+                                table = document.querySelector(".table");
+                                tr = table.querySelectorAll("tbody tr");
+                                for (i = 0; i < tr.length; i++) {
+                                    if (status === 'all') {
+                                        tr[i].style.display = "";
+                                    } else {
+                                        var td = tr[i].querySelector("td:last-child"); // Assuming the status is in the last column
+                                        var statusValue = td ? (td.textContent || td.innerText).toLowerCase() : '';
+                                        if (statusValue === status.toLowerCase()) {
+                                            tr[i].style.display = "";
+                                        } else {
+                                            tr[i].style.display = "none";
+                                        }
+                                    }
+                                }
+                            }
+                        </script>
+
+
+
                         <script>
                             function filterTable() {
                                 var input, filter, table, tr, td, i, j, txtValue;

@@ -36,7 +36,7 @@
     }
 </style>
 <div class="col-md-7" style="background-color: black;">
-    
+
     <div class="container mt-3 p-4">
 
         <div class="row mb-3">
@@ -78,7 +78,7 @@
                 }
             </script>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm"><i
+                <button type="button"  class="btn btn-outline-warning btn-sm"><i
                         class="fas fa-print text-warning"></i></button>
             </div>
             <div class="col-md-1 text-center">
@@ -221,7 +221,7 @@
 
 
         </div>
-        <div style="background-color: white;border-radius: 25px;">
+        <div style="background-color: white;border-radius: 25px;padding: 20px;">
             <div class="row" style="margin-left: 40px;">
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Mode of Adjustment:</strong>
@@ -251,23 +251,15 @@
                     <strong>Reason:</strong>
                     {{ adjustments.inventory_adjustment.Reason }}
                 </div>
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
-                    <strong>Description:</strong>
-                    {{ adjustments.inventory_adjustment.Description }}
-                </div>
-            </div>
-
-            <div class="row mt-3" style="margin-left: 40px;">
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
-                    <strong>Status:</strong>
-                    {{ adjustments.inventory_adjustment.Status }}
-                </div>
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
+                <div class="col-md-6" style="margin-top: 30px;color: black; text-align: center;">
                     <strong>File:</strong>
-                    {{ adjustments.inventory_adjustment.Attach_file }}
+                    <a href="{{ adjustments.inventory_adjustment.Attach_file.url }}" download>
+                        <button class="btn btn-warning text-black">Download File</button>
+                    </a>
                 </div>
-
             </div>
+
+            
         </div>
 
     </div>

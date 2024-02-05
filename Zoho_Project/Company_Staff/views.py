@@ -605,11 +605,11 @@ def get_item_price(request):
  
 
 def generate_unique_reference_number():
-    latest_reference_number = Inventory_adjustment.objects.all().aggregate(Max('Reference_number'))['Reference_number__max']
-    if latest_reference_number:
-        return str(int(latest_reference_number) + 1)
-    else:
-        return '1'
+    latest_id = Inventory_adjustment.objects.all().aggregate(Max('id'))['id__max']
+    next_id = latest_id + 1 if latest_id is not None else 1
+    return str(next_id)
+
+
 
 def quantity(request):
      if 'login_id' in request.session:
@@ -651,6 +651,8 @@ def quantity(request):
                 return redirect('items_list')
             return render(request,"zohomodules/stock_adjustment/create_adjustment_itemquantity.html")
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+     
+
      
 
 def value(request):

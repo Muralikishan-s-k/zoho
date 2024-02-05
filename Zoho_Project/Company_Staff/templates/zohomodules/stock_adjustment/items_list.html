@@ -57,16 +57,14 @@
 
 
                     <div class="dropdown">
-                        <button class="btn btn-outline-warning dropdown-toggle" type="button" id="sortDropdown"
+                        <button class="btn btn-outline-warning dropdown-toggle" type="button" 
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-sort text-warning"></i> Sort
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-sort="all">All</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;"
-                                    onclick="sortTable('sort-reason')" data-sort="date">Reason</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;"
-                                    data-sort="reference_number">Reference Number</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" onclick="resetTable()">All</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" onclick="sortTable('sort-reason')">Reason</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" onclick="sortTable('sort-refno')">Reference Number</a></li>
                         </ul>
                     </div>
 
@@ -94,9 +92,12 @@
                             <i class="fas fa-filter text-warning"></i> Filter
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-status="all">All</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-status="adjusted">Save</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" data-status="draft">Draft</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;"
+                                    onclick="filterByStatus('all')">All</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;"
+                                    onclick="filterByStatus('adjusted')">Save</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;"
+                                    onclick="filterByStatus('draft')">Draft</a></li>
                         </ul>
                     </div>
                     <a href="{% url 'create_adjustment' %}" class="text-decoration-none">
@@ -115,7 +116,7 @@
                         <tr>
                             <th scope="col" id="sort-sl">Sl.No</th>
                             <th scope="col" id="sort-date">Date</th>
-                            <th scope="col" id="sort-reason" >Reason</th>
+                            <th scope="col" id="sort-reason">Reason</th>
                             <th scope="col" id="sort-description">Description</th>
                             <th scope="col" id="sort-refno">Ref.No</th>
                             <th scope="col" id="sort-type">Type</th>
@@ -125,7 +126,7 @@
                     <tbody style="background-color: black;">
                         {% for s in adjustment1 %}
 
-                        <tr data-status="{{s.Status | lower}}">
+                        <tr >
                             <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{forloop.counter}}</a>
                             </td>
                             <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Adjusting_date}}</a>
@@ -150,12 +151,75 @@
                     </tbody>
                 </table>
             </div>
-            
 
             
-
-
+            <script>
+                var originalOrder = Array.from(document.querySelectorAll('.table tbody tr'));
+        
+                function sortTable(columnId) {
+                    var table, rows, switching, i, x, y, shouldSwitch;
+                    table = document.querySelector(".table");
+                    switching = true;
+                    columnIndex = document.getElementById(columnId).cellIndex;
+        
+                    while (switching) {
+                        switching = false;
+                        rows = table.rows;
+        
+                        for (i = 1; i < rows.length - 1; i++) {
+                            shouldSwitch = false;
+                            x = rows[i].getElementsByTagName("TD")[columnIndex];
+                            y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+        
+                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+        
+                        if (shouldSwitch) {
+                            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                            switching = true;
+                        }
+                    }
+                }
+        
+                function resetTable() {
+                    var table = document.querySelector('.table tbody');
+                    table.innerHTML = '';
+                    originalOrder.forEach(function (row) {
+                        table.appendChild(row);
+                    });
+                }
+            </script>
             
+
+            <script>
+                function filterByStatus(status) {
+                    var table, tr, i;
+                    table = document.querySelector(".table");
+                    tr = table.querySelectorAll("tbody tr");
+                    for (i = 0; i < tr.length; i++) {
+                        if (status === 'all') {
+                            tr[i].style.display = "";
+                        } else {
+                            var td = tr[i].querySelector("td:last-child"); // Assuming the status is in the last column
+                            var statusValue = td ? (td.textContent || td.innerText).toLowerCase() : '';
+                            if (statusValue === status.toLowerCase()) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            </script>
+
+
+
+
+
+
 
 
             <script>
