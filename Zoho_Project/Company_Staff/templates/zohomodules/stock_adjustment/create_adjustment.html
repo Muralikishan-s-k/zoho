@@ -88,15 +88,15 @@
 
                 <!-- Date field -->
                 <div class="mt-3 row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="dateInput" style="color: white; font-weight: bold;">Date*</label>
                         <input type="date" class="form-control" name="date1" id="dateInput"
                             style="width: 150px; color: white;">
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="accountsDropdown"
-                            style="color: white; font-weight: bold; margin-left: 20px;margin-top: 20px;">Accounts*</label>
+                            style="color: white; font-weight: bold; margin-left: 20px;margin-top: 30px;">Accounts*</label>
                         <select class="form-control select2" name="account1" id="accountsDropdown"
                             style="width: 150px; color: white;">
                             <option value="">Select Category</option>
@@ -109,7 +109,7 @@
                         $('.select2').select2();
                     </script>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="reasonDropdown"
                             style="color: white; font-weight: bold; margin-left: 20px;">Reason*</label>
                         <div class="input-group">
@@ -175,36 +175,55 @@
 
                                             <td class="index">1</td>
                                             <td class="item-details">
-                                                <div class="dropdown">
-                                                    <select class="form-control item-dropdown" name="item1"
-                                                        style="background-color: white;" id="itemDropdown">
-                                                        <option value="" selected disabled>Select item</option>
-                                                        {% for c in item %}
-                                                        <option value="{{c.id}}" style="color: black;">{{c.item_name}}
-                                                        </option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <button type="button" class="btn btn-warning" id="addItemBtn"
-                                                        style="color: white;"><i class="fas fa-plus"></i></button>
-                                                        
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <div class="dropdown">
+                                                            <select class="form-control item-dropdown" name="item1"
+                                                                style="background-color: white;" id="itemDropdown">
+                                                                <option value="" selected disabled>Select item</option>
+                                                                {% for c in item %}
+                                                                <option value="{{c.id}}" style="color: black;">
+                                                                    {{c.item_name}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <button type="button" class="btn btn-warning"
+                                                            data-bs-toggle="modal" data-bs-target="#itemModal"
+                                                            style="color: white;margin-left: -20px;"><i
+                                                                class="fas fa-plus"></i></button>
+                                                    </div>
                                                 </div>
-
                                             </td>
-                                            <script>
-                                                $(document).ready(function () {
-                                                    // Add new reason on button click
-                                                    $('#addItemBtn').on('click', function () {
-                                                        var newReason = prompt("Enter the new item:");
-                                                        if (newReason) {
-                                                            // Create a new option and append it to the dropdown
-                                                            $('#itemDropdown').append($('<option>', {
-                                                                value: newReason,
-                                                                text: newReason
-                                                            }));
-                                                        }
-                                                    });
-                                                });
-                                            </script>
+                                            <div class="modal fade" id="itemModal" tabindex="-1"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal
+                                                                title</h1>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <label for="newItemName">Item Name:</label>
+                                                            <input type="text" id="newItemName" name="newitem"
+                                                                class="form-control">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close</button>
+                                                            <button type="button" class="btn btn-primary">Save
+                                                                changes</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            
+
+
                                             <script>
                                                 $('.item-dropdown').on('change', function () {
                                                     var selectedOption = $(this).find(':selected');

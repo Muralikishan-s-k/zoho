@@ -873,21 +873,22 @@ def stockdelete(request,pk):
         return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')     
 
 
-def add_comment(request,pk):
-     if 'login_id' in request.session:
+def add_comment(request, pk):
+    if 'login_id' in request.session:
         log_id = request.session['login_id']
         if 'login_id' not in request.session:
             return redirect('/')
-        log_details= LoginDetails.objects.get(id=log_id)        
+        log_details = LoginDetails.objects.get(id=log_id)
         if log_details.user_type == 'Company':
-            adjustment2=Inventory_adjustment_items.objects.get(id=pk)                       
-            if request.method =='POST':
-                comment=request.POST.get('commentText')
-                adjustment2.Comment=comment
-                adjustment2.save()                                                  
-                return redirect('adjustment_overview')
-            return render(request,"zohomodules/stock_adjustment/adjustment_overview.html")
-        return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+            adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
+            if request.method == 'POST':
+                comment = request.POST.get('commentText')
+                adjustment2.Comment = comment
+                adjustment2.save()
+                # Return the newly added comment in the response
+                return JsonResponse({'newComment': comment})
+            return render(request, "zohomodules/stock_adjustment/adjustment_overview.html")
+    return JsonResponse({'error': 'Invalid request'})
      
 
 def stockeditdb(request,pk):
@@ -922,4 +923,6 @@ def stockeditdb(request,pk):
                 return redirect('adjustment_overview')
             return render(request,"zohomodules/stock_adjustment/adjustment_overview.html")
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+     
+     
                

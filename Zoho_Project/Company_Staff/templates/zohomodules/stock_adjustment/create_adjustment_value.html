@@ -59,7 +59,8 @@
                                 <select class="form-control" name="mode2" onchange="window.location.href=this.value"
                                     style="background-color: white;width: 200px;">
 
-                                    <option value="Value adjustment" style="color: black;" selected>Value adjustment</option>
+                                    <option value="Value adjustment" style="color: black;" selected>Value adjustment
+                                    </option>
                                     <option value="{% url 'create_adjustment' %}" style="color: black;">Quantity
                                         adjustment</option>
 
@@ -77,16 +78,16 @@
                         style="width: 200px; color: white;">
                 </div>
 
-                
+
 
                 <!-- Date field -->
                 <div class="mt-3 row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="dateInput" style="color: white; font-weight: bold;">Date*</label>
                         <input type="date" name="date2" class="form-control" id="dateInput"
                             style="width: 150px; color: white;">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="accountsDropdown"
                             style="color: white; font-weight: bold; margin-left: 20px;margin-top: 20px;">Accounts*</label>
                         <select class="form-control select2" name="account2" id="accountsDropdown"
@@ -102,7 +103,7 @@
                     <script>
                         $('.select2').select2();
                     </script>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="reasonDropdown"
                             style="color: white; font-weight: bold; margin-left: 20px;">Reason*</label>
                         <div class="input-group">
@@ -165,25 +166,58 @@
                                     <tbody>
                                         <!-- Rows will be dynamically added here -->
                                         <tr>
-        
+
                                             <td class="index">1</td>
                                             <td class="item-details">
-                                                <div class="dropdown">
-                                                    <select class="form-control item-dropdown" name="item2"
-                                                        style="background-color: white;">
-                                                        <option value="" selected disabled>Select item</option>
-                                                        {% for c in item %}
-                                                        <option value="{{c.id}}" style="color: black;">{{c.item_name}}</option>
-                                                        {% endfor %}
-                                                    </select>
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <div class="dropdown">
+                                                            <select class="form-control item-dropdown" name="item2"
+                                                                style="background-color: white;" id="itemDropdown">
+                                                                <option value="" selected disabled>Select item</option>
+                                                                {% for c in item %}
+                                                                <option value="{{c.id}}" style="color: black;">
+                                                                    {{c.item_name}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <button type="button" class="btn btn-warning"
+                                                            data-bs-toggle="modal" data-bs-target="#itemModal"
+                                                            style="color: white;margin-left: -20px;"><i
+                                                                class="fas fa-plus"></i></button>
+                                                    </div>
                                                 </div>
                                             </td>
+                                            <div class="modal fade" id="itemModal" tabindex="-1"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal
+                                                                title</h1>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            ...
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close</button>
+                                                            <button type="button" class="btn btn-primary">Save
+                                                                changes</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <script>
                                                 $('.item-dropdown').on('change', function () {
                                                     var selectedOption = $(this).find(':selected');
                                                     var itemId = selectedOption.val();
                                                     var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
-        
+
                                                     $.ajax({
                                                         type: "GET",
                                                         url: "{% url 'get_item_price' %}",
@@ -194,19 +228,20 @@
                                                     });
                                                 });
                                             </script>
-        
-        
+
+
                                             <td class="quantity-available">
-                                                <input type="number" name="stock_value" class="form-control item-quantity"
-                                                    value="" style="color: white;">
+                                                <input type="number" name="stock_value"
+                                                    class="form-control item-quantity" value="" style="color: white;">
                                             </td>
                                             <td class="new-quantity">
-                                                <input type="number" name="changedvalue" class="form-control" id="changedValue"
-                                                    oninput="updateAdjustedValue()" style="color: white;">
+                                                <input type="number" name="changedvalue" class="form-control"
+                                                    id="changedValue" oninput="updateAdjustedValue()"
+                                                    style="color: white;">
                                             </td>
                                             <td class="quantity-adjusted">
                                                 <input type="number" name="adjustedvalue" class="form-control"
-                                                id="adjustedValue"  style="color: white;" readonly>
+                                                    id="adjustedValue" style="color: white;" readonly>
                                             </td>
                                             <td>
                                                 <div class="col-md-1">
@@ -234,7 +269,7 @@
                     </div>
                 </div>
 
-                
+
 
 
                 <!-- JavaScript to handle dynamic row addition and removal -->

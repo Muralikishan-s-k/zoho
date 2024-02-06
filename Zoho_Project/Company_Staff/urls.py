@@ -49,7 +49,7 @@ urlpatterns = [
     path('stockedit/<int:pk>',views.stockedit,name='stockedit'),
     path('stockdelete/<int:pk>',views.stockdelete,name='stockdelete'),
     path('add_comment/<int:pk>',views.add_comment,name='add_comment'),
-    path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb')
+    path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb'),
     
     
   

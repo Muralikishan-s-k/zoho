@@ -57,10 +57,50 @@
                 </button>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm" onclick="shareViaEmail()">
+                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#emailModal">
                     <i class="fas fa-envelope text-warning"></i>
                 </button>
             </div>
+
+            <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="emailModalLabel">Send Email</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="recipientEmail">Recipient's Email</label>
+                                <input type="email" class="form-control" id="recipientEmail" placeholder="Enter email">
+                            </div>
+                            <div class="form-group">
+                                <label for="emailSubject">Subject</label>
+                                <input type="text" class="form-control" id="emailSubject" placeholder="Enter subject">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="sendEmail()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function sendEmail() {
+                    var recipientEmail = document.getElementById('recipientEmail').value;
+                    var subject = document.getElementById('emailSubject').value;
+                    var body = encodeURIComponent("Mode of Adjustment: {{ adjustments.inventory_adjustment.Mode_of_adjustment }}\nReference Number: {{ adjustments.inventory_adjustment.Reference_number }}\nAdjusting Date: {{ adjustments.inventory_adjustment.Adjusting_date }}\nAccount: {{ adjustments.inventory_adjustment.Account }}\nReason: {{ adjustments.inventory_adjustment.Reason }}\nDescription: {{ adjustments.inventory_adjustment.Description }}\nStatus: {{ adjustments.inventory_adjustment.Status }}");
+                    var emailURL = "mailto:" + recipientEmail + "?subject=" + subject + "&body=" + body;
+                    window.location.href = emailURL;
+                }
+            </script>
+
             <script>
                 // Function to share details via WhatsApp
                 function shareViaWhatsApp() {
@@ -122,15 +162,16 @@
                                     class="btn btn-outline-warning btn-sm">Add</button>
                             </form>
                             {% endif %}
-                            <div class="row comments-section" style="margin-top: 20px;">
-                                <!-- Existing comments will be dynamically added here -->
-                            </div>
+
                             <div class="row" style="margin-top: 20px;">
                                 <!-- Field 3 -->
                                 <div class="col-md-6">
                                     <label for="field3" style="color: white;"><strong>Comments:</strong></label>
-                                    <input type="text" class="form-control" name="comment" style="color: white;"
-                                        value="{{adjustments.Comment}}">
+                                    <div class="row comments-section" style="margin-top: 20px;">
+                                        <!-- Existing comments will be dynamically added here -->
+
+                                    </div>
+
                                 </div>
 
                             </div>
@@ -152,9 +193,16 @@
                             url: form.attr('action'),
                             data: form.serialize(),
                             success: function (response) {
-                                // Handle the response, e.g., update comments section or close modal
-                                updateComments(response.newComment);
-                                $('#commentModal').modal('hide');
+                                if (response.newComment) {
+                                    // Handle the response, update comments section with new comment
+                                    updateComments(response.newComment);
+                                    $('#commentModal').modal('hide');
+                                } else {
+                                    // Handle error or other responses
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                // Handle errors
                             }
                         });
                     });
@@ -162,10 +210,11 @@
                     function updateComments(newComment) {
                         // Update the comments section with the new comment
                         var commentsSection = $('.comments-section');
-                        var newCommentElement = $('<div class="comment-item">' + newComment + '</div>');
+                        var newCommentElement = $('<textarea class="form-control comment-item" style="color:white" readonly>' + newComment + '</textarea>');
                         commentsSection.append(newCommentElement);
                     }
                 });
+
             </script>
 
             <div class="col-md-1 text-center">
@@ -258,8 +307,6 @@
                     </a>
                 </div>
             </div>
-
-            
         </div>
 
     </div>
