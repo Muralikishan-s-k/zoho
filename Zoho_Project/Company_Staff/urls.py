@@ -52,6 +52,7 @@ urlpatterns = [
     path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb'),
     
     
+    
   
     
 ]

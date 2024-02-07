@@ -632,6 +632,7 @@ def quantity(request):
                 newquantity=request.POST.get('new-quantity')
                 quantityadjusted=request.POST.get('quantity-adjusted')
                 file1 = request.FILES.get('file1')
+                itemadd=request.POST.get('items')
                 if 'draft' in request.POST:
                     status = 'draft'
                 else:
@@ -644,6 +645,11 @@ def quantity(request):
                                                    login_details=log_details,inventory_adjustment=adjustment1)
                 adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
                                                    login_details=log_details,inventory_adjustment=adjustment1)
+                
+                adjustment4=Items(item_name=itemadd,unit_id=2,company=dash_details,login_details=log_details)
+                
+                
+                adjustment4.save()
                 adjustment1.save()
                 
                 adjustment2.save()
@@ -915,7 +921,8 @@ def stockeditdb(request,pk):
                 edit.Current_value=request.POST.get('currentvalue')
                 edit.Changed_value=request.POST.get('changedvalue')
                 edit.Adjusted_value=request.POST.get('adjustedvalue')
-                edit2.Status=request.POST.get('status')             
+                edit2.Status=request.POST.get('status')
+                            
                                 
                 edit.save()
                 edit2.save()
@@ -925,4 +932,5 @@ def stockeditdb(request,pk):
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
      
      
-               
+
+                    

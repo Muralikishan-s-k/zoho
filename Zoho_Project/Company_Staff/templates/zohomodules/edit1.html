@@ -1,1 +1,33 @@
 <button class="btn btn-warning text-black">Download File</button>
+
+<li>
+    {% if adjustments.id %}
+    <form action="{% url 'attach' adjustments.id  %}" id="fileUploadForm"
+        enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        <input type="file" name="fileattach" multiple id="fileInput" accept="image/*,application/pdf,.doc,.docx,.t">
+        <button type="submit" class="btn btn-warning text-black">Attach File</button>
+    </form>
+    {% endif %}
+</li>
+
+path('attach/<int:pk>',views.attach,name='attach')
+
+
+def attach(request,pk):
+    if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details = LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Company':            
+            if request.method == 'POST':
+                adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
+                attach = adjustment2.inventory_adjustment
+                file = request.POST.get('fileattach')
+                attach.Attach_file = file
+                attach.save()
+                # Return the newly added comment in the response
+                return redirect('adjustment_overview')
+            return render(request, "zohomodules/stock_adjustment/adjustment_overview.html")
+    return JsonResponse({'error': 'Invalid request'})
