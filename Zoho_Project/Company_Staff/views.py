@@ -10,6 +10,8 @@ from openpyxl import Workbook
 from django.http import HttpResponse
 from openpyxl import load_workbook
 from django.db.models import Max
+from docx import Document
+from docx.shared import Pt
 
 
 # Create your views here.
@@ -632,7 +634,7 @@ def quantity(request):
                 newquantity=request.POST.get('new-quantity')
                 quantityadjusted=request.POST.get('quantity-adjusted')
                 file1 = request.FILES.get('file1')
-                itemadd=request.POST.get('items')
+                
                 if 'draft' in request.POST:
                     status = 'draft'
                 else:
@@ -646,10 +648,7 @@ def quantity(request):
                 adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
                                                    login_details=log_details,inventory_adjustment=adjustment1)
                 
-                adjustment4=Items(item_name=itemadd,unit_id=2,company=dash_details,login_details=log_details)
                 
-                
-                adjustment4.save()
                 adjustment1.save()
                 
                 adjustment2.save()
@@ -921,9 +920,7 @@ def stockeditdb(request,pk):
                 edit.Current_value=request.POST.get('currentvalue')
                 edit.Changed_value=request.POST.get('changedvalue')
                 edit.Adjusted_value=request.POST.get('adjustedvalue')
-                edit2.Status=request.POST.get('status')
-                            
-                                
+                edit2.Status=request.POST.get('status')                                                          
                 edit.save()
                 edit2.save()
                                             
@@ -932,5 +929,80 @@ def stockeditdb(request,pk):
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
      
      
+def itemadd(request):
+    if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return JsonResponse({'error': 'User not authenticated'}, status=401)
+        
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company':            
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            if request.method =='POST':
+                itemadd = request.POST.get('items')                              
+                adjustment4 = Items(item_name=itemadd, unit_id=2, company=dash_details, login_details=log_details)                              
+                adjustment4.save()  
 
-                    
+                # Return the newly added item data
+                return JsonResponse({'success': True, 'item_id': adjustment4.id, 'item_name': adjustment4.item_name})
+            
+            return JsonResponse({'error': 'Invalid request method'}, status=400)
+        
+        return JsonResponse({'error': 'User is not a company'}, status=403)
+    
+    return JsonResponse({'error': 'Login session not found'}, status=401)
+
+def itemadd1(request):
+    if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return JsonResponse({'error': 'User not authenticated'}, status=401)
+        
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company':            
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            if request.method =='POST':
+                itemadd = request.POST.get('items')                              
+                adjustment4 = Items(item_name=itemadd, unit_id=2, company=dash_details, login_details=log_details)                              
+                adjustment4.save()  
+
+                # Return the newly added item data
+                return JsonResponse({'success': True, 'item_id': adjustment4.id, 'item_name': adjustment4.item_name})
+            
+            return JsonResponse({'error': 'Invalid request method'}, status=400)
+        
+        return JsonResponse({'error': 'User is not a company'}, status=403)
+    
+    return JsonResponse({'error': 'Login session not found'}, status=401)   
+
+
+def export_to_word(request):
+    # Extract values from the request or context
+    mode_of_adjustment = request.POST.get('mode_of_adjustment', '')
+    reference_number = request.POST.get('reference_number', '')
+    adjusting_date = request.POST.get('adjusting_date', '')
+    account = request.POST.get('account', '')
+    reason = request.POST.get('reason', '')
+
+    # Create a new Document
+    document = Document()
+
+    # Add styles
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(12)
+
+    # Add content to the Document
+    document.add_paragraph(f"Mode of Adjustment: {mode_of_adjustment}")
+    document.add_paragraph(f"Reference Number: {reference_number}")
+    document.add_paragraph(f"Adjusting Date: {adjusting_date}")
+    document.add_paragraph(f"Account: {account}")
+    document.add_paragraph(f"Reason: {reason}")
+
+    # Save the Document
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename=adjusted_values.docx'
+    document.save(response)
+
+    return response                     

@@ -55,7 +55,7 @@
                             </a>
                             {% endif %}
                         </li>
-                        
+
 
                     </ul>
                 </div>
@@ -130,10 +130,7 @@
                 // Function to share details via email
 
             </script>
-            <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm"><i
-                        class="fas fa-print text-warning"></i></button>
-            </div>
+
             <div class="col-md-1 text-center">
                 {% if adjustments.id %}
                 <a href="{% url 'stockdelete' adjustments.id %}">
@@ -284,37 +281,43 @@
 
         </div>
 
-
-        <div style="background-color: white;border-radius: 25px;padding: 20px;">
-            <div class="row" style="margin-left: 40px;">
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
-                    <strong>Mode of Adjustment:</strong>
-                    {{ adjustments.inventory_adjustment.Mode_of_adjustment }}
+        <form action="{% url 'export_to_word' %}" method="post">
+            {% csrf_token %}
+            <div style="background-color: white;border-radius: 25px;padding: 20px;">
+                <div class="row" style="margin-left: 40px;">
+                    <div class="col-md-6" style="margin-top: 30px;color: black;">
+                        <strong>Mode of Adjustment:</strong>
+                        {{ adjustments.inventory_adjustment.Mode_of_adjustment }}
+                    </div>
+                    <div class="col-md-6" style="margin-top: 30px;color: black;">
+                        <strong>Reference Number:</strong>
+                        {{ adjustments.inventory_adjustment.Reference_number }}
+                    </div>
                 </div>
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
-                    <strong>Reference Number:</strong>
-                    {{ adjustments.inventory_adjustment.Reference_number }}
+                <div class="row mt-3" style="margin-left: 40px;">
+                    <div class="col-md-6" style="margin-top: 30px;color: black;">
+                        <strong>Adjusting Date:</strong>
+                        {{ adjustments.inventory_adjustment.Adjusting_date }}
+                    </div>
+                    <div class="col-md-6" style="margin-top: 30px;color: black;">
+                        <strong>Account:</strong>
+                        {{ adjustments.inventory_adjustment.Account }}
+                    </div>
+                </div>
+                <div class="row mt-3" style="margin-left: 40px;">
+                    <div class="col-md-6" style="margin-top: 30px;color: black;">
+                        <strong>Reason:</strong>
+                        {{ adjustments.inventory_adjustment.Reason }}
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <button type="submit" class="btn btn-outline-warning btn-sm"
+                            style="margin-top: 30px;background-color: black;"><i class="fas fa-print text-warning"></i></button>
+                    </div>
                 </div>
             </div>
-            <div class="row mt-3" style="margin-left: 40px;">
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
-                    <strong>Adjusting Date:</strong>
-                    {{ adjustments.inventory_adjustment.Adjusting_date }}
-                </div>
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
-                    <strong>Account:</strong>
-                    {{ adjustments.inventory_adjustment.Account }}
-                </div>
-            </div>
-            <div class="row mt-3" style="margin-left: 40px;">
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
-                    <strong>Reason:</strong>
-                    {{ adjustments.inventory_adjustment.Reason }}
-                </div>
 
 
-            </div>
-        </div>
+        </form>
 
 
     </div>

@@ -50,7 +50,9 @@ urlpatterns = [
     path('stockdelete/<int:pk>',views.stockdelete,name='stockdelete'),
     path('add_comment/<int:pk>',views.add_comment,name='add_comment'),
     path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb'),
-    
+    path('itemadd',views.itemadd,name='itemadd'),
+    path('itemadd1',views.itemadd1,name='itemadd1'),
+    path('export_to_word',views.export_to_word,name='export_to_word')
     
     
   

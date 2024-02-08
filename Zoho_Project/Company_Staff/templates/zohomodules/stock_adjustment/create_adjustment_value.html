@@ -172,7 +172,7 @@
                                                 <div class="row">
                                                     <div class="col-md-8">
                                                         <div class="dropdown">
-                                                            <select class="form-control item-dropdown" name="item2"
+                                                            <select class="form-control item-dropdown select2" name="item2"
                                                                 style="background-color: white;" id="itemDropdown">
                                                                 <option value="" selected disabled>Select item</option>
                                                                 {% for c in item %}
@@ -181,37 +181,19 @@
                                                                 {% endfor %}
                                                             </select>
                                                         </div>
+                                                        <script>
+                                                            $('.select2').select2();
+                                                        </script>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <button type="button" class="btn btn-warning"
                                                             data-bs-toggle="modal" data-bs-target="#itemModal"
-                                                            style="color: white;margin-left: -20px;"><i
+                                                            style="color: white;margin-left: -10px;"><i
                                                                 class="fas fa-plus"></i></button>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <div class="modal fade" id="itemModal" tabindex="-1"
-                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal
-                                                                title</h1>
-                                                            <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            ...
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-bs-dismiss="modal">Close</button>
-                                                            <button type="button" class="btn btn-primary">Save
-                                                                changes</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                             <script>
                                                 $('.item-dropdown').on('change', function () {
                                                     var selectedOption = $(this).find(':selected');
@@ -241,7 +223,7 @@
                                             </td>
                                             <td class="quantity-adjusted">
                                                 <input type="number" name="adjustedvalue" class="form-control"
-                                                    id="adjustedValue" style="color: white;" readonly>
+                                                    id="adjustedValue" style="color: white;" >
                                             </td>
                                             <td>
                                                 <div class="col-md-1">
@@ -256,6 +238,28 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <script>
+                                    // Function to add a new row
+                                    $(document).on('click', '.add-row', function () {
+                                        var newRow = $(this).closest('tr').clone(); // Clone the row
+                                        newRow.find('input[type="number"]').val(''); // Clear input values
+                                        newRow.find('select').val(''); // Clear select value
+                                        $(this).closest('tr').after(newRow); // Insert the cloned row after the current row
+                                        newRow.find('.item-dropdown').select2(); // Initialize select2 for the new dropdown
+                                    });
+                                
+                                    // Function to remove the row
+                                    $(document).on('click', '.remove-row', function () {
+                                        $(this).closest('tr').remove(); // Remove the closest row
+                                    });
+                                
+                                    // Function to update quantity adjusted
+                                    function updateQuantityAdjusted() {
+                                        // Implement your logic to update quantity adjusted here
+                                    }
+                                </script>
+
+
                                 <script>
                                     function updateAdjustedValue() {
                                         var currentValue = parseInt(document.querySelector(".quantity-available input").value);
@@ -296,7 +300,68 @@
 
             </form>
 
-            <!-- Other content goes here -->
+            <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" >
+                    <div class="modal-content bg-dark" >
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5 text-light" id="exampleModalLabel">Add
+                                Item:</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="addItemForm" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <label for="newItemName" style="color: white;">Item Name:</label>
+                                <input type="text" id="newItemName" name="items" class="form-control bg-light">
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-outline-warning" data-bs-dismiss="modal">Add Item</button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#addItemForm').submit(function (event) {
+                        event.preventDefault(); // Prevent the default form submission
+
+                        var formData = new FormData(this);
+
+                        $.ajax({
+                            url: "{% url 'itemadd1' %}",
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                // Handle success response
+                                if (data.success) {
+                                    // Append the new item to the dropdown
+                                    $('#itemDropdown').append($('<option>', {
+                                        value: data.item_id,
+                                        text: data.item_name,
+                                        style: 'color: black;'
+                                    }));
+                                    // Optional: Select the newly added item
+                                    $('#itemDropdown').val(data.item_id);
+                                } else {
+                                    alert("Error adding item");
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                // Handle error response
+                                console.error(xhr.responseText);
+                                alert("Error adding item");
+                            }
+                        });
+                    });
+                });
+            </script>
         </div>
     </div>
 </div>
