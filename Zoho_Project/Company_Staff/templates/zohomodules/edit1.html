@@ -31,3 +31,11 @@ def attach(request,pk):
                 return redirect('adjustment_overview')
             return render(request, "zohomodules/stock_adjustment/adjustment_overview.html")
     return JsonResponse({'error': 'Invalid request'})
+
+
+
+    if len(request.FILES)!=0:
+    if len(prdcts.image)>0:
+        os.remove(prdcts.image.path)
+    prdcts.image=request.FILES.get('file')    
+prdcts.save()    

@@ -52,7 +52,8 @@ urlpatterns = [
     path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb'),
     path('itemadd',views.itemadd,name='itemadd'),
     path('itemadd1',views.itemadd1,name='itemadd1'),
-    path('export_to_word',views.export_to_word,name='export_to_word')
+    path('export_to_word',views.export_to_word,name='export_to_word'),
+    path('attach/<int:pk>',views.attach,name='attach')
     
     
   

@@ -12,6 +12,7 @@ from openpyxl import load_workbook
 from django.db.models import Max
 from docx import Document
 from docx.shared import Pt
+import os
 
 
 # Create your views here.
@@ -799,7 +800,8 @@ def itemdetail(request,pk):
             adjustment1=Inventory_adjustment.objects.all()
             adjustment2=Inventory_adjustment_items.objects.all()
             adjustments=Inventory_adjustment_items.objects.get(id=pk)           
-            adjustment3 = Inventory_adjustment_history.objects.all()
+            adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
+            
             context = {
                     'details': dash_details,
                     'item': item,
@@ -807,7 +809,7 @@ def itemdetail(request,pk):
                     'adjustment1':adjustment1,
                     'adjustments':adjustments,
                     'adjustment2':adjustment2,
-                    'adjustment3':adjustment3
+                    'adjustment3':adjustment_history_entry
 
             }
         return render(request,'zohomodules/stock_adjustment/adjustment_overview.html',context)  
@@ -906,6 +908,7 @@ def stockeditdb(request,pk):
             
             if request.method =='POST':
                 edit=Inventory_adjustment_items.objects.get(id=pk)
+                edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
                 edit2 = edit.inventory_adjustment
                 item=request.POST.get('item')
                 item1=Items.objects.get(id=item)
@@ -920,9 +923,11 @@ def stockeditdb(request,pk):
                 edit.Current_value=request.POST.get('currentvalue')
                 edit.Changed_value=request.POST.get('changedvalue')
                 edit.Adjusted_value=request.POST.get('adjustedvalue')
-                edit2.Status=request.POST.get('status')                                                          
+                edit2.Status=request.POST.get('status')
+                edit3.Action='edited'                                                          
                 edit.save()
                 edit2.save()
+                edit3.save()
                                             
                 return redirect('adjustment_overview')
             return render(request,"zohomodules/stock_adjustment/adjustment_overview.html")
@@ -978,11 +983,11 @@ def itemadd1(request):
 
 def export_to_word(request):
     # Extract values from the request or context
-    mode_of_adjustment = request.POST.get('mode_of_adjustment', '')
-    reference_number = request.POST.get('reference_number', '')
-    adjusting_date = request.POST.get('adjusting_date', '')
-    account = request.POST.get('account', '')
-    reason = request.POST.get('reason', '')
+    mode_of_adjustment = request.POST.get('value1')
+    reference_number = request.POST.get('value2')
+    adjusting_date = request.POST.get('value3')
+    account = request.POST.get('value4')
+    reason = request.POST.get('value5')
 
     # Create a new Document
     document = Document()
@@ -1005,4 +1010,31 @@ def export_to_word(request):
     response['Content-Disposition'] = 'attachment; filename=adjusted_values.docx'
     document.save(response)
 
-    return response                     
+    return response  
+
+def attach(request, pk):
+    if 'login_id' in request.session:
+        log_id = request.session.get('login_id')
+        if not log_id:
+            return JsonResponse({'error': 'Invalid request'})
+        
+        log_details = LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Company':
+            if request.method == 'POST':
+                adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
+                edit = adjustment2.inventory_adjustment
+                if request.FILES:
+                    file_obj = request.FILES['file1']
+                    if edit.Attach_file:
+                        os.remove(edit.Attach_file.path)
+                    edit.Attach_file = file_obj
+                    edit.save()
+                    return JsonResponse({'success': 'File attached successfully'})
+                else:
+                    return JsonResponse({'error': 'No file provided'})
+            else:
+                return JsonResponse({'error': 'Invalid request'})
+        else:
+            return JsonResponse({'error': 'Unauthorized access'})
+    else:
+        return JsonResponse({'error': 'User not logged in'})                   
