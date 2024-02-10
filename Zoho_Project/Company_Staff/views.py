@@ -701,50 +701,7 @@ def value(request):
             return render(request,"zohomodules/stock_adjustment/create_adjustment_itemvalue.html")
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
           
-
-def export_to_excel(request):
-    adjustment_data = Inventory_adjustment.objects.all()  # Adjust this based on your actual model
-    workbook = Workbook()
-    sheet = workbook.active
-
-    # Write headers
-    headers = ["Sl.No", "Date", "Reason", "Description", "Ref.No", "Type", "Status"]
-    sheet.append(headers)
-
-    # Write data
-    for index, s in enumerate(adjustment_data, start=1):
-        row_data = [index, s.Adjusting_date, s.Reason, s.Description, s.Reference_number, s.Mode_of_adjustment, s.Status]
-        sheet.append(row_data)
-
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=adjustment_data.xlsx'
-    workbook.save(response)
-
-    return response
      
-def import_from_excel(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        excel_file = request.FILES['file']
-        workbook = load_workbook(excel_file)
-        sheet = workbook.active
-
-        # Assuming the structure is the same as the export
-        for row in sheet.iter_rows(min_row=2, values_only=True):
-            _, adjusting_date, reason, description, reference_number, mode_of_adjustment, status = row
-
-            # Create or update your model instance here
-            adjustment_instance, created = Inventory_adjustment.objects.update_or_create(
-                adjusting_date=adjusting_date,
-                reason=reason,
-                description=description,
-                reference_number=reference_number,
-                mode_of_adjustment=mode_of_adjustment,
-                status=status,
-            )
-
-        return redirect('items_list')
-
-    return render(request, 'zohomodules/stock_adjustment/items_list.html')
 
 def adjustment_overview(request):
      if 'login_id' in request.session:
@@ -981,36 +938,7 @@ def itemadd1(request):
     return JsonResponse({'error': 'Login session not found'}, status=401)   
 
 
-def export_to_word(request):
-    # Extract values from the request or context
-    mode_of_adjustment = request.POST.get('value1')
-    reference_number = request.POST.get('value2')
-    adjusting_date = request.POST.get('value3')
-    account = request.POST.get('value4')
-    reason = request.POST.get('value5')
 
-    # Create a new Document
-    document = Document()
-
-    # Add styles
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Arial'
-    font.size = Pt(12)
-
-    # Add content to the Document
-    document.add_paragraph(f"Mode of Adjustment: {mode_of_adjustment}")
-    document.add_paragraph(f"Reference Number: {reference_number}")
-    document.add_paragraph(f"Adjusting Date: {adjusting_date}")
-    document.add_paragraph(f"Account: {account}")
-    document.add_paragraph(f"Reason: {reason}")
-
-    # Save the Document
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename=adjusted_values.docx'
-    document.save(response)
-
-    return response  
 
 def attach(request, pk):
     if 'login_id' in request.session:

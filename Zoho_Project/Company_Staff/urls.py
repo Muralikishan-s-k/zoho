@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import export_to_excel, import_from_excel
+
 
 urlpatterns = [
     # -------------------------------Company section--------------------------------
@@ -41,9 +41,7 @@ urlpatterns = [
     path('zohomodules/stock_adjustment/create_adjustment_value',views.create_adjustment_value,name='create_adjustment_value'),
     path('get-item-price/', views.get_item_price, name='get_item_price'),    
     path('zohomodules/stock_adjustment/quantity',views.quantity,name='quantity'),
-    path('zohomodules/stock_adjustment/value',views.value,name='value'),
-    path('export_to_excel',views.export_to_excel,name='export_to_excel'),
-    path('import_from_excel',views.import_from_excel,name='import_from_excel'),
+    path('zohomodules/stock_adjustment/value',views.value,name='value'),   
     path('zohomodules/stock_adjustment/items_list/adjustment_overview',views.adjustment_overview,name='adjustment_overview'),
     path('itemdetail/<int:pk>',views.itemdetail,name='itemdetail'),
     path('stockedit/<int:pk>',views.stockedit,name='stockedit'),
@@ -52,7 +50,6 @@ urlpatterns = [
     path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb'),
     path('itemadd',views.itemadd,name='itemadd'),
     path('itemadd1',views.itemadd1,name='itemadd1'),
-    path('export_to_word',views.export_to_word,name='export_to_word'),
     path('attach/<int:pk>',views.attach,name='attach')
     
     

@@ -57,14 +57,17 @@
 
 
                     <div class="dropdown">
-                        <button class="btn btn-outline-warning dropdown-toggle" type="button" 
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <i class="fas fa-sort text-warning"></i> Sort
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                            <li><a class="dropdown-item" href="#" style="color: black;" onclick="resetTable()">All</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" onclick="sortTable('sort-reason')">Reason</a></li>
-                            <li><a class="dropdown-item" href="#" style="color: black;" onclick="sortTable('sort-refno')">Reference Number</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;" onclick="resetTable()">All</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" style="color: black;"
+                                    onclick="sortTable('sort-reason')">Reason</a></li>
+                            <li><a class="dropdown-item" href="#" style="color: black;"
+                                    onclick="sortTable('sort-refno')">Reference Number</a></li>
                         </ul>
                     </div>
 
@@ -74,18 +77,80 @@
                 <!-- Buttons aligned to the right -->
                 <div class="d-flex flex-column flex-md-row align-items-md-center">
                     <!-- Use flex classes for responsiveness -->
-                    <a href="{% url 'export_to_excel' %}" class="text-decoration-none mb-2 mb-md-0">
-                        <button class="btn btn-outline-warning">
-                            <i class="fas fa-sign-out-alt text-warning"></i> Export
-                        </button>
-                    </a>
-                    <form method="post" enctype="multipart/form-data" action="{% url 'import_from_excel' %}"
-                        class="mb-2 mb-md-0">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-warning">
-                            <i class="fas fa-sign-in-alt text-warning"></i> Import
-                        </button>
-                    </form>
+
+                    <button class="btn btn-outline-warning" id="btn-export">
+                        <i class="fas fa-sign-out-alt text-warning"></i> Export
+                    </button>
+
+
+
+                    <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
+                        data-bs-target="#importModal">
+                        <i class="fas fa-sign-in-alt text-warning"></i> Import
+                    </button>
+
+                    <div class="modal fade" id="importModal" tabindex="-1" role="dialog"
+                        aria-labelledby="importModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content bg-dark">
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-light" id="importModalLabel">Import Data</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="file" id="file-input">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script src="xlsx.min.js"></script>
+                    <script>
+                        // Function to handle file selection
+                        document.getElementById('file-input').addEventListener('change', function (e) {
+                            var file = e.target.files[0];
+                            var reader = new FileReader();
+
+                            reader.onload = function (e) {
+                                var data = new Uint8Array(e.target.result);
+                                var workbook = XLSX.read(data, { type: 'array' });
+
+                                // Assuming the first sheet contains the data
+                                var sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                                // Convert sheet data to JSON
+                                var jsonData = XLSX.utils.sheet_to_json(sheet);
+
+                                // Update the table with the Excel data
+                                updateTable(jsonData);
+                            };
+
+                            reader.readAsArrayBuffer(file);
+                        });
+
+                        // Function to update the table with Excel data
+                        function updateTable(data) {
+                            var table = document.getElementById('my-table').getElementsByTagName('tbody')[0];
+
+                            // Clear existing table rows
+                            table.innerHTML = '';
+
+                            // Populate table with Excel data
+                            data.forEach(function (row) {
+                                var newRow = table.insertRow(table.rows.length);
+                                Object.values(row).forEach(function (value) {
+                                    var cell = newRow.insertCell();
+                                    cell.appendChild(document.createTextNode(value));
+                                });
+                            });
+                        }
+                    </script>
+
                     <div class="dropdown">
                         <button class="btn btn-outline-warning mb-2 mb-md-0 dropdown-toggle" type="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -111,7 +176,7 @@
 
 
             <div class="table-responsive">
-                <table class="table align-middle mb-0 " style="background-color: black; color: white;">
+                <table id="my-table" class="table align-middle mb-0 " style="background-color: black; color: white;">
                     <thead class="bg-black text-light">
                         <tr>
                             <th scope="col" id="sort-sl">Sl.No</th>
@@ -123,10 +188,10 @@
                             <th scope="col" id="sort-status">Status</th>
                         </tr>
                     </thead>
-                    <tbody style="background-color: black;">
+                    <tbody style="background-color: black;" id="table-body">
                         {% for s in adjustment1 %}
 
-                        <tr >
+                        <tr>
                             <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{forloop.counter}}</a>
                             </td>
                             <td><a href="{% url 'adjustment_overview' %}" style="color: white;">{{s.Adjusting_date}}</a>
@@ -150,40 +215,58 @@
                         {% endfor %}
                     </tbody>
                 </table>
+
+                <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+
+                <script>
+                    const exportButton = document.getElementById('btn-export');
+
+                    const table = document.getElementById('my-table');
+
+                    exportButton.addEventListener('click', () => {
+                        /* Create worksheet from HTML DOM TABLE */
+                        const wb = XLSX.utils.table_to_book(table, { sheet: 'sheet-1' });
+
+                        /* Export to file (start a download) */
+                        XLSX.writeFile(wb, 'MyTable.xlsx');
+                    });
+
+                </script>
             </div>
 
-            
+
+
             <script>
                 var originalOrder = Array.from(document.querySelectorAll('.table tbody tr'));
-        
+
                 function sortTable(columnId) {
                     var table, rows, switching, i, x, y, shouldSwitch;
                     table = document.querySelector(".table");
                     switching = true;
                     columnIndex = document.getElementById(columnId).cellIndex;
-        
+
                     while (switching) {
                         switching = false;
                         rows = table.rows;
-        
+
                         for (i = 1; i < rows.length - 1; i++) {
                             shouldSwitch = false;
                             x = rows[i].getElementsByTagName("TD")[columnIndex];
                             y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
-        
+
                             if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
                                 shouldSwitch = true;
                                 break;
                             }
                         }
-        
+
                         if (shouldSwitch) {
                             rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                             switching = true;
                         }
                     }
                 }
-        
+
                 function resetTable() {
                     var table = document.querySelector('.table tbody');
                     table.innerHTML = '';
@@ -192,7 +275,7 @@
                     });
                 }
             </script>
-            
+
 
             <script>
                 function filterByStatus(status) {

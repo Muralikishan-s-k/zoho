@@ -1,41 +1,58 @@
-<button class="btn btn-warning text-black">Download File</button>
+<button onclick="importData()" type="button" class="btn btn-outline-warning">
+    <i class="fas fa-sign-in-alt text-warning"></i> Import
+</button>
 
-<li>
-    {% if adjustments.id %}
-    <form action="{% url 'attach' adjustments.id  %}" id="fileUploadForm"
-        enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        <input type="file" name="fileattach" multiple id="fileInput" accept="image/*,application/pdf,.doc,.docx,.t">
-        <button type="submit" class="btn btn-warning text-black">Attach File</button>
-    </form>
-    {% endif %}
-</li>
+<script>
+    function importData() {
+        var input = document.createElement('input');
+        input.type = 'file';
 
-path('attach/<int:pk>',views.attach,name='attach')
+        input.onchange = function (e) {
+            var file = e.target.files[0];
+            if (!file) return;
 
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, {
+                    type: 'array'
+                });
+                var sheetName = workbook.SheetNames[0];
+                var sheet = workbook.Sheets[sheetName];
+                var jsonData = XLSX.utils.sheet_to_json(sheet, {
+                    header: 1
+                });
 
-def attach(request,pk):
-    if 'login_id' in request.session:
-        log_id = request.session['login_id']
-        if 'login_id' not in request.session:
-            return redirect('/')
-        log_details = LoginDetails.objects.get(id=log_id)
-        if log_details.user_type == 'Company':            
-            if request.method == 'POST':
-                adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
-                attach = adjustment2.inventory_adjustment
-                file = request.POST.get('fileattach')
-                attach.Attach_file = file
-                attach.save()
-                # Return the newly added comment in the response
-                return redirect('adjustment_overview')
-            return render(request, "zohomodules/stock_adjustment/adjustment_overview.html")
-    return JsonResponse({'error': 'Invalid request'})
+                var tableBody = document.getElementById("table-body");
 
+                // Populate table with imported data
+                for (var i = 0; i < jsonData.length; i++) {
+                    var row = jsonData[i];
+                    var tr = document.createElement("tr");
+                    for (var j = 0; j < row.length; j++) {
+                        var td = document.createElement("td");
+                        td.textContent = row[j];
+                        tr.appendChild(td);
+                    }
+                    tableBody.appendChild(tr);
+                }
+            };
 
+            reader.readAsArrayBuffer(file);
+        };
 
-    if len(request.FILES)!=0:
-    if len(prdcts.image)>0:
-        os.remove(prdcts.image.path)
-    prdcts.image=request.FILES.get('file')    
-prdcts.save()    
+        input.click();
+    }
+</script>
+    
+    
+    <!-- <script>
+        function printContent() {
+            var printWindow = window.open('', '', 'width=600,height=600');
+            printWindow.document.write('<html><head><title>Print</title></head><body>');
+            printWindow.document.write(document.getElementById('printableContent').innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>     -->
