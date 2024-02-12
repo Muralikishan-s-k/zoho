@@ -1,65 +1,103 @@
-<!-- Button trigger modal -->
-
-<div class="col-md-1 text-center">
-  <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#emailModal">
-    <i class="fas fa-envelope text-warning"></i>
-  </button>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="emailModalLabel">Send Email</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="recipientEmail">Recipient's Email</label>
-          <input type="email" class="form-control" id="recipientEmail" placeholder="Enter email">
-        </div>
-        <div class="form-group">
-          <label for="emailSubject">Subject</label>
-          <input type="text" class="form-control" id="emailSubject" placeholder="Enter subject">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="sendEmail()">Send</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <script>
-  const myModal = document.getElementById('exampleModal');
-  const myInput = document.getElementById('myInput');
+  $(document).ready(function () {
 
-  myModal.addEventListener('shown.bs.modal', () => {
-    myInput.focus();
-  });
+
+    // Function to update quantity adjusted
+    function updateQuantityAdjusted(row) {
+      var currentValue = parseInt(row.find('.quantity-available input').val());
+      var changedValue = parseInt(row.find('changedValue').val());
+      var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
+      row.find('adjustedValue').val(adjustedValue);
+    }
+
+   
+
+    // Event listener for dynamically added rows
+    $('tbody').on('change', '.item-dropdown', function () {
+      var selectedOption = $(this).find(':selected');
+      var itemId = selectedOption.val();
+      var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
+
+      $.ajax({
+        type: "GET",
+        url: "{% url 'get_item_price' %}",
+        data: { id: itemId },
+      }).done(function (response) {
+        // Update the quantity-available input field with the current stock
+        quantityAvailableField.val(response.price);
+      });
+    });
+
+   
+
+    // Add Row Function
+    $(".add-row").click(function () {
+      // Get the index of the last row and add 1 to it
+      var lastIndex = parseInt($('tbody tr:last .index').text());
+      var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
+      var newRow = `<tr>
+          <td class="index">${newIndex}</td>
+          <td class="item-details">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <div class="dropdown">
+                                                            <select class="form-control item-dropdown select2"
+                                                                name="item2" style="background-color: white;"
+                                                                id="itemDropdown">
+                                                                <option value="" selected disabled>Select item</option>
+                                                                {% for c in item %}
+                                                                <option value="{{c.id}}" style="color: black;">
+                                                                    {{c.item_name}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        
+</div>
+<div class="col-md-4">
+  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#itemModal"
+    style="color: white;margin-left: -10px;"><i class="fas fa-plus"></i></button>
+</div>
+</div>
+</td>
+<td class="quantity-available">
+                                                <input type="number" name="stock_value"
+                                                    class="form-control item-quantity" value="" style="color: white;">
+                                            </td>
+                                            <td class="new-quantity">
+                                                <input type="number" name="changedvalue" class="form-control"
+                                                    id="changedValue" 
+                                                    style="color: white;">
+                                            </td>
+                                            <td class="quantity-adjusted">
+                                                <input type="number" name="adjustedvalue" class="form-control"
+                                                    id="adjustedValue" style="color: white;">
+                                            </td>
+                                            <td>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-danger remove-row"><i
+                                                            class="fas fa-minus"></i></button>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-success add-row"><i
+                                                            class="fas fa-plus"></i></button>
+                                                </div>
+                                            </td>
+</tr>`;
+$("tbody").append(newRow);
+$('.select2').select2(); // Initialize select2 for the newly added row
+});
+
+// Remove Row Function
+$("tbody").on("click", ".remove-row", function () {
+$(this).closest("tr").remove();
+});
+
+// Update quantity adjusted when input changes
+$("tbody").on("input", ".changedvalue input", function () {
+var row = $(this).closest('tr');
+updateAdjustedValue(row);
+});
+
+
+});
 </script>

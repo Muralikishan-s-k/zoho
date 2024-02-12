@@ -172,8 +172,9 @@
                                                 <div class="row">
                                                     <div class="col-md-8">
                                                         <div class="dropdown">
-                                                            <select class="form-control item-dropdown select2" name="item2"
-                                                                style="background-color: white;" id="itemDropdown">
+                                                            <select class="form-control item-dropdown select2"
+                                                                name="item2" style="background-color: white;"
+                                                                id="itemDropdown">
                                                                 <option value="" selected disabled>Select item</option>
                                                                 {% for c in item %}
                                                                 <option value="{{c.id}}" style="color: black;">
@@ -211,6 +212,15 @@
                                                 });
                                             </script>
 
+                                            <script>
+                                                function updateAdjustedValue() {
+                                                    var currentValue = parseInt(document.querySelector(".quantity-available input").value);
+                                                    var changedValue = parseInt(document.getElementById("changedValue").value);
+                                                    var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
+                                                    document.getElementById("adjustedValue").value = adjustedValue;
+                                                }
+                                            </script>
+
 
                                             <td class="quantity-available">
                                                 <input type="number" name="stock_value"
@@ -223,54 +233,126 @@
                                             </td>
                                             <td class="quantity-adjusted">
                                                 <input type="number" name="adjustedvalue" class="form-control"
-                                                    id="adjustedValue" style="color: white;" >
+                                                    id="adjustedValue" style="color: white;">
                                             </td>
                                             <td>
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-danger remove-row"><i
                                                             class="fas fa-minus"></i></button>
                                                 </div>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-success add-row"><i
-                                                            class="fas fa-plus"></i></button>
-                                                </div>
+
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <script>
-                                    // Function to add a new row
-                                    $(document).on('click', '.add-row', function () {
-                                        var newRow = $(this).closest('tr').clone(); // Clone the row
-                                        newRow.find('input[type="number"]').val(''); // Clear input values
-                                        newRow.find('select').val(''); // Clear select value
-                                        $(this).closest('tr').after(newRow); // Insert the cloned row after the current row
-                                        newRow.find('.item-dropdown').select2(); // Initialize select2 for the new dropdown
-                                    });
-                                
-                                    // Function to remove the row
-                                    $(document).on('click', '.remove-row', function () {
-                                        $(this).closest('tr').remove(); // Remove the closest row
-                                    });
-                                
-                                    // Function to update quantity adjusted
-                                    function updateQuantityAdjusted() {
-                                        // Implement your logic to update quantity adjusted here
-                                    }
-                                </script>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-success add-row"><i
+                                            class="fas fa-plus"></i></button>
+                                </div>
 
 
-                                <script>
-                                    function updateAdjustedValue() {
-                                        var currentValue = parseInt(document.querySelector(".quantity-available input").value);
-                                        var changedValue = parseInt(document.getElementById("changedValue").value);
-                                        var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
-                                        document.getElementById("adjustedValue").value = adjustedValue;
-                                    }
-                                </script>
+
+
                             </div>
                         </div>
                     </div>
+
+
+
+                    <script>
+                        $(document).ready(function () {
+
+                            $('tbody').on('input', '.item-quantity, .new-quantity input', function () {
+                                updateAdjustedValue($(this).closest('tr'));
+                            });
+
+                            function updateAdjustedValue(row) {
+                                var currentValue = parseInt(row.find(".item-quantity").val());
+                                var changedValue = parseInt(row.find(".new-quantity input").val());
+                                var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
+                                row.find(".quantity-adjusted input").val(adjustedValue);
+                            }
+
+                            $('tbody').on('change', '.item-dropdown', function () {
+                                var selectedOption = $(this).find(':selected');
+                                var itemId = selectedOption.val();
+                                var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: "{% url 'get_item_price' %}",
+                                    data: { id: itemId },
+                                }).done(function (response) {
+                                    // Update the quantity-available input field with the current stock
+                                    quantityAvailableField.val(response.price);
+                                });
+                            });
+
+                            // Function to add a new row
+                            $('.add-row').click(function () {
+                                var lastIndex = parseInt($('tbody tr:last .index').text());
+                                var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
+                                var newRow = `<tr>
+                                <td class="index">${newIndex}</td>
+                <td class="item-details">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="dropdown">
+                                <select class="form-control item-dropdown select2"
+                                    name="item2" style="background-color: white;"
+                                    id="itemDropdown">
+                                    <option value="" selected disabled>Select item</option>
+                                    {% for c in item %}
+                                    <option value="{{c.id}}" style="color: black;">
+                                        {{c.item_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-warning"
+                                data-bs-toggle="modal" data-bs-target="#itemModal"
+                                style="color: white;margin-left: -10px;"><i
+                                    class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </td>
+                <td class="quantity-available">
+                    <input type="number" name="stock_value"
+                        class="form-control item-quantity" value="" style="color: white;">
+                </td>
+                <td class="new-quantity">
+                    <input type="number" name="changedvalue" class="form-control"
+                        id="changedValue" oninput="updateAdjustedValue()"
+                        style="color: white;">
+                </td>
+                <td class="quantity-adjusted">
+                    <input type="number" name="adjustedvalue" class="form-control"
+                        id="adjustedValue" style="color: white;">
+                </td>
+                <td>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger remove-row"><i
+                                class="fas fa-minus"></i></button>
+                    </div>
+                    
+                </td>
+            </tr>
+        `;
+                                $('tbody').append(newRow);
+                            });
+
+                            // Function to remove a row
+                            $('tbody').on('click', '.remove-row', function () {
+                                $(this).closest('tr').remove();
+                            });
+                        });
+
+                    </script>
+
+
+
+
                 </div>
 
 
@@ -301,8 +383,8 @@
             </form>
 
             <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" >
-                    <div class="modal-content bg-dark" >
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5 text-light" id="exampleModalLabel">Add
                                 Item:</h1>
@@ -316,7 +398,8 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-outline-warning" data-bs-dismiss="modal">Add Item</button>
+                                <button type="submit" class="btn btn-outline-warning" data-bs-dismiss="modal">Add
+                                    Item</button>
 
                             </div>
                         </form>
@@ -333,7 +416,7 @@
                         var formData = new FormData(this);
 
                         $.ajax({
-                            url: "{% url 'itemadd1' %}",
+                            url: "{% url 'itemadd' %}",
                             type: 'POST',
                             data: formData,
                             processData: false,
@@ -362,8 +445,12 @@
                     });
                 });
             </script>
+
+
+
         </div>
     </div>
 </div>
+
 
 {% endblock %}

@@ -170,7 +170,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Rows will be dynamically added here -->
+
                                         <tr>
 
                                             <td class="index">1</td>
@@ -201,28 +201,6 @@
                                                 </div>
                                             </td>
 
-
-
-
-
-                                            <script>
-                                                $('.item-dropdown').on('change', function () {
-                                                    var selectedOption = $(this).find(':selected');
-                                                    var itemId = selectedOption.val();
-                                                    var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
-
-                                                    $.ajax({
-                                                        type: "GET",
-                                                        url: "{% url 'get_item_stock' %}",
-                                                        data: { id: itemId },
-                                                    }).done(function (response) {
-                                                        // Update the quantity-available input field with the current stock
-                                                        quantityAvailableField.val(response.stock);
-                                                    });
-                                                });
-                                            </script>
-
-
                                             <td class="quantity-available">
                                                 <input type="number" name="current_stock"
                                                     class="form-control item-quantity" value="" style="color: white;">
@@ -234,46 +212,143 @@
                                             </td>
                                             <td class="quantity-adjusted">
                                                 <input type="number" name="quantity-adjusted" class="form-control"
-                                                    id="quantityAdjusted" style="color: white;" >
+                                                    id="quantityAdjusted" style="color: white;">
                                             </td>
                                             <td>
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-danger remove-row"><i
                                                             class="fas fa-minus"></i></button>
                                                 </div>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-success add-row"><i
-                                                            class="fas fa-plus"></i></button>
-                                                </div>
+
                                             </td>
                                         </tr>
                                     </tbody>
-                                </table>
 
+                                </table>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-success add-row"><i
+                                            class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <script>
-                        // Function to add a new row
-                        $(document).on('click', '.add-row', function () {
-                            var newRow = $(this).closest('tr').clone(); // Clone the row
-                            newRow.find('input[type="number"]').val(''); // Clear input values
-                            newRow.find('select').val(''); // Clear select value
-                            $(this).closest('tr').after(newRow); // Insert the cloned row after the current row
-                            newRow.find('.item-dropdown').select2(); // Initialize select2 for the new dropdown
+                        $('.item-dropdown').on('change', function () {
+                            var selectedOption = $(this).find(':selected');
+                            var itemId = selectedOption.val();
+                            var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
+
+                            $.ajax({
+                                type: "GET",
+                                url: "{% url 'get_item_stock' %}",
+                                data: { id: itemId },
+                            }).done(function (response) {
+                                // Update the quantity-available input field with the current stock
+                                quantityAvailableField.val(response.stock);
+                            });
                         });
-                    
-                        // Function to remove the row
-                        $(document).on('click', '.remove-row', function () {
-                            $(this).closest('tr').remove(); // Remove the closest row
-                        });
-                    
-                        // Function to update quantity adjusted
-                        function updateQuantityAdjusted() {
-                            // Implement your logic to update quantity adjusted here
-                        }
                     </script>
+
+                    <script>
+                        $(document).ready(function () {
+
+
+                            // Function to update quantity adjusted
+                            function updateQuantityAdjusted(row) {
+                                var quantityAvailable = parseInt(row.find('.item-quantity').val());
+                                var newQuantity = parseInt(row.find('.new-quantity input').val());
+                                var quantityAdjusted = isNaN(newQuantity) ? 0 : newQuantity - quantityAvailable;
+                                row.find('.quantity-adjusted input').val(quantityAdjusted);
+                            }
+
+
+                            // Event listener for dynamically added rows
+                            $('tbody').on('change', '.item-dropdown', function () {
+                                var selectedOption = $(this).find(':selected');
+                                var itemId = selectedOption.val();
+                                var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: "{% url 'get_item_stock' %}",
+                                    data: { id: itemId },
+                                }).done(function (response) {
+                                    // Update the quantity-available input field with the current stock
+                                    quantityAvailableField.val(response.stock);
+                                });
+                            });
+
+                            // Add Row Function
+                            $(".add-row").click(function () {
+                                // Get the index of the last row and add 1 to it
+                                var lastIndex = parseInt($('tbody tr:last .index').text());
+                                var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
+                                var newRow = `<tr>
+                                <td class="index">${newIndex}</td>
+                                <td class="item-details">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="dropdown">
+                                                <select class="form-control item-dropdown select2"
+                                                    name="item1" style="background-color: white;"
+                                                    id="itemDropdown">
+                                                    <option value="" selected disabled>Select item</option>
+                                                    {% for c in item %}
+                                                    <option value="{{c.id}}" style="color: black;">
+                                                        {{c.item_name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="button" class="btn btn-warning"
+                                                data-bs-toggle="modal" data-bs-target="#itemModal"
+                                                style="color: white;margin-left: -16px;"><i
+                                                    class="fas fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="quantity-available">
+                                    <input type="number" name="current_stock"
+                                        class="form-control item-quantity" value="" style="color: white;">
+                                </td>
+                                <td class="new-quantity">
+                                    <input type="number" name="new-quantity" class="form-control"
+                                        style="color: white;">
+                                </td>
+                                <td class="quantity-adjusted">
+                                    <input type="number" name="quantity-adjusted" class="form-control"
+                                        style="color: white;">
+                                </td>
+                                <td>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-danger remove-row"><i
+                                                class="fas fa-minus"></i></button>
+                                    </div>
+                                </td>
+                            </tr>`;
+                                $("tbody").append(newRow);
+                                $('.select2').select2(); // Initialize select2 for the newly added row
+                            });
+
+                            // Remove Row Function
+                            $("tbody").on("click", ".remove-row", function () {
+                                $(this).closest("tr").remove();
+                            });
+
+                            // Update quantity adjusted when input changes
+                            $("tbody").on("input", ".new-quantity input", function () {
+                                var row = $(this).closest('tr');
+                                updateQuantityAdjusted(row);
+                            });
+
+                            
+                        });
+                    </script>
+
+
+
 
 
 
@@ -383,5 +458,6 @@
         </div>
     </div>
 </div>
+
 
 {% endblock %}
