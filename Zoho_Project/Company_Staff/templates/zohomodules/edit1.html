@@ -1,58 +1,98 @@
-<button onclick="importData()" type="button" class="btn btn-outline-warning">
-    <i class="fas fa-sign-in-alt text-warning"></i> Import
-</button>
+def value(request):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company':            
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            if request.method =='POST':
+                mode1=request.POST.get('mode2')
+                ref1=generate_unique_reference_number()
+                date1=request.POST.get('date2')
+                account1=request.POST.get('account2')
+                reason1=request.POST.get('reason2')
+                desc1=request.POST.get('desc2')
+                
+                for i in range(1, len(request.POST.getlist('item2')) + 1):
+                    item = request.POST.getlist('item2')[i - 1]
+                    item1=Items.objects.get(id=item) 
+                    currentstock = request.POST.getlist('stock_value')[i - 1]
+                    newquantity = request.POST.getlist('changedvalue')[i - 1]
+                    quantityadjusted = request.POST.getlist('adjustedvalue')[i - 1]
+                file1 = request.FILES.get('file2')
+                if 'draft' in request.POST:
+                    status = 'draft'
+                else:
+                    status = 'adjusted'
+                adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
+                                             Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
+                                             login_details=log_details)
+                adjustment2=Inventory_adjustment_items(items=item1,Current_value=currentstock,Changed_value=newquantity,
+                                                   Adjusted_value=quantityadjusted,company=dash_details,
+                                                   login_details=log_details,inventory_adjustment=adjustment1)
+                adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
+                                                   login_details=log_details,inventory_adjustment=adjustment1)
+                adjustment1.save()
+                adjustment2.save()   
+                adjustment3.save()            
+                return redirect('items_list')
+            return render(request,"zohomodules/stock_adjustment/create_adjustment_itemvalue.html")
+        return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
 
-<script>
-    function importData() {
-        var input = document.createElement('input');
-        input.type = 'file';
 
-        input.onchange = function (e) {
-            var file = e.target.files[0];
-            if (!file) return;
 
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                var data = new Uint8Array(e.target.result);
-                var workbook = XLSX.read(data, {
-                    type: 'array'
-                });
-                var sheetName = workbook.SheetNames[0];
-                var sheet = workbook.Sheets[sheetName];
-                var jsonData = XLSX.utils.sheet_to_json(sheet, {
-                    header: 1
-                });
 
-                var tableBody = document.getElementById("table-body");
-
-                // Populate table with imported data
-                for (var i = 0; i < jsonData.length; i++) {
-                    var row = jsonData[i];
-                    var tr = document.createElement("tr");
-                    for (var j = 0; j < row.length; j++) {
-                        var td = document.createElement("td");
-                        td.textContent = row[j];
-                        tr.appendChild(td);
-                    }
-                    tableBody.appendChild(tr);
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
-        };
-
-        input.click();
-    }
-</script>
-    
-    
-    <!-- <script>
-        function printContent() {
-            var printWindow = window.open('', '', 'width=600,height=600');
-            printWindow.document.write('<html><head><title>Print</title></head><body>');
-            printWindow.document.write(document.getElementById('printableContent').innerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.print();
-        }
-    </script>     -->
+        def value(request):
+        if 'login_id' in request.session:
+           log_id = request.session['login_id']
+           if 'login_id' not in request.session:
+               return redirect('/')
+           log_details= LoginDetails.objects.get(id=log_id)        
+           if log_details.user_type == 'Company':            
+               dash_details = CompanyDetails.objects.get(login_details=log_details)
+               if request.method =='POST':
+                   mode1=request.POST.get('mode2')
+                   ref1=generate_unique_reference_number()
+                   date1=request.POST.get('date2')
+                   account1=request.POST.get('account2')
+                   reason1=request.POST.get('reason2')
+                   desc1=request.POST.get('desc2')
+                   
+                   items  = tuple(request.POST.getlist("item2[]"))
+                                
+                   
+                   currentstock = tuple(request.POST.getlist("stock_value[]"))
+                   
+                   newquantity = tuple(request.POST.getlist("changedvalue[]"))
+                   
+                   quantityadjusted = tuple(request.POST.getlist("adjustedvalue[]"))
+                   file1 = request.FILES.get('file2')
+                   if 'draft' in request.POST:
+                       status = 'draft'
+                   else:
+                       status = 'adjusted'
+                   adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
+                                                Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
+                                                login_details=log_details)
+                   for item_id, stock_value, changed_value, adjusted_value in zip(items, currentstock, newquantity, quantityadjusted):
+                       item = Items.objects.get(id=item_id)
+                       adjustment2 = Inventory_adjustment_items.objects.create(
+                           items=item,
+                           Current_value=stock_value,
+                           Changed_value=changed_value,
+                           Adjusted_value=adjusted_value,
+                           company=dash_details,
+                           login_details=log_details,
+                           inventory_adjustment=adjustment1
+                           
+                       )
+                       adjustment2.save()    
+                   adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
+                                                      login_details=log_details,inventory_adjustment=adjustment1)
+                   adjustment1.save()
+                      
+                   adjustment3.save()            
+                   return redirect('items_list')
+               return render(request,"zohomodules/stock_adjustment/create_adjustment_itemvalue.html")
+           return render(request,'zohomodules/stock_adjustment/create_adjustment.html')        
