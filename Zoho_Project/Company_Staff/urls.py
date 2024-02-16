@@ -50,7 +50,8 @@ urlpatterns = [
     path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb'),
     path('itemadd',views.itemadd,name='itemadd'),
     path('itemadd1',views.itemadd1,name='itemadd1'),
-    path('attach/<int:pk>',views.attach,name='attach')
+    path('attach/<int:pk>',views.attach,name='attach'),
+    path('email/<int:pk>',views.email,name='email'),
     
     
   

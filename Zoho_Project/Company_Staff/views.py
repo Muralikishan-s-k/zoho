@@ -13,6 +13,7 @@ from django.db.models import Max
 from docx import Document
 from docx.shared import Pt
 import os
+from django.core.mail import send_mail
 
 
 # Create your views here.
@@ -629,11 +630,10 @@ def quantity(request):
                 account1=request.POST.get('account1')
                 reason1=request.POST.get('reason1')
                 desc1=request.POST.get('desc1')
-                item=request.POST.get('item1')
-                item1=Items.objects.get(id=item)                
-                currentstock=request.POST.get('current_stock')
-                newquantity=request.POST.get('new-quantity')
-                quantityadjusted=request.POST.get('quantity-adjusted')
+                items=tuple(request.POST.getlist('item1'))                              
+                currentstock=tuple(request.POST.getlist('current_stock'))                
+                newquantity=tuple(request.POST.getlist('new-quantity'))
+                quantityadjusted=tuple(request.POST.getlist('quantity-adjusted'))
                 file1 = request.FILES.get('file1')
                 
                 if 'draft' in request.POST:
@@ -643,15 +643,24 @@ def quantity(request):
                 adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
                                              Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
                                              login_details=log_details)
-                adjustment2=Inventory_adjustment_items(items=item1,Quantity_available=currentstock,New_quantity_inhand=newquantity,
-                                                   Quantity_adjusted=quantityadjusted,company=dash_details,
-                                                   login_details=log_details,inventory_adjustment=adjustment1)
+                adjustment1.save()
+                for item_id, stock_value, changed_value, adjusted_value in zip(items, currentstock, newquantity, quantityadjusted):
+                       item = Items.objects.get(id=item_id)
+                       adjustment2 = Inventory_adjustment_items.objects.create(
+                           items=item,
+                           Quantity_available=stock_value,
+                           New_quantity_inhand=changed_value,
+                           Quantity_adjusted=adjusted_value,
+                           company=dash_details,
+                           login_details=log_details,
+                           inventory_adjustment=adjustment1
+                           
+                       )
+                       adjustment2.save()
+                
                 adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
                                                    login_details=log_details,inventory_adjustment=adjustment1)
-                
-                
-                adjustment1.save()
-                
+                                                             
                 adjustment2.save()
                 adjustment3.save()               
                 return redirect('items_list')
@@ -671,20 +680,16 @@ def value(request):
                dash_details = CompanyDetails.objects.get(login_details=log_details)
                if request.method =='POST':
                    mode1=request.POST.get('mode2')
+                   print(mode1)
                    ref1=generate_unique_reference_number()
                    date1=request.POST.get('date2')
                    account1=request.POST.get('account2')
                    reason1=request.POST.get('reason2')
-                   desc1=request.POST.get('desc2')
-                   
-                   items  = tuple(request.POST.getlist("item2[]"))
-                                
-                   
-                   currentstock = tuple(request.POST.getlist("stock_value[]"))
-                   
-                   newquantity = tuple(request.POST.getlist("changedvalue[]"))
-                   
-                   quantityadjusted = tuple(request.POST.getlist("adjustedvalue[]"))
+                   desc1=request.POST.get('desc2')                   
+                   items  = tuple(request.POST.getlist("item2"))                                                   
+                   currentstock = tuple(request.POST.getlist("stock_value"))                                    
+                   newquantity = tuple(request.POST.getlist("changedvalue"))                   
+                   quantityadjusted = tuple(request.POST.getlist("adjustedvalue"))
                    file1 = request.FILES.get('file2')
                    if 'draft' in request.POST:
                        status = 'draft'
@@ -693,6 +698,7 @@ def value(request):
                    adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
                                                 Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
                                                 login_details=log_details)
+                   adjustment1.save()
                    for item_id, stock_value, changed_value, adjusted_value in zip(items, currentstock, newquantity, quantityadjusted):
                        item = Items.objects.get(id=item_id)
                        adjustment2 = Inventory_adjustment_items.objects.create(
@@ -708,7 +714,7 @@ def value(request):
                        adjustment2.save()    
                    adjustment3=Inventory_adjustment_history(company=dash_details,Action='created',
                                                       login_details=log_details,inventory_adjustment=adjustment1)
-                   adjustment1.save()
+                   
                       
                    adjustment3.save()            
                    return redirect('items_list')
@@ -979,4 +985,42 @@ def attach(request, pk):
         else:
             return JsonResponse({'error': 'Unauthorized access'})
     else:
-        return JsonResponse({'error': 'User not logged in'})                   
+        return JsonResponse({'error': 'User not logged in'})    
+
+
+def email(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                context = {
+                        'details': dash_details,
+                        'item':item,
+                        'allmodules': allmodules,
+                }
+                return render(request,'zohomodules/items/items_list.html',context)
+        if log_details.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')            
+            if request.method == 'POST':
+        # Retrieve form data
+                subject = request.POST.get('subject')
+                email = request.POST.get('email')
+                adjustment2 = Inventory_adjustment_items.objects.get(id=pk) 
+                message = f'Mode of adjustment: {adjustment2.inventory_adjustment.Mode_of_adjustment}\nReference number: {adjustment2.inventory_adjustment.Reference_number}\nAdjusting date: {adjustment2.inventory_adjustment.Adjusting_date}\nAccount: {adjustment2.inventory_adjustment.Account}\nReason: {adjustment2.inventory_adjustment.Reason}\n'
+        
+        # Send email
+                send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+
+        # Return JSON response
+                return JsonResponse({'message': 'Email sent successfully!'})
+            else:
+        # Handle GET request if needed
+                pass
+        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')                   

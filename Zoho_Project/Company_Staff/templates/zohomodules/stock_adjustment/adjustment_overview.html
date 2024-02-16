@@ -117,7 +117,7 @@
                 </div>
             </div>
             <div class="col-md-1 text-center">
-                <button onclick="printContent()" class="btn btn-outline-warning btn-sm" ><i
+                <button onclick="printContent()" class="btn btn-outline-warning btn-sm"><i
                         class="fas fa-print text-warning"></i> </button>
             </div>
             <div class="col-md-1 text-center">
@@ -143,30 +143,64 @@
             <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
-                    <div class="modal-content">
+                    <div class="modal-content bg-dark">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="emailModalLabel">Send Email</h5>
+                            <h5 class="modal-title text-light" id="emailModalLabel">Send Email</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="recipientEmail">Recipient's Email</label>
-                                <input type="email" class="form-control" id="recipientEmail" placeholder="Enter email">
+                        {% if adjustments.id %}
+                        <form id="commentForm" method="post" action="{% url 'email' adjustments.id %}">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="recipientEmail">Recipient's Email</label>
+                                    <input type="email" name="email" class="form-control text-light" id="recipientEmail"
+                                        placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="emailSubject">Subject</label>
+                                    <input type="text" name="subject" class="form-control text-light" id="emailSubject"
+                                        placeholder="Enter subject">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="emailSubject">Subject</label>
-                                <input type="text" class="form-control" id="emailSubject" placeholder="Enter subject">
+                            <div class="modal-footer">
+                                
+                                <button type="button" id="sendEmailBtn" class="btn btn-outline-warning" data-bs-dismiss="modal">Send</button>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" onclick="sendEmail()">Send</button>
-                        </div>
+                        </form>
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $(document).ready(function () {
+                                $('#sendEmailBtn').click(function (e) {
+                                    e.preventDefault(); // Prevent the default form submission
+            
+                                    // Collect form data
+                                    var formData = $('#commentForm').serialize();
+            
+                                    // Send AJAX request
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '{% url "email" adjustments.id %}',
+                                        data: formData,
+                                        
+                                        error: function (xhr, status, error) {
+                                            // Handle error
+                                            console.error(xhr.responseText);
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
+
+           
+
 
             <script>
                 function sendEmail() {
@@ -378,7 +412,7 @@
                         value="{{ adjustments.inventory_adjustment.Reason }}">
 
                 </div>
-                
+
             </div>
         </div>
 
