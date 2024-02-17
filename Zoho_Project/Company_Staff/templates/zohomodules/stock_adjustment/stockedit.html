@@ -2,6 +2,18 @@
 {% load static %}
 
 {% block content %}
+<style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        // Set today's date in the date field
+        var today = new Date().toISOString().split('T')[0];
+        $("#dateInput").val(today);
+    });
+</script>
 <div class="body-wrapper">
     <div class="container-fluid">
         <nav aria-label="breadcrumb" class="col-12">
@@ -62,7 +74,8 @@
                         <label for="reasonDropdown"
                             style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
                         <div class="input-group">
-                            <select class="form-control" name="reason" id="reasonDropdown" style="width: 100px; color: white;">
+                            <select class="form-control" name="reason" id="reasonDropdown"
+                                style="width: 100px; color: white;">
                                 <option value="{{adjustment2.inventory_adjustment.Reason}}" style="color:black ;">
                                     {{adjustment2.inventory_adjustment.Reason}}</option>
                                 <option value="High Demand Goods" style="color:black ;">High Demand Goods</option>
@@ -97,7 +110,8 @@
                     <div class="col-md-6" style="color: white;">
                         <label for="accountsDropdown"
                             style="color: white; font-weight: bold; margin-left: 20px;">Accounts</label>
-                        <select class="form-control" name="account" id="accountsDropdown" style="width: 150px; color: white;">
+                        <select class="form-control" name="account" id="accountsDropdown"
+                            style="width: 150px; color: white;">
                             <option value="{{adjustment2.inventory_adjustment.Account}}" style="color:black ;">
                                 {{adjustment2.inventory_adjustment.Account}}</option>
                             {% for c in account %}
@@ -118,8 +132,13 @@
                         <input type="text" class="form-control" id="field1" name="description" style="color: white;"
                             value="{{adjustment2.inventory_adjustment.Description}}">
                     </div>
+                    <div class="col-md-6" style="color: white;">
+                        <label for="dateInput">Date:</label>
+                        <input type="date" class="form-control" name="date" id="dateInput"
+                            style="width: 150px; color: white;">
+                    </div>
 
-                    
+
                 </div>
 
                 <!-- Repeat the above pattern for the next 10 fields -->
@@ -127,8 +146,8 @@
                     <!-- Field 3 -->
                     <div class="col-md-4" style="color: white;">
                         <label for="field3">Quantity available:</label>
-                        <input type="number" class="form-control" id="field3" name="quantity-available" style="color: white;"
-                            value="{{adjustment2.items.current_stock}}">
+                        <input type="number" class="form-control" id="field3" name="quantity-available"
+                            style="color: white;" value="{{adjustment2.items.current_stock}}">
                     </div>
 
                     <!-- Field 4 -->
@@ -158,8 +177,8 @@
                     <!-- Field 3 -->
                     <div class="col-md-4" style="color: white;">
                         <label for="field3">Current value:</label>
-                        <input type="number" class="form-control" id="currentValue" name="currentvalue" style="color: white;"
-                            value="{{stock_value}}">
+                        <input type="number" class="form-control" id="currentValue" name="currentvalue"
+                            style="color: white;" value="{{stock_value}}">
                     </div>
 
                     <!-- Field 4 -->
@@ -194,7 +213,8 @@
                         <label for="reasonDropdown"
                             style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
                         <div class="input-group">
-                            <select class="form-control" id="reasonDropdown" name="status" style="width: 50px; color: white;">
+                            <select class="form-control" id="reasonDropdown" name="status"
+                                style="width: 50px; color: white;">
                                 <option value="{{adjustment2.inventory_adjustment.Status}}" selected>
                                     {{adjustment2.inventory_adjustment.Status}}
                                 </option>
@@ -206,7 +226,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="col-md-4" style="color: white;margin-top:20px;">
                         <button type="submit" class="btn btn-outline-warning mb-2 mb-md-0">

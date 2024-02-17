@@ -667,7 +667,10 @@ def quantity(request):
             return render(request,"zohomodules/stock_adjustment/create_adjustment_itemquantity.html")
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
      
-
+def generate_reference_number():
+    latest_id = Inventory_adjustment.objects.all().aggregate(Max('id'))['id__max']
+    next_id = latest_id + 1 if latest_id is not None else 1
+    return str(next_id)
      
 
 def value(request):
@@ -681,7 +684,7 @@ def value(request):
                if request.method =='POST':
                    mode1=request.POST.get('mode2')
                    print(mode1)
-                   ref1=generate_unique_reference_number()
+                   ref1=generate_reference_number()
                    date1=request.POST.get('date2')
                    account1=request.POST.get('account2')
                    reason1=request.POST.get('reason2')
@@ -901,6 +904,7 @@ def stockeditdb(request,pk):
                 edit.Changed_value=request.POST.get('changedvalue')
                 edit.Adjusted_value=request.POST.get('adjustedvalue')
                 edit2.Status=request.POST.get('status')
+                edit2.Adjusting_date=request.POST.get('date')
                 edit3.Action='edited'                                                          
                 edit.save()
                 edit2.save()

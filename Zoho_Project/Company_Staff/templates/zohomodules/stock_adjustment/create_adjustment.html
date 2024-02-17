@@ -10,7 +10,7 @@
     integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy7BikI5XDN+tdHsEDFou1fuqtqpi7ci1N"
     crossorigin="anonymous"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
 
 <style>
     .btn-warning {
@@ -37,6 +37,7 @@
 </script>
 
 <div class="body-wrapper">
+    
     <div class="container-fluid">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -105,9 +106,6 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <script>
-                        $('.select2').select2();
-                    </script>
 
                     <div class="col-md-3">
                         <label for="reasonDropdown"
@@ -188,9 +186,7 @@
                                                                 {% endfor %}
                                                             </select>
                                                         </div>
-                                                        <script>
-                                                            $('.select2').select2();
-                                                        </script>
+
                                                     </div>
                                                     <div class="col-md-4">
                                                         <button type="button" class="btn btn-warning"
@@ -252,6 +248,14 @@
 
                     <script>
                         $(document).ready(function () {
+                            $('.select2').select2();
+                        })
+                      
+                    </script>
+
+                    <script>
+
+                        $(document).ready(function () {
 
 
                             // Function to update quantity adjusted
@@ -280,7 +284,24 @@
                             });
 
                             // Add Row Function
-                            $(".add-row").click(function () {
+                           
+
+                           
+
+                            // Remove Row Function
+                            $("tbody").on("click", ".remove-row", function () {
+                                $(this).closest("tr").remove();
+                            });
+
+                            // Update quantity adjusted when input changes
+                            $("tbody").on("input", ".new-quantity input", function () {
+                                var row = $(this).closest('tr');
+                                updateQuantityAdjusted(row);
+                            });
+
+
+                        });
+                        $(".add-row").click(function () {
                                 // Get the index of the last row and add 1 to it
                                 var lastIndex = parseInt($('tbody tr:last .index').text());
                                 var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
@@ -290,9 +311,9 @@
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="dropdown">
-                                                <select class="form-control item-dropdown select2"
+                                                <select  class="form-control item-dropdown select3"
                                                     name="item1" style="background-color: white;"
-                                                    id="itemDropdown">
+                                                    id="itemDropdown${newIndex}">
                                                     <option value="" selected disabled>Select item</option>
                                                     {% for c in item %}
                                                     <option value="{{c.id}}" style="color: black;">
@@ -329,22 +350,14 @@
                                 </td>
                             </tr>`;
                                 $("tbody").append(newRow);
-                                $('.select2').select2(); // Initialize select2 for the newly added row
-                            });
+                                
+                                $(`#itemDropdown${newIndex}`).select2();
 
-                            // Remove Row Function
-                            $("tbody").on("click", ".remove-row", function () {
-                                $(this).closest("tr").remove();
+                              
+                                  // Initialize select2 for the newly added row
                             });
+                       
 
-                            // Update quantity adjusted when input changes
-                            $("tbody").on("input", ".new-quantity input", function () {
-                                var row = $(this).closest('tr');
-                                updateQuantityAdjusted(row);
-                            });
-
-                            
-                        });
                     </script>
 
 
@@ -435,13 +448,13 @@
                                 // Handle success response
                                 if (data.success) {
                                     // Append the new item to the dropdown
-                                    $('#itemDropdown').append($('<option>', {
+                                    $('.item-dropdown').append($('<option>', {
                                         value: data.item_id,
                                         text: data.item_name,
                                         style: 'color: black;'
                                     }));
                                     // Optional: Select the newly added item
-                                    $('#itemDropdown').val(data.item_id);
+                                    $('.item-dropdown').val(data.item_id);
                                 } else {
                                     alert("Error adding item");
                                 }
@@ -457,6 +470,7 @@
             </script>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
 </div>
 
 
