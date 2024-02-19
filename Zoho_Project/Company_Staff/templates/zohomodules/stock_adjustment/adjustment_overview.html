@@ -23,11 +23,39 @@
         .container.mt-3.p-4 {
 
             width: 300px;
+            
 
         }
 
-        .col-md-1.text-center {
-            flex-direction: row;
+        .print {
+            margin-left: -200px;
+        }
+        .edit {
+            margin-left: -130px;
+            margin-top: -50px;
+        }
+        .whatsapp {
+            margin-left: -60px;
+            margin-top: -90px;
+        }
+        .email {
+            margin-left: 10px;
+            margin-top: -132px;
+        }
+        .delete {
+            margin-left: 80px;
+            margin-top: -174px;
+        }
+        .comment {
+            margin-left: 150px;
+            margin-top: -215px;
+        }
+        .history {
+            margin-left: 220px;
+            margin-top: -256px;
+        }
+        .values{
+            margin-top: -100px;
         }
 
 
@@ -117,25 +145,25 @@
                 </div>
             </div>
             <div class="col-md-1 text-center">
-                <button onclick="printContent()" class="btn btn-outline-warning btn-sm"><i
+                <button onclick="printContent()" class="btn btn-outline-warning btn-sm print" title="Print"><i
                         class="fas fa-print text-warning"></i> </button>
             </div>
             <div class="col-md-1 text-center">
                 {% if adjustments.id %}
                 <a href="{% url 'stockedit' adjustments.id %}">
                     {% endif %}
-                    <button type="button" class="btn btn-outline-warning btn-sm"><i
+                    <button type="button" class="btn btn-outline-warning btn-sm edit" title="Edit"><i
                             class="fas fa-pencil-alt text-warning"></i></button>
                 </a>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm" onclick="shareViaWhatsApp()">
+                <button type="button" class="btn btn-outline-warning btn-sm whatsapp" onclick="shareViaWhatsApp()" title="Whatsapp">
                     <i class="fab fa-whatsapp text-warning"></i>
                 </button>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#emailModal">
+                <button type="button" class="btn btn-outline-warning btn-sm email" data-bs-toggle="modal"
+                    data-bs-target="#emailModal" title="Email">
                     <i class="fas fa-envelope text-warning"></i>
                 </button>
             </div>
@@ -228,14 +256,14 @@
                 {% if adjustments.id %}
                 <a href="{% url 'stockdelete' adjustments.id %}">
                     {% endif %}
-                    <button type="button" class="btn btn-outline-warning btn-sm"><i
+                    <button type="button" class="btn btn-outline-warning btn-sm delete" title="Delete"><i
                             class="fas fa-trash text-warning"></i>
                     </button>
                 </a>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#commentModal">
+                <button type="button" class="btn btn-outline-warning btn-sm comment" data-bs-toggle="modal"
+                    data-bs-target="#commentModal" title="Comment">
                     <i class="fas fa-comment text-warning"></i>
                 </button>
             </div>
@@ -322,8 +350,8 @@
             </script>
 
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal">
+                <button type="button" class="btn btn-outline-warning btn-sm history" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" title="history">
                     <i class="fas fa-history text-warning"></i>
                 </button>
             </div>
@@ -376,7 +404,7 @@
         </div>
 
 
-        <div id="printableContent" style="background-color: white;border-radius: 25px;padding: 20px;">
+        <div class="values" id="printableContent" style="background-color: white;border-radius: 25px;padding: 20px;">
             <div class="row" style="margin-left: 40px;">
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Mode of Adjustment:</strong>

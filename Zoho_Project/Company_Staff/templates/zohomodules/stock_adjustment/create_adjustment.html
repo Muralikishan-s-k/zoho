@@ -26,6 +26,14 @@
     input[type="date"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
+    @media screen and (max-width: 768px) {
+        .item-dropdown {
+
+            width: 100px;
+            
+        }
+        
+    }
 </style>
 
 <script>
@@ -49,7 +57,7 @@
 
         <!-- Responsive container for the content -->
         <div class="container mt-3" style="background-color: black;">
-            <h1 style="color: white;" class="text-center">Create Adjustments</h1>
+            <h1 style="color: white;" class="text-center text-warning"><strong>Create Adjustments:</strong></h1>
             <form action="{% url 'quantity'  %}" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
 
