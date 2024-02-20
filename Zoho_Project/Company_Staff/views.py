@@ -975,15 +975,6 @@ def add_comment(request, pk):
         if 'login_id' not in request.session:
             return redirect('/')
         log_details = LoginDetails.objects.get(id=log_id)
-        if log_details.user_type == 'Staff':
-            adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
-            if request.method == 'POST':
-                comment = request.POST.get('commentText')
-                adjustment2.Comment = comment
-                adjustment2.save()
-                # Return the newly added comment in the response
-                return JsonResponse({'newComment': comment})
-            
         if log_details.user_type == 'Company':
             adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
             if request.method == 'POST':
@@ -1218,25 +1209,24 @@ def email(request,pk):
             return redirect('/')
         log_details= LoginDetails.objects.get(id=log_id)
         if log_details.user_type == 'Staff':
-            dash_details = StaffDetails.objects.get(login_details=log_details)
-            item=Items.objects.filter(company=dash_details.company)
-            allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-            if request.method == 'POST':
-            # Retrieve form data
-                subject = request.POST.get('subject')
-                email = request.POST.get('email')
-                adjustment2 = Inventory_adjustment_items.objects.get(id=pk) 
-                message = f'Mode of adjustment: {adjustment2.inventory_adjustment.Mode_of_adjustment}\nReference number: {adjustment2.inventory_adjustment.Reference_number}\nAdjusting date: {adjustment2.inventory_adjustment.Adjusting_date}\nAccount: {adjustment2.inventory_adjustment.Account}\nReason: {adjustment2.inventory_adjustment.Reason}\n'
-            
-            # Send email
-                send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
-
-            # Return JSON response
-                return JsonResponse({'message': 'Email sent successfully!'})
-            else:
-            # Handle GET request if needed
-                pass
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                if request.method == 'POST':
+                # Retrieve form data
+                    subject = request.POST.get('subject')
+                    email = request.POST.get('email')
+                    adjustment2 = Inventory_adjustment_items.objects.get(id=pk) 
+                    message = f'Mode of adjustment: {adjustment2.inventory_adjustment.Mode_of_adjustment}\nReference number: {adjustment2.inventory_adjustment.Reference_number}\nAdjusting date: {adjustment2.inventory_adjustment.Adjusting_date}\nAccount: {adjustment2.inventory_adjustment.Account}\nReason: {adjustment2.inventory_adjustment.Reason}\n'
                 
+                # Send email
+                    send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+
+                # Return JSON response
+                    return JsonResponse({'message': 'Email sent successfully!'})
+                else:
+                # Handle GET request if needed
+                    pass               
         if log_details.user_type == 'Company':
             dash_details = CompanyDetails.objects.get(login_details=log_details)
             item=Items.objects.filter(company=dash_details)

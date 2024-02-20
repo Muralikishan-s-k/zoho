@@ -267,6 +267,8 @@
                     <i class="fas fa-comment text-warning"></i>
                 </button>
             </div>
+
+
             <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
@@ -279,7 +281,6 @@
                         </div>
                         <div class="modal-body">
                             <!-- Display existing comments here -->
-
                             {% if adjustments.id %}
                             <form id="commentForm" method="post" action="{% url 'add_comment' adjustments.id %}">
                                 {% csrf_token %}
@@ -289,11 +290,10 @@
                                     <textarea class="form-control" id="commentText" name="commentText" rows="3"
                                         style="color: white;"></textarea>
                                 </div>
-                                <button type="button" id="addCommentBtn"
+                                <button type="submit" id="addCommentBtn"
                                     class="btn btn-outline-warning btn-sm">Add</button>
                             </form>
                             {% endif %}
-
                             <div class="row" style="margin-top: 20px;">
                                 <!-- Field 3 -->
                                 <div class="col-md-6">
@@ -303,11 +303,8 @@
                                             {{adjustments.Comment}}
                                         </textarea>
                                     </div>
-
                                 </div>
-
                             </div>
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
@@ -315,6 +312,8 @@
                     </div>
                 </div>
             </div>
+
+
 
             <script>
                 $(document).ready(function () {
