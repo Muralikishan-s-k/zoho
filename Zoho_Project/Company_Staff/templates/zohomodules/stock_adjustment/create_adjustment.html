@@ -26,13 +26,30 @@
     input[type="date"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
+
     @media screen and (max-width: 768px) {
         .item-dropdown {
 
             width: 100px;
-            
+
         }
-        
+
+       
+
+        .draft {
+
+            margin-left: 100px;
+            margin-top: -35px;
+
+        }
+
+        .cancel {
+
+            margin-left: 210px;
+            margin-top: -35px;
+
+        }
+
     }
 </style>
 
@@ -45,7 +62,7 @@
 </script>
 
 <div class="body-wrapper">
-    
+
     <div class="container-fluid">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -87,8 +104,9 @@
 
 
                 <!-- Reference Number field -->
-                <div class="mt-3">
-                    <label for="referenceNumberInput" class="text-warning" style="font-weight: bold;">Reference Number</label>
+                <div class="container mt-4">
+                    <label for="referenceNumberInput" class="text-warning" style="font-weight: bold;">Reference
+                        Number</label>
                     <input type="text" name="ref1" class="form-control" id="referenceNumberInput"
                         style="width: 200px; color: white;">
                 </div>
@@ -96,7 +114,7 @@
 
 
                 <!-- Date field -->
-                <div class="mt-3 row">
+                <div class="container mt-4 row">
                     <div class="col-md-3">
                         <label for="dateInput" class="text-warning" style=" font-weight: bold;">Date*</label>
                         <input type="date" class="form-control" name="date1" id="dateInput"
@@ -104,8 +122,9 @@
                     </div>
 
                     <div class="col-md-3">
-                        <label for="accountsDropdown" class="text-warning"
-                            style="font-weight: bold; margin-left: 20px;margin-top: 30px;">Accounts*</label>
+                        <div class="dropdown-heading text-warning">
+                            Accounts*
+                        </div>
                         <select class="form-control select2" name="account1" id="accountsDropdown"
                             style="width: 150px; color: white;">
                             <option value="">Select Category</option>
@@ -151,14 +170,14 @@
 
                 </div>
 
-                <div class="col-md-12 mt-3">
+                <div class="container col-md-12 mt-4">
                     <label for="descriptionBox" class="text-warning" style="font-weight: bold;">Description</label>
-                    <textarea class="form-control" name="desc1" id="descriptionBox" style="width: 70%; color: white;"
+                    <textarea class="form-control" name="desc1" id="descriptionBox" style="width: 40%; color: white;"
                         rows="4"></textarea>
                 </div>
 
 
-                <div class="container mt-3" style="background-color: black;">
+                <div class="container mt-4" style="background-color: black;">
                     <div class="row">
                         <div class="col-md-10">
                             <!-- Make the table responsive -->
@@ -258,7 +277,7 @@
                         $(document).ready(function () {
                             $('.select2').select2();
                         })
-                      
+
                     </script>
 
                     <script>
@@ -292,9 +311,9 @@
                             });
 
                             // Add Row Function
-                           
 
-                           
+
+
 
                             // Remove Row Function
                             $("tbody").on("click", ".remove-row", function () {
@@ -310,10 +329,10 @@
 
                         });
                         $(".add-row").click(function () {
-                                // Get the index of the last row and add 1 to it
-                                var lastIndex = parseInt($('tbody tr:last .index').text());
-                                var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
-                                var newRow = `<tr>
+                            // Get the index of the last row and add 1 to it
+                            var lastIndex = parseInt($('tbody tr:last .index').text());
+                            var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
+                            var newRow = `<tr>
                                 <td class="index">${newIndex}</td>
                                 <td class="item-details">
                                     <div class="row">
@@ -357,14 +376,14 @@
                                     </div>
                                 </td>
                             </tr>`;
-                                $("tbody").append(newRow);
-                                
-                                $(`#itemDropdown${newIndex}`).select2();
+                            $("tbody").append(newRow);
 
-                              
-                                  // Initialize select2 for the newly added row
-                            });
-                       
+                            $(`#itemDropdown${newIndex}`).select2();
+
+
+                            // Initialize select2 for the newly added row
+                        });
+
 
                     </script>
 
@@ -385,7 +404,7 @@
 
 
 
-                    <div class="mt-3">
+                    <div class="mt-4">
                         <label for="fileInput" class="text-warning" style="font-weight: bold;">Upload Files*</label>
                         <input type="file" name="file1" multiple class="form-control-file" id="fileInput">
                     </div>
@@ -398,14 +417,14 @@
 
 
 
-                    <div class="row mt-3">
-                        <div class="col-md-2">
+                    <div class="row mt-4">
+                        <div class="col-md-2 save">
                             <button type="submit" class="btn btn-primary" name="save" id="saveBtn">Save</button>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 draft">
                             <button type="submit" class="btn btn-warning" name="draft" id="draftBtn">Draft</button>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 cancel">
                             <a href="{% url 'items_list' %}"> <button type="button" class="btn btn-danger"
                                     id="cancelBtn">Cancel</button></a>
                         </div>
@@ -478,7 +497,7 @@
             </script>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </div>
 
 

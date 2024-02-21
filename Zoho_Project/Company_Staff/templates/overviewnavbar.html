@@ -839,7 +839,7 @@
                                             onclick="filterByStatus('all')">All</a>
                                     </li>
                                     <li><a class="dropdown-item" href="#" style="color: black;"
-                                            onclick="filterByStatus('adjusted')">Save</a></li>
+                                            onclick="filterByStatus('saved')">Save</a></li>
                                     <li><a class="dropdown-item" href="#" style="color: black;"
                                             onclick="filterByStatus('draft')">Draft</a>
                                     </li>
@@ -876,20 +876,11 @@
                                         <tr>
                                             <td>
                                                 <a href="{% url 'itemdetail' s.id %}"
-                                                    style="color: white;">{{s.items.item_name}}</a>
+                                                title="View details">{{s.items.item_name}}</a>
                                             </td>
-                                            <td>
-                                                <a href="{% url 'itemdetail' s.id %}"
-                                                    style="color: white;">{{s.inventory_adjustment.Reference_number}}</a>
-                                            </td>
-                                            <td>
-                                                <a href="{% url 'itemdetail' s.id %}"
-                                                    style="color: white;">{{s.inventory_adjustment.Reason}}</a>
-                                            </td>
-                                            <td>
-                                                <a href="{% url 'itemdetail' s.id %}"
-                                                    style="color: white;">{{s.inventory_adjustment.Status}}</a>
-                                            </td>
+                                            <td style="color: white;">{{s.inventory_adjustment.Reference_number}}</td>
+                                            <td style="color: white;">{{s.inventory_adjustment.Reason}}</td>
+                                            <td style="color: white;">{{s.inventory_adjustment.Status}}</td>
                                            
                                         </tr>
                                         {% endfor %}

@@ -21,13 +21,28 @@
     input[type="date"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
+
     @media screen and (max-width: 768px) {
         .item-dropdown {
 
             width: 100px;
-            
+
         }
-        
+
+        .draft {
+
+            margin-left: 100px;
+            margin-top: -35px;
+
+        }
+
+        .cancel {
+
+            margin-left: 210px;
+            margin-top: -35px;
+
+        }
+
     }
 </style>
 
@@ -56,7 +71,7 @@
                 {% csrf_token %}
                 <!-- Dropdown for adjustment type -->
 
-                <div class="container mt-3">
+                <div class="container mt-4">
                     <div class="row">
                         <div class="col-md-6">
                             <!-- Make the dropdown responsive -->
@@ -80,8 +95,9 @@
 
 
                 <!-- Reference Number field -->
-                <div class="mt-3">
-                    <label for="referenceNumberInput" class="text-warning" style="font-weight: bold;">Reference Number</label>
+                <div class="container mt-4">
+                    <label for="referenceNumberInput" class="text-warning" style="font-weight: bold;">Reference
+                        Number</label>
                     <input type="text" name="ref2" class="form-control" id="referenceNumberInput"
                         style="width: 200px; color: white;">
                 </div>
@@ -89,15 +105,16 @@
 
 
                 <!-- Date field -->
-                <div class="mt-3 row">
+                <div class="container mt-4 row">
                     <div class="col-md-3">
                         <label for="dateInput" class="text-warning" style="font-weight: bold;">Date*</label>
                         <input type="date" name="date2" class="form-control" id="dateInput"
                             style="width: 150px; color: white;">
                     </div>
                     <div class="col-md-3">
-                        <label for="accountsDropdown" class="text-warning"
-                            style="font-weight: bold; margin-left: 20px;margin-top: 20px;">Accounts*</label>
+                        <div class="dropdown-heading text-warning ">
+                            Accounts*
+                        </div>
                         <select class="form-control select2" name="account2" id="accountsDropdown"
                             style="width: 150px; color: white;">
                             <option value="">Select Category</option>
@@ -108,7 +125,7 @@
                             <!-- Add more options as needed -->
                         </select>
                     </div>
-                   
+
                     <div class="col-md-3">
                         <label for="reasonDropdown" class="text-warning"
                             style="font-weight: bold; margin-left: 20px;">Reason*</label>
@@ -145,14 +162,14 @@
                 </div>
 
 
-                <div class="col-md-12 mt-3">
+                <div class="container col-md-12 mt-4">
                     <label for="descriptionBox" class="text-warning" style="font-weight: bold;">Description</label>
-                    <textarea class="form-control" name="desc2" id="descriptionBox" style="width: 70%; color: white;"
+                    <textarea class="form-control" name="desc2" id="descriptionBox" style="width: 40%; color: white;"
                         rows="4"></textarea>
                 </div>
 
 
-                <div class="container mt-3" style="background-color: black;">
+                <div class="container mt-4" style="background-color: black;">
                     <div class="row">
                         <div class="col-md-10">
                             <!-- Make the table responsive -->
@@ -188,7 +205,7 @@
                                                                 {% endfor %}
                                                             </select>
                                                         </div>
-                                                       
+
                                                     </div>
                                                     <div class="col-md-4">
                                                         <button type="button" class="btn btn-warning"
@@ -374,19 +391,19 @@
 
 
 
-                <div class="mt-3">
+                <div class="container mt-4">
                     <label for="fileInput" class="text-warning" style="font-weight: bold;">Upload Files*</label>
                     <input type="file" name="file2" multiple class="form-control-file" id="fileInput">
                 </div>
 
-                <div class="row mt-3">
-                    <div class="col-md-2">
+                <div class="container row mt-4">
+                    <div class="col-md-2 save">
                         <button type="submit" class="btn btn-primary" name="save" id="saveBtn">Save</button>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 draft">
                         <button type="submit" class="btn btn-warning" name="draft" id="draftBtn">Draft</button>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 cancel">
                         <a href="{% url 'items_list' %}"> <button type="button" class="btn btn-danger"
                                 id="cancelBtn">Cancel</button></a>
                     </div>
@@ -462,7 +479,7 @@
 
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </div>
 
 

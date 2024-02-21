@@ -57,6 +57,7 @@
         .values{
             margin-top: -100px;
         }
+        
 
 
 
@@ -157,7 +158,7 @@
                 </a>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm whatsapp" onclick="shareViaWhatsApp()" title="Whatsapp">
+                <button type="button" class="btn btn-outline-warning btn-sm whatsapp" onclick="shareOnWhatsApp()" title="Whatsapp">
                     <i class="fab fa-whatsapp text-warning"></i>
                 </button>
             </div>
@@ -227,30 +228,7 @@
                 </div>
             </div>
 
-           
-
-
-            <script>
-                function sendEmail() {
-                    var recipientEmail = document.getElementById('recipientEmail').value;
-                    var subject = document.getElementById('emailSubject').value;
-                    var body = encodeURIComponent("Mode of Adjustment: {{ adjustments.inventory_adjustment.Mode_of_adjustment }}\nReference Number: {{ adjustments.inventory_adjustment.Reference_number }}\nAdjusting Date: {{ adjustments.inventory_adjustment.Adjusting_date }}\nAccount: {{ adjustments.inventory_adjustment.Account }}\nReason: {{ adjustments.inventory_adjustment.Reason }}\nDescription: {{ adjustments.inventory_adjustment.Description }}\nStatus: {{ adjustments.inventory_adjustment.Status }}");
-                    var emailURL = "mailto:" + recipientEmail + "?subject=" + subject + "&body=" + body;
-                    window.location.href = emailURL;
-                }
-            </script>
-
-            <script>
-                // Function to share details via WhatsApp
-                function shareViaWhatsApp() {
-                    var text = encodeURIComponent("Mode of Adjustment: {{ adjustments.inventory_adjustment.Mode_of_adjustment }}\nReference Number: {{ adjustments.inventory_adjustment.Reference_number }}\nAdjusting Date: {{ adjustments.inventory_adjustment.Adjusting_date }}\nAccount: {{ adjustments.inventory_adjustment.Account }}\nReason: {{ adjustments.inventory_adjustment.Reason }}\nDescription: {{ adjustments.inventory_adjustment.Description }}\nStatus: {{ adjustments.inventory_adjustment.Status }}");
-                    var whatsappURL = "https://api.whatsapp.com/send?text=" + text;
-                    window.open(whatsappURL);
-                }
-
-                // Function to share details via email
-
-            </script>
+                      
 
             <div class="col-md-1 text-center">
                 {% if adjustments.id %}
@@ -455,6 +433,30 @@
                 document.body.innerHTML = originalContents;
             }
         </script>
+       <script>
+        function shareOnWhatsApp() {
+            var modeOfAdjustment = document.getElementsByName('value1')[0].value;
+            var referenceNumber = document.getElementsByName('value2')[0].value;
+            var adjustingDate = document.getElementsByName('value3')[0].value;
+            var account = document.getElementsByName('value4')[0].value;
+            var reason = document.getElementsByName('value5')[0].value;
+        
+            // Get the current page URL
+            var pageUrl = window.location.href;
+        
+            var message = "Page URL: " + pageUrl + "\n" +
+                          "Mode of Adjustment: " + modeOfAdjustment + "\n" +
+                          "Reference Number: " + referenceNumber + "\n" +
+                          "Adjusting Date: " + adjustingDate + "\n" +
+                          "Account: " + account + "\n" +
+                          "Reason: " + reason;
+        
+            // Encode the message for URL
+            var whatsappUrl = "https://wa.me/?text=" + encodeURIComponent(message);
+            window.open(whatsappUrl, '_blank');
+        }
+        </script>
+        
 
 
 
