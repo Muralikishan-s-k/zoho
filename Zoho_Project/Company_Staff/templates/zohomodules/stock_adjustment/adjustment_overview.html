@@ -1,6 +1,7 @@
 {% extends 'overviewnavbar.html' %}
 {% load static %}
 {% block content %}
+{% load social_share %}
 <style>
     .white-divider {
         width: 2px;
@@ -23,46 +24,52 @@
         .container.mt-3.p-4 {
 
             width: 300px;
-            
+
 
         }
 
         .print {
             margin-left: -200px;
         }
+
         .edit {
             margin-left: -130px;
             margin-top: -50px;
         }
+
         .whatsapp {
             margin-left: -60px;
             margin-top: -90px;
         }
+
         .email {
             margin-left: 10px;
             margin-top: -132px;
         }
+
         .delete {
             margin-left: 80px;
             margin-top: -174px;
         }
+
         .comment {
             margin-left: 150px;
             margin-top: -215px;
         }
+
         .history {
             margin-left: 220px;
             margin-top: -256px;
         }
-        .values{
+
+        .values {
             margin-top: -100px;
         }
+
         
-
-
-
-
     }
+
+   
 </style>
 <div class="col-md-7" style="background-color: black;">
 
@@ -158,7 +165,8 @@
                 </a>
             </div>
             <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm whatsapp" onclick="shareOnWhatsApp()" title="Whatsapp">
+                <button type="button" class="btn btn-outline-warning btn-sm whatsapp" onclick="shareOnWhatsApp()"
+                    title="Whatsapp">
                     <i class="fab fa-whatsapp text-warning"></i>
                 </button>
             </div>
@@ -195,8 +203,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                
-                                <button type="button" id="sendEmailBtn" class="btn btn-outline-warning" data-bs-dismiss="modal">Send</button>
+
+                                <button type="button" id="sendEmailBtn" class="btn btn-outline-warning"
+                                    data-bs-dismiss="modal">Send</button>
                             </div>
                         </form>
                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -204,16 +213,16 @@
                             $(document).ready(function () {
                                 $('#sendEmailBtn').click(function (e) {
                                     e.preventDefault(); // Prevent the default form submission
-            
+
                                     // Collect form data
                                     var formData = $('#commentForm').serialize();
-            
+
                                     // Send AJAX request
                                     $.ajax({
                                         type: 'POST',
                                         url: '{% url "email" adjustments.id %}',
                                         data: formData,
-                                        
+
                                         error: function (xhr, status, error) {
                                             // Handle error
                                             console.error(xhr.responseText);
@@ -228,7 +237,7 @@
                 </div>
             </div>
 
-                      
+
 
             <div class="col-md-1 text-center">
                 {% if adjustments.id %}
@@ -417,6 +426,7 @@
                         value="{{ adjustments.inventory_adjustment.Reason }}">
 
                 </div>
+                
 
             </div>
         </div>
@@ -433,30 +443,30 @@
                 document.body.innerHTML = originalContents;
             }
         </script>
-       <script>
-        function shareOnWhatsApp() {
-            var modeOfAdjustment = document.getElementsByName('value1')[0].value;
-            var referenceNumber = document.getElementsByName('value2')[0].value;
-            var adjustingDate = document.getElementsByName('value3')[0].value;
-            var account = document.getElementsByName('value4')[0].value;
-            var reason = document.getElementsByName('value5')[0].value;
-        
-            // Get the current page URL
-            var pageUrl = window.location.href;
-        
-            var message = "Page URL: " + pageUrl + "\n" +
-                          "Mode of Adjustment: " + modeOfAdjustment + "\n" +
-                          "Reference Number: " + referenceNumber + "\n" +
-                          "Adjusting Date: " + adjustingDate + "\n" +
-                          "Account: " + account + "\n" +
-                          "Reason: " + reason;
-        
-            // Encode the message for URL
-            var whatsappUrl = "https://wa.me/?text=" + encodeURIComponent(message);
-            window.open(whatsappUrl, '_blank');
-        }
+        <script>
+            function shareOnWhatsApp() {
+                var modeOfAdjustment = document.getElementsByName('value1')[0].value;
+                var referenceNumber = document.getElementsByName('value2')[0].value;
+                var adjustingDate = document.getElementsByName('value3')[0].value;
+                var account = document.getElementsByName('value4')[0].value;
+                var reason = document.getElementsByName('value5')[0].value;
+
+                // Get the current page URL
+                var pageUrl = window.location.href;
+
+                var message = "Page URL: " + pageUrl + "\n" +
+                    "Mode of Adjustment: " + modeOfAdjustment + "\n" +
+                    "Reference Number: " + referenceNumber + "\n" +
+                    "Adjusting Date: " + adjustingDate + "\n" +
+                    "Account: " + account + "\n" +
+                    "Reason: " + reason;
+
+                // Encode the message for URL
+                var whatsappUrl = "https://wa.me/?text=" + encodeURIComponent(message);
+                window.open(whatsappUrl, '_blank');
+            }
         </script>
-        
+
 
 
 

@@ -2,11 +2,50 @@
 {% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+
+
 <style>
+    .btn-warning {
+        color: black;
+    }
+
+    .dropdown-heading {
+        font-weight: bold;
+        color: white;
+        margin-bottom: 5px;
+    }
+
     input[type="date"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
+
+    @media screen and (max-width: 768px) {
+        .item-dropdown {
+
+            width: 100px;
+
+        }
+
+        .draft {
+
+            margin-left: 100px;
+            margin-top: -35px;
+
+        }
+
+        .cancel {
+
+            margin-left: 210px;
+            margin-top: -35px;
+
+        }
+
+    }
 </style>
+
 <script>
     $(document).ready(function () {
         // Set today's date in the date field
@@ -14,229 +53,435 @@
         $("#dateInput").val(today);
     });
 </script>
+
 <div class="body-wrapper">
     <div class="container-fluid">
-        <nav aria-label="breadcrumb" class="col-12">
+        <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}"
                         class="text-warning-emphasis">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'items_list' %}" class="text-warning-emphasis">Stock
-                        Adjustment</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'adjustment_overview' %}"
-                        class="text-warning-emphasis">Adjustment overview</a></li>
-                <li class="breadcrumb-item" aria-current="page">Edit Overview</li>
+                <li class="breadcrumb-item" aria-current="page">Create adjustment</li>
             </ol>
         </nav>
-        <div class="container" style="background-color: black; border-radius: 20px; padding: 20px;">
-            <h1 class="text-warning" style="color: white;"><strong>EDIT:</strong></h1>
-            <form action="{% url 'stockeditdb' adjustment2.id %}" method="post" enctype="multipart/form-data">
+
+        <!-- Responsive container for the content -->
+        <div class="container mt-3" style="background-color: black;">
+            <h1 style="color: white;" class="text-center text-warning"><strong>Create Adjustments:</strong></h1>
+            <form action="{% url 'value' %}" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
-                <div class="row" style="margin-bottom: 20px;">
-                    <div class="col-md-6">
-                        <div class="dropdown">
-                            <div class="dropdown-heading" style="color: white;">
-                                Item:
-                            </div>
-                            <select class="form-control" name="item" style="background-color: white;">
-                                <option value="{{adjustment2.items.id}}" selected>{{adjustment2.items.item_name}}
-                                </option>
-                                {% for c in itemz %}
-                                <option value="{{c.id}}" style="color: black;">
-                                    {{c.item_name}}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
+                <!-- Dropdown for adjustment type -->
 
-                    <div class="col-md-6">
-                        <!-- Field 2 -->
-                        <div class="dropdown">
-                            <div class="dropdown-heading" style="color: white;">
-                                Mode of Adjustment:
-                            </div>
-                            <select class="form-control" name="mode" style="background-color: white;width: 200px;">
+                <div class="container mt-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Make the dropdown responsive -->
+                            <div class="dropdown">
+                                <div class="dropdown-heading text-warning ">
+                                    Mode of Adjustment*
+                                </div>
+                                <select class="form-control" name="mode2" onchange="window.location.href=this.value"
+                                    style="background-color: white;width: 200px;">
 
-                                <option value="Quantity adjustment" style="color: black;" selected>Quantity adjustment
-                                </option>
-                                <option value=">Value
-                                adjustment" style="color: black;">Value
-                                    adjustment</option>
-                            </select>
+                                    <option value="Value adjustment" style="color: black;" selected>Value adjustment
+                                    </option>
+                                    <option value="{% url 'create_adjustment' %}" style="color: black;">Quantity
+                                        adjustment</option>
+
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Repeat the above pattern for the next 10 fields -->
-                <div class="row" style="margin-bottom: 20px;">
-                    <!-- Field 3 -->
-                    <div class="col-md-6" style="color: white;">
-                        <label for="reasonDropdown"
-                            style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
+
+                <!-- Reference Number field -->
+                <div class="container mt-4">
+                    <label for="referenceNumberInput" class="text-warning" style="font-weight: bold;">Reference
+                        Number</label>
+                    <input type="text" name="ref2" class="form-control" id="referenceNumberInput"
+                        style="width: 200px; color: white;">
+                </div>
+
+
+
+                <!-- Date field -->
+                <div class="container mt-4 row">
+                    <div class="col-md-3">
+                        <label for="dateInput" class="text-warning" style="font-weight: bold;">Date*</label>
+                        <input type="date" name="date2" class="form-control" id="dateInput"
+                            style="width: 150px; color: white;">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="dropdown-heading text-warning ">
+                            Accounts*
+                        </div>
+                        <select class="form-control select2" name="account2" id="accountsDropdown"
+                            style="width: 150px; color: white;">
+                            <option value="">Select Category</option>
+                            {% for c in account %}
+                            <option value="{{c.account_name}}" style="color: black;">{{c.account_name}}</option>
+                            {% endfor %}
+
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    
+
+                    <div class="col-md-3">
+                        <label for="reasonDropdown" class="text-warning"
+                            style="font-weight: bold; margin-left: 20px;">Reason*</label>
                         <div class="input-group">
-                            <select class="form-control" name="reason" id="reasonDropdown"
-                                style="width: 100px; color: white;">
-                                <option value="{{adjustment2.inventory_adjustment.Reason}}" style="color:black ;">
-                                    {{adjustment2.inventory_adjustment.Reason}}</option>
+                            <select class="form-control" name="reason2" id="reasonDropdown"
+                                style="width: 100px; color: black;background-color: white;">
                                 <option value="High Demand Goods" style="color:black ;">High Demand Goods</option>
                                 <option value="Stock Written Off" style="color:black ;">Stock Written Off</option>
                                 <option value="Inventory Revaluation" style="color:black ;">Inventory Revaluation
                                 </option>
                                 <option value="Stock on Fire" style="color:black ;">Stock on Fire</option>
-
+                                <!-- Add more options as needed -->
                             </select>
                             <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
                                     class="fas fa-plus"></i></button>
                         </div>
-                        <script>
-                            $(document).ready(function () {
-                                // Add new reason on button click
-                                $('#addReasonBtn').on('click', function () {
-                                    var newReason = prompt("Enter the new reason:");
-                                    if (newReason) {
-                                        // Create a new option, set its text and value, and append it to the dropdown
-                                        var newOption = $('<option>', {
-                                            value: newReason,
-                                            text: newReason
-                                        }).css('color', 'black'); // Set the text color to black
-                                        $('#reasonDropdown').append(newOption);
-                                    }
+                    </div>
+
+                    <script>
+                        $(document).ready(function () {
+                            // Add new reason on button click
+                            $('#addReasonBtn').on('click', function () {
+                                var newReason = prompt("Enter the new reason:");
+                                if (newReason) {
+                                    // Create a new option and append it to the dropdown
+                                    $('#reasonDropdown').append($('<option>', {
+                                        value: newReason,
+                                        text: newReason
+                                    }));
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+
+
+                <div class="container col-md-12 mt-4">
+                    <label for="descriptionBox" class="text-warning" style="font-weight: bold;">Description</label>
+                    <textarea class="form-control" name="desc2" id="descriptionBox" style="width: 40%; color: white;"
+                        rows="4"></textarea>
+                </div>
+
+
+                <div class="container mt-4" style="background-color: black;">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <!-- Make the table responsive -->
+                            <div class="table-responsive">
+                                <!-- Table for item transactions -->
+                                <table class="table" id="itemTransactionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-warning" style="font-weight:bold;">#</th>
+                                            <th class="text-warning" style="font-weight:bold;">Item*</th>
+                                            <th class="text-warning" style="font-weight:bold;">Current Value</th>
+                                            <th class="text-warning" style="font-weight:bold;">Changed Value</th>
+                                            <th class="text-warning" style="font-weight:bold;">Adjusted Value</th>
+                                            <th class="text-warning" style="font-weight:bold;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Rows will be dynamically added here -->
+                                        <tr>
+
+                                            <td class="index">1</td>
+                                            <td class="item-details">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <div class="dropdown">
+                                                            <select class="form-control item-dropdown select2"
+                                                                name="item2" style="background-color: white;"
+                                                                id="itemDropdown">
+                                                                <option value="" selected disabled>Select item</option>
+                                                                {% for c in item %}
+                                                                <option value="{{c.id}}" style="color: black;">
+                                                                    {{c.item_name}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <button type="button" class="btn btn-warning"
+                                                            data-bs-toggle="modal" data-bs-target="#itemModal"
+                                                            style="color: white;margin-left: -10px;"><i
+                                                                class="fas fa-plus"></i></button>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <script>
+                                                $('.item-dropdown').on('change', function () {
+                                                    var selectedOption = $(this).find(':selected');
+                                                    var itemId = selectedOption.val();
+                                                    var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
+
+                                                    $.ajax({
+                                                        type: "GET",
+                                                        url: "{% url 'get_item_price' %}",
+                                                        data: { id: itemId },
+                                                    }).done(function (response) {
+                                                        // Update the quantity-available input field with the current stock
+                                                        quantityAvailableField.val(response.price);
+                                                    });
+                                                });
+                                            </script>
+
+                                            <script>
+                                                function updateAdjustedValue() {
+                                                    var currentValue = parseInt(document.querySelector(".quantity-available input").value);
+                                                    var changedValue = parseInt(document.getElementById("changedValue").value);
+                                                    var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
+                                                    document.getElementById("adjustedValue").value = adjustedValue;
+                                                }
+                                            </script>
+
+
+                                            <td class="quantity-available">
+                                                <input type="number" name="stock_value"
+                                                    class="form-control item-quantity" value="" style="color: white;">
+                                            </td>
+                                            <td class="new-quantity">
+                                                <input type="number" name="changedvalue" class="form-control"
+                                                    id="changedValue" oninput="updateAdjustedValue()"
+                                                    style="color: white;">
+                                            </td>
+                                            <td class="quantity-adjusted">
+                                                <input type="number" name="adjustedvalue" class="form-control"
+                                                    id="adjustedValue" style="color: white;">
+                                            </td>
+                                            <td>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-danger remove-row"><i
+                                                            class="fas fa-minus"></i></button>
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-success add-row"><i
+                                            class="fas fa-plus"></i></button>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+                            $('.select2').select2();
+                        })
+                    </script>
+
+
+
+                    <script>
+                        $(document).ready(function () {
+
+                            $('tbody').on('input', '.item-quantity, .new-quantity input', function () {
+                                updateAdjustedValue($(this).closest('tr'));
+                            });
+
+                            function updateAdjustedValue(row) {
+                                var currentValue = parseInt(row.find(".item-quantity").val());
+                                var changedValue = parseInt(row.find(".new-quantity input").val());
+                                var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
+                                row.find(".quantity-adjusted input").val(adjustedValue);
+                            }
+
+                            $('tbody').on('change', '.item-dropdown', function () {
+                                var selectedOption = $(this).find(':selected');
+                                var itemId = selectedOption.val();
+                                var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: "{% url 'get_item_price' %}",
+                                    data: { id: itemId },
+                                }).done(function (response) {
+                                    // Update the quantity-available input field with the current stock
+                                    quantityAvailableField.val(response.price);
                                 });
                             });
-                        </script>
-                    </div>
 
-                    <!-- Field 4 -->
-                    <div class="col-md-6" style="color: white;">
-                        <label for="accountsDropdown"
-                            style="color: white; font-weight: bold; margin-left: 20px;">Accounts</label>
-                        <select class="form-control" name="account" id="accountsDropdown"
-                            style="width: 150px; color: white;">
-                            <option value="{{adjustment2.inventory_adjustment.Account}}" style="color:black ;">
-                                {{adjustment2.inventory_adjustment.Account}}</option>
-                            {% for c in account %}
-                            <option value="{{c.id}}" style="color: black;">{{c.account_name}}</option>
-                            {% endfor %}
+                            // Function to add a new row
+                            $('.add-row').click(function () {
+                                var lastIndex = parseInt($('tbody tr:last .index').text());
+                                var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
+                                var newRow = `<tr>
+                                <td class="index">${newIndex}</td>
+                                    <td class="item-details">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="dropdown">
+                                                    <select class="form-control item-dropdown select2"
+                                                        name="item2" style="background-color: white;"
+                                                        id="itemDropdown${newIndex}">
+                                                        <option value="" selected disabled>Select item</option>
+                                                        {% for c in item %}
+                                                        <option value="{{c.id}}" style="color: black;">
+                                                            {{c.item_name}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-warning"
+                                                    data-bs-toggle="modal" data-bs-target="#itemModal"
+                                                    style="color: white;margin-left: -10px;"><i
+                                                        class="fas fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="quantity-available">
+                                        <input type="number" name="stock_value"
+                                            class="form-control item-quantity" value="" style="color: white;">
+                                    </td>
+                                    <td class="new-quantity">
+                                        <input type="number" name="changedvalue" class="form-control"
+                                            id="changedValue" oninput="updateAdjustedValue()"
+                                            style="color: white;">
+                                    </td>
+                                    <td class="quantity-adjusted">
+                                        <input type="number" name="adjustedvalue" class="form-control"
+                                            id="adjustedValue" style="color: white;">
+                                    </td>
+                                    <td>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-danger remove-row"><i
+                                                    class="fas fa-minus"></i></button>
+                                        </div>
+                                        
+                                    </td>
+                                </tr>
+                            `;
+                                $('tbody').append(newRow);
+                                $(`#itemDropdown${newIndex}`).select2();
+                            });
+
+                            // Function to remove a row
+                            $('tbody').on('click', '.remove-row', function () {
+                                $(this).closest('tr').remove();
+                            });
 
 
-                        </select>
-                    </div>
+                        });
 
-                    <!-- Repeat the above pattern for the next 8 fields -->
+                    </script>
+
+
+
+
                 </div>
 
-                <div class="row" style="margin-bottom: 20px;">
-                    <div class="col-md-6" style="color: white;">
-                        <!-- Field 1 -->
-                        <label for="field1">Description:</label>
-                        <input type="text" class="form-control" id="field1" name="description" style="color: white;"
-                            value="{{adjustment2.inventory_adjustment.Description}}">
-                    </div>
-                    <div class="col-md-6" style="color: white;">
-                        <label for="dateInput">Date:</label>
-                        <input type="date" class="form-control" name="date" id="dateInput"
-                            style="width: 150px; color: white;">
-                    </div>
 
 
+
+                <!-- JavaScript to handle dynamic row addition and removal -->
+
+
+
+                <div class="container mt-4">
+                    <label for="fileInput" class="text-warning" style="font-weight: bold;">Upload Files*</label>
+                    <input type="file" name="file2" multiple class="form-control-file" id="fileInput">
                 </div>
 
-                <!-- Repeat the above pattern for the next 10 fields -->
-                <div class="row" style="margin-bottom: 20px;">
-                    <!-- Field 3 -->
-                    <div class="col-md-4" style="color: white;">
-                        <label for="field3">Quantity available:</label>
-                        <input type="number" class="form-control" id="field3" name="quantity-available"
-                            style="color: white;" value="{{adjustment2.items.current_stock}}">
+                <div class="container row mt-4">
+                    <div class="col-md-2 save">
+                        <button type="submit" class="btn btn-primary" name="save" id="saveBtn">Save</button>
                     </div>
-
-                    <!-- Field 4 -->
-                    <div class="col-md-4" style="color: white;">
-                        <label for="field4">New quantity in hand:</label>
-                        <input type="number" class="form-control" id="newQuantity" oninput="updateQuantityAdjusted()"
-                            name="quantity-inhand" value="{{adjustment2.New_quantity_inhand}}" style="color: white;">
+                    <div class="col-md-2 draft">
+                        <button type="submit" class="btn btn-warning" name="draft" id="draftBtn">Draft</button>
                     </div>
-
-                    <div class="col-md-4" style="color: white;">
-                        <label for="quantityAdjusted">Quantity adjusted:</label>
-                        <input type="number" class="form-control" value="{{adjustment2.Quantity_adjusted}}"
-                            id="quantityAdjusted" name="quantity-adjusted" style="color: white;">
+                    <div class="col-md-2 cancel">
+                        <a href="{% url 'items_list' %}"> <button type="button" class="btn btn-danger"
+                                id="cancelBtn">Cancel</button></a>
                     </div>
                 </div>
 
-                <script>
-                    function updateQuantityAdjusted() {
-                        var quantityAvailable = parseInt(document.getElementById("field3").value) || 0;
-                        var newQuantity = parseInt(document.getElementById("newQuantity").value) || 0;
-                        var quantityAdjusted = isNaN(newQuantity) ? 0 : newQuantity - quantityAvailable;
-                        document.getElementById("quantityAdjusted").value = quantityAdjusted;
-                    }
-                </script>
-
-                <div class="row" style="margin-bottom: 20px;">
-                    <!-- Field 3 -->
-                    <div class="col-md-4" style="color: white;">
-                        <label for="field3">Current value:</label>
-                        <input type="number" class="form-control" id="currentValue" name="currentvalue"
-                            style="color: white;" value="{{stock_value}}">
-                    </div>
-
-                    <!-- Field 4 -->
-                    <div class="col-md-4" style="color: white;">
-                        <label for="changedValue">Changed value:</label>
-                        <input type="number" class="form-control" value="{{adjustment2.Changed_value}}"
-                            id="changedValue" name="changedvalue" style="color: white;" oninput="updateAdjustedValue()">
-                    </div>
-
-                    <div class="col-md-4" style="color: white;">
-                        <label for="adjustedValue">Adjusted value:</label>
-                        <input type="number" class="form-control" value="{{adjustment2.Adjusted_value}}"
-                            id="adjustedValue" name="adjustedvalue" style="color: white;" readonly>
-                    </div>
-                </div>
-
-                <!-- Repeat the above pattern for the next 8 fields -->
-
-                <script>
-                    function updateAdjustedValue() {
-                        var currentValue = parseInt(document.getElementById("currentValue").value) || 0;
-                        var changedValue = parseInt(document.getElementById("changedValue").value) || 0;
-                        var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
-                        document.getElementById("adjustedValue").value = adjustedValue;
-                    }
-                </script>
-
-
-                <!-- Repeat the above pattern for the next 10 fields -->
-                <div class="row" style="margin-bottom: 20px;">
-                    <div class="col-md-4" style="color: white;">
-                        <label for="reasonDropdown"
-                            style="color: white; font-weight: bold; margin-left: 20px;">Reason</label>
-                        <div class="input-group">
-                            <select class="form-control" id="reasonDropdown" name="status"
-                                style="width: 50px; color: white;">
-                                <option value="{{adjustment2.inventory_adjustment.Status}}" selected>
-                                    {{adjustment2.inventory_adjustment.Status}}
-                                </option>
-                                <option value="adjusted" style="color:black ;">Save</option>
-                                <option value="draft" style="color:black ;">Draft</option>
-                            </select>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="col-md-4" style="color: white;margin-top:20px;">
-                        <button type="submit" class="btn btn-outline-warning mb-2 mb-md-0">
-                            <i class="fas fa-save text-warning"></i> Save
-                        </button>
-                    </div>
-                </div>
             </form>
-        </div>
 
+            <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5 text-light" id="exampleModalLabel">Add
+                                Item:</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="addItemForm" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <label for="newItemName" style="color: white;">Item Name:</label>
+                                <input type="text" id="newItemName" name="items" class="form-control bg-light">
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-outline-warning" data-bs-dismiss="modal">Add
+                                    Item</button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#addItemForm').submit(function (event) {
+                        event.preventDefault(); // Prevent the default form submission
+
+                        var formData = new FormData(this);
+
+                        $.ajax({
+                            url: "{% url 'itemadd' %}",
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                // Handle success response
+                                if (data.success) {
+                                    // Append the new item to the dropdown
+                                    $('.item-dropdown').append($('<option>', {
+                                        value: data.item_id,
+                                        text: data.item_name,
+                                        style: 'color: black;'
+                                    }));
+                                    // Optional: Select the newly added item
+                                    $('.item-dropdown').val(data.item_id);
+                                } else {
+                                    alert("Error adding item");
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                // Handle error response
+                                console.error(xhr.responseText);
+                                alert("Error adding item");
+                            }
+                        });
+                    });
+                });
+            </script>
+
+
+
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </div>
+
+
 {% endblock %}

@@ -920,6 +920,10 @@ def stockedit(request,pk):
                         'account':accounts,
                         'stock_value': stock_value,
                 }
+                if adjustment2.inventory_adjustment.Mode_of_adjustment == 'Quantity adjustment':
+                    return render(request, 'zohomodules/stock_adjustment/quantityedit.html', context)
+                elif adjustment2.inventory_adjustment.Mode_of_adjustment == 'Value adjustment':
+                    return render(request, 'zohomodules/stock_adjustment/valueedit.html', context)
                 
         if log_details.user_type == 'Company':
             dash_details = CompanyDetails.objects.get(login_details=log_details)
@@ -940,7 +944,12 @@ def stockedit(request,pk):
                     'account':accounts,
                     'stock_value': stock_value,
             }
-        return render(request,'zohomodules/stock_adjustment/stockedit.html',context)
+            if adjustment2.inventory_adjustment.Mode_of_adjustment == 'Quantity adjustment':
+                return render(request, 'zohomodules/stock_adjustment/quantityedit.html', context)
+            elif adjustment2.inventory_adjustment.Mode_of_adjustment == 'Value adjustment':
+                return render(request, 'zohomodules/stock_adjustment/valueedit.html', context)
+            
+        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')
      
 def stockdelete(request,pk):
      if 'login_id' in request.session:
@@ -1106,7 +1115,7 @@ def stockeditdb(request,pk):
                 edit3.save()
                                             
                 return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
-            return render(request,"zohomodules/stock_adjustment/adjustment_overview.html")
+            return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
      
      
