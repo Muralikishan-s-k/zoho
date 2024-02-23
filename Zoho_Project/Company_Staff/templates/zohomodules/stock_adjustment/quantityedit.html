@@ -103,10 +103,12 @@
                     </div>
                 </div>
 
-
-
-
-                
+                <div class="container mt-4">
+                    <label for="referenceNumberInput" class="text-warning" style="font-weight: bold;">Reference
+                        Number</label>
+                    <input type="text" name="refno" class="form-control" id="referenceNumberInput"
+                        style="width: 200px; color: white;" value="{{adjustment2.inventory_adjustment.Reference_number}}">
+                </div>
 
 
 
@@ -337,7 +339,7 @@
                                         <div class="col-md-8">
                                             <div class="dropdown">
                                                 <select  class="form-control item-dropdown select3"
-                                                    name="item1" style="background-color: white;"
+                                                    name="item" style="background-color: white;"
                                                     id="itemDropdown${newIndex}">
                                                     <option value="" selected disabled>Select item</option>
                                                     {% for c in item %}
@@ -356,11 +358,11 @@
                                     </div>
                                 </td>
                                 <td class="quantity-available">
-                                    <input type="number" name="current_stock"
+                                    <input type="number" name="quantity-available"
                                         class="form-control item-quantity" value="" style="color: white;">
                                 </td>
                                 <td class="new-quantity">
-                                    <input type="number" name="new-quantity" class="form-control"
+                                    <input type="number" name="quantity-inhand" class="form-control"
                                         style="color: white;">
                                 </td>
                                 <td class="quantity-adjusted">

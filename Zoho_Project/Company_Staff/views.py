@@ -1093,24 +1093,31 @@ def stockeditdb(request,pk):
 
                 }
                 edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
-                edit2 = edit.inventory_adjustment
-                item=request.POST.get('item')
-                item1=Items.objects.get(id=item)
-                edit.items=item1             
+                edit2 = edit.inventory_adjustment                             
                 edit2.Mode_of_adjustment=request.POST.get('mode')
                 edit2.Reason=request.POST.get('reason')
                 edit2.Account=request.POST.get('account')
-                edit2.Description=request.POST.get('description')                                               
-                edit.Quantity_available=request.POST.get('quantity-available')
-                edit.New_quantity_inhand=request.POST.get('quantity-inhand')
-                edit.Quantity_adjusted=request.POST.get('quantity-adjusted')
-                edit.Current_value=request.POST.get('currentvalue')
-                edit.Changed_value=request.POST.get('changedvalue')
-                edit.Adjusted_value=request.POST.get('adjustedvalue')
-                edit2.Status=request.POST.get('status')
+                edit2.Description=request.POST.get('description')
+                edit2.Reference_number=request.POST.get('refno')                                               
+                quantity_available=tuple(request.POST.getlist('quantity-available'))                
+                new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
+                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))
+                current_value=tuple(request.POST.getlist('currentvalue'))
+                changed_value=tuple(request.POST.getlist('changedvalue'))
+                adjusted_value=tuple(request.POST.getlist('adjustedvalue'))
+                items=tuple(request.POST.getlist('item'))                                
+                for item_id, quantityavailable, newquantity_inhand, quantityadjusted,currentvalue,changedvalue,adjustedvalue in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted,current_value,changed_value,adjusted_value):
+                       item = Items.objects.get(id=item_id)
+                       edit.items =item
+                       edit.Quantity_available=quantityavailable
+                       edit.New_quantity_inhand=newquantity_inhand
+                       edit.Quantity_adjusted=quantityadjusted
+                       edit.Current_value=currentvalue
+                       edit.Changed_value=changedvalue
+                       edit.Adjusted_value=adjustedvalue
+                       edit.save()                
                 edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                                          
-                edit.save()
+                edit3.Action='edited'                                                                          
                 edit2.save()
                 edit3.save()
                                             
