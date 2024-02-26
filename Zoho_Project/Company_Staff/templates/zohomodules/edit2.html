@@ -1,103 +1,40 @@
-<script>
-  $(document).ready(function () {
+if request.method =='POST':
+edit=Inventory_adjustment_items.objects.get(id=pk)
+dash_details = StaffDetails.objects.get(login_details=log_details)
+item=Items.objects.filter(company=dash_details.company)
+allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+adjustment1=Inventory_adjustment.objects.all()
+adjustment2=Inventory_adjustment_items.objects.all()
+adjustments=Inventory_adjustment_items.objects.get(id=pk)           
+adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
 
+context = {
+        'details': dash_details,
+        'item': item,
+        'allmodules': allmodules,
+        'adjustment1':adjustment1,
+        'adjustments':adjustments,
+        'adjustment2':adjustment2,
+        'adjustment3':adjustment_history_entry
 
-    // Function to update quantity adjusted
-    function updateQuantityAdjusted(row) {
-      var currentValue = parseInt(row.find('.quantity-available input').val());
-      var changedValue = parseInt(row.find('changedValue').val());
-      var adjustedValue = isNaN(changedValue) ? 0 : changedValue - currentValue;
-      row.find('adjustedValue').val(adjustedValue);
-    }
-
-   
-
-    // Event listener for dynamically added rows
-    $('tbody').on('change', '.item-dropdown', function () {
-      var selectedOption = $(this).find(':selected');
-      var itemId = selectedOption.val();
-      var quantityAvailableField = $(this).closest('tr').find('.item-quantity');
-
-      $.ajax({
-        type: "GET",
-        url: "{% url 'get_item_price' %}",
-        data: { id: itemId },
-      }).done(function (response) {
-        // Update the quantity-available input field with the current stock
-        quantityAvailableField.val(response.price);
-      });
-    });
-
-   
-
-    // Add Row Function
-    $(".add-row").click(function () {
-      // Get the index of the last row and add 1 to it
-      var lastIndex = parseInt($('tbody tr:last .index').text());
-      var newIndex = isNaN(lastIndex) ? 1 : lastIndex + 1;
-      var newRow = `<tr>
-          <td class="index">${newIndex}</td>
-          <td class="item-details">
-                                                <div class="row">
-                                                    <div class="col-md-8">
-                                                        <div class="dropdown">
-                                                            <select class="form-control item-dropdown select2"
-                                                                name="item2" style="background-color: white;"
-                                                                id="itemDropdown">
-                                                                <option value="" selected disabled>Select item</option>
-                                                                {% for c in item %}
-                                                                <option value="{{c.id}}" style="color: black;">
-                                                                    {{c.item_name}}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                        
-</div>
-<div class="col-md-4">
-  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#itemModal"
-    style="color: white;margin-left: -10px;"><i class="fas fa-plus"></i></button>
-</div>
-</div>
-</td>
-<td class="quantity-available">
-                                                <input type="number" name="stock_value"
-                                                    class="form-control item-quantity" value="" style="color: white;">
-                                            </td>
-                                            <td class="new-quantity">
-                                                <input type="number" name="changedvalue" class="form-control"
-                                                    id="changedValue" 
-                                                    style="color: white;">
-                                            </td>
-                                            <td class="quantity-adjusted">
-                                                <input type="number" name="adjustedvalue" class="form-control"
-                                                    id="adjustedValue" style="color: white;">
-                                            </td>
-                                            <td>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-danger remove-row"><i
-                                                            class="fas fa-minus"></i></button>
-                                                </div>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-success add-row"><i
-                                                            class="fas fa-plus"></i></button>
-                                                </div>
-                                            </td>
-</tr>`;
-$("tbody").append(newRow);
-$('.select2').select2(); // Initialize select2 for the newly added row
-});
-
-// Remove Row Function
-$("tbody").on("click", ".remove-row", function () {
-$(this).closest("tr").remove();
-});
-
-// Update quantity adjusted when input changes
-$("tbody").on("input", ".changedvalue input", function () {
-var row = $(this).closest('tr');
-updateAdjustedValue(row);
-});
-
-
-});
-</script>
+}
+edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
+edit2 = edit.inventory_adjustment
+item=request.POST.get('item')
+item1=Items.objects.get(id=item)
+edit.items=item1             
+edit2.Mode_of_adjustment=request.POST.get('mode')
+edit2.Reason=request.POST.get('reason')
+edit2.Account=request.POST.get('account')
+edit2.Description=request.POST.get('description')                                               
+edit.Quantity_available=request.POST.get('quantity-available')
+edit.New_quantity_inhand=request.POST.get('quantity-inhand')
+edit.Quantity_adjusted=request.POST.get('quantity-adjusted')               
+edit2.Status=request.POST.get('status')
+edit2.Adjusting_date=request.POST.get('date')
+edit3.Action='edited'                                                          
+edit.save()
+edit2.save()
+edit3.save()
+                            
+return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)

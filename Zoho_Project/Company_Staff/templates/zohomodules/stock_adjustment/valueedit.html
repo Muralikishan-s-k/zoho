@@ -71,7 +71,7 @@
         <!-- Responsive container for the content -->
         <div class="container mt-3" style="background-color: black;">
             <h1 style="color: white;" class="text-center text-warning"><strong>Edit Adjustment:</strong></h1>
-            <form action="{% url 'stockeditdb' adjustment2.id %}" enctype="multipart/form-data" method="post">
+            <form action="{% url 'valueedit' adjustment2.id %}" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
                 <!-- Dropdown for adjustment type -->
 
@@ -328,7 +328,7 @@
                                             <div class="col-md-8">
                                                 <div class="dropdown">
                                                     <select class="form-control item-dropdown select2"
-                                                        name="item2" style="background-color: white;"
+                                                        name="item" style="background-color: white;"
                                                         id="itemDropdown${newIndex}">
                                                         <option value="" selected disabled>Select item</option>
                                                         {% for c in item %}
@@ -347,7 +347,7 @@
                                         </div>
                                     </td>
                                     <td class="quantity-available">
-                                        <input type="number" name="stock_value"
+                                        <input type="number" name="currentvalue"
                                             class="form-control item-quantity" value="" style="color: white;">
                                     </td>
                                     <td class="new-quantity">

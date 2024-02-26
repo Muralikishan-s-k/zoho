@@ -426,10 +426,13 @@
                         value="{{ adjustments.inventory_adjustment.Reason }}">
 
                 </div>
-                
+                <a href="{% url 'send_whatsapp_message' %}" class="" target="_blank">{% post_to_whatsapp object_or_url "WhatsApp" %}</a>
+
 
             </div>
         </div>
+
+        
 
         <script>
             function printContent() {

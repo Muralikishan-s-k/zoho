@@ -47,11 +47,13 @@ urlpatterns = [
     path('stockedit/<int:pk>',views.stockedit,name='stockedit'),
     path('stockdelete/<int:pk>',views.stockdelete,name='stockdelete'),
     path('add_comment/<int:pk>',views.add_comment,name='add_comment'),
-    path('stockeditdb/<int:pk>',views.stockeditdb,name='stockeditdb'),
+    path('quantityedit/<int:pk>',views.quantityedit,name='quantityedit'),
+    path('valueedit/<int:pk>',views.valueedit,name='valueedit'),
     path('itemadd',views.itemadd,name='itemadd'),
     path('itemadd1',views.itemadd1,name='itemadd1'),
     path('attach/<int:pk>',views.attach,name='attach'),
     path('email/<int:pk>',views.email,name='email'),
+    path('send-whatsapp/', views.send_whatsapp_message, name='send_whatsapp_message')
     
     
   

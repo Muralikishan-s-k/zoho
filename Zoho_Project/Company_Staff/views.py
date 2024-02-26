@@ -14,6 +14,7 @@ from docx import Document
 from docx.shared import Pt
 import os
 from django.core.mail import send_mail
+import requests
 
 
 # Create your views here.
@@ -1020,7 +1021,7 @@ def add_comment(request, pk):
     return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')
      
 
-def stockeditdb(request,pk):
+def quantityedit(request,pk):
      if 'login_id' in request.session:
         log_id = request.session['login_id']
         if 'login_id' not in request.session:
@@ -1059,7 +1060,101 @@ def stockeditdb(request,pk):
                 edit2.Description=request.POST.get('description')                                               
                 edit.Quantity_available=request.POST.get('quantity-available')
                 edit.New_quantity_inhand=request.POST.get('quantity-inhand')
-                edit.Quantity_adjusted=request.POST.get('quantity-adjusted')
+                edit.Quantity_adjusted=request.POST.get('quantity-adjusted')               
+                edit2.Status=request.POST.get('status')
+                edit2.Adjusting_date=request.POST.get('date')
+                edit3.Action='edited'                                                          
+                edit.save()
+                edit2.save()
+                edit3.save()
+                                            
+                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)                    
+        if log_details.user_type == 'Company':                       
+            if request.method =='POST':
+                edit=Inventory_adjustment_items.objects.get(id=pk)
+                dash_details = CompanyDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details)
+                allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+                adjustment1=Inventory_adjustment.objects.all()
+                adjustment2=Inventory_adjustment_items.objects.all()
+                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
+                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
+                
+                context = {
+                        'details': dash_details,
+                        'item': item,
+                        'allmodules': allmodules,
+                        'adjustment1':adjustment1,
+                        'adjustments':adjustments,
+                        'adjustment2':adjustment2,
+                        'adjustment3':adjustment_history_entry
+
+                }
+                edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
+                edit2 = edit.inventory_adjustment                             
+                edit2.Mode_of_adjustment=request.POST.get('mode')
+                edit2.Reason=request.POST.get('reason')
+                edit2.Account=request.POST.get('account')
+                edit2.Description=request.POST.get('description')
+                edit2.Reference_number=request.POST.get('refno')
+                edit2.Adjusting_date=request.POST.get('date')
+                edit3.Action='edited'                                               
+                quantity_available=tuple(request.POST.getlist('quantity-available'))                
+                new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
+                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))                
+                items=tuple(request.POST.getlist('item'))
+                print(items)                                
+                for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
+                       item = Items.objects.get(id=item_id)
+                       edit.items=item
+                       edit.Quantity_available=quantityavailable
+                       edit.New_quantity_inhand=newquantity_inhand
+                       edit.Quantity_adjusted=quantityadjusted                 
+                       edit.save()                                                                                                                                
+                edit2.save()
+                edit3.save()
+                                            
+                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
+            return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
+        return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+     
+def valueedit(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+            log_details= LoginDetails.objects.get(id=log_id)
+            if request.method =='POST':
+                edit=Inventory_adjustment_items.objects.get(id=pk)
+                dash_details = StaffDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details.company)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+                adjustment1=Inventory_adjustment.objects.all()
+                adjustment2=Inventory_adjustment_items.objects.all()
+                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
+                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
+                
+                context = {
+                        'details': dash_details,
+                        'item': item,
+                        'allmodules': allmodules,
+                        'adjustment1':adjustment1,
+                        'adjustments':adjustments,
+                        'adjustment2':adjustment2,
+                        'adjustment3':adjustment_history_entry
+
+                }
+                edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
+                edit2 = edit.inventory_adjustment
+                item=request.POST.get('item')
+                item1=Items.objects.get(id=item)
+                edit.items=item1             
+                edit2.Mode_of_adjustment=request.POST.get('mode')
+                edit2.Reason=request.POST.get('reason')
+                edit2.Account=request.POST.get('account')
+                edit2.Description=request.POST.get('description')                                                               
                 edit.Current_value=request.POST.get('currentvalue')
                 edit.Changed_value=request.POST.get('changedvalue')
                 edit.Adjusted_value=request.POST.get('adjustedvalue')
@@ -1098,20 +1193,14 @@ def stockeditdb(request,pk):
                 edit2.Reason=request.POST.get('reason')
                 edit2.Account=request.POST.get('account')
                 edit2.Description=request.POST.get('description')
-                edit2.Reference_number=request.POST.get('refno')                                               
-                quantity_available=tuple(request.POST.getlist('quantity-available'))                
-                new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
-                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))
+                edit2.Reference_number=request.POST.get('refno')                                                               
                 current_value=tuple(request.POST.getlist('currentvalue'))
                 changed_value=tuple(request.POST.getlist('changedvalue'))
                 adjusted_value=tuple(request.POST.getlist('adjustedvalue'))
                 items=tuple(request.POST.getlist('item'))                                
-                for item_id, quantityavailable, newquantity_inhand, quantityadjusted,currentvalue,changedvalue,adjustedvalue in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted,current_value,changed_value,adjusted_value):
+                for item_id,currentvalue,changedvalue,adjustedvalue in zip(items,current_value,changed_value,adjusted_value):
                        item = Items.objects.get(id=item_id)
-                       edit.items =item
-                       edit.Quantity_available=quantityavailable
-                       edit.New_quantity_inhand=newquantity_inhand
-                       edit.Quantity_adjusted=quantityadjusted
+                       edit.items =item                       
                        edit.Current_value=currentvalue
                        edit.Changed_value=changedvalue
                        edit.Adjusted_value=adjustedvalue
@@ -1124,6 +1213,34 @@ def stockeditdb(request,pk):
                 return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
             return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
+     
+
+def send_whatsapp_message(request):
+    if request.method == 'POST':
+        # Extract details from the request
+        mode_of_adjustment = request.POST.get('value1')
+        reference_number = request.POST.get('value2')
+        adjusting_date = request.POST.get('value3')
+        account = request.POST.get('value4')
+        reason = request.POST.get('value5')
+
+        # Compose the message
+        message = f"Mode of Adjustment: {mode_of_adjustment}\n"
+        message += f"Reference Number: {reference_number}\n"
+        message += f"Adjusting Date: {adjusting_date}\n"
+        message += f"Account: {account}\n"
+        message += f"Reason: {reason}"
+
+        # Send message via WhatsApp using your configured API
+        whatsapp_api_url = 'https://api.whatsapp.com/send'
+        response = requests.post(whatsapp_api_url, data={'message': message})
+
+        if response.status_code == 200:
+            return JsonResponse({'status': 'Message sent successfully'})
+        else:
+            return JsonResponse({'status': 'Failed to send message'}, status=500)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
      
      
 def itemadd(request):
