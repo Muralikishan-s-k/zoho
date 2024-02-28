@@ -774,8 +774,7 @@ def value(request):
            if log_details.user_type == 'Company':            
                dash_details = CompanyDetails.objects.get(login_details=log_details)
                if request.method =='POST':
-                   mode1=request.POST.get('mode2')
-                   print(mode1)
+                   mode1=request.POST.get('mode2')                 
                    ref1=generate_reference_number()
                    date1=request.POST.get('date2')
                    account1=request.POST.get('account2')
@@ -1069,17 +1068,18 @@ def quantityedit(request,pk):
                 edit3.save()
                                             
                 return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)                    
-        if log_details.user_type == 'Company':                       
+        if log_details.user_type == 'Company':
+            edit=Inventory_adjustment_items.objects.get(id=pk)
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            item=Items.objects.filter(company=dash_details)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            adjustment1=Inventory_adjustment.objects.all()
+            adjustment2=Inventory_adjustment_items.objects.all()
+            adjustments=Inventory_adjustment_items.objects.get(id=pk)           
+            adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)                       
             if request.method =='POST':
-                edit=Inventory_adjustment_items.objects.get(id=pk)
-                dash_details = CompanyDetails.objects.get(login_details=log_details)
-                item=Items.objects.filter(company=dash_details)
-                allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-                adjustment1=Inventory_adjustment.objects.all()
-                adjustment2=Inventory_adjustment_items.objects.all()
-                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
-                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
                 
+               
                 context = {
                         'details': dash_details,
                         'item': item,
@@ -1091,7 +1091,8 @@ def quantityedit(request,pk):
 
                 }
                 edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
-                edit2 = edit.inventory_adjustment                             
+                edit2 = edit.inventory_adjustment 
+                                        
                 edit2.Mode_of_adjustment=request.POST.get('mode')
                 edit2.Reason=request.POST.get('reason')
                 edit2.Account=request.POST.get('account')
@@ -1099,18 +1100,27 @@ def quantityedit(request,pk):
                 edit2.Reference_number=request.POST.get('refno')
                 edit2.Adjusting_date=request.POST.get('date')
                 edit3.Action='edited'                                               
-                quantity_available=tuple(request.POST.getlist('quantity-available'))                
-                new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
-                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))                
-                items=tuple(request.POST.getlist('item'))
-                print(items)                                
-                for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
-                       item = Items.objects.get(id=item_id)
-                       edit.items=item
-                       edit.Quantity_available=quantityavailable
-                       edit.New_quantity_inhand=newquantity_inhand
-                       edit.Quantity_adjusted=quantityadjusted                 
-                       edit.save()                                                                                                                                
+                quantity_available=request.POST.getlist('quantity-available[]')                
+                new_quantity_inhand=request.POST.getlist('quantity-inhand[]')
+                quantity_adjusted=request.POST.getlist('quantity-adjusted[]')                
+                items=request.POST.getlist('item')
+                inventory=Inventory_adjustment_items.objects.filter(inventory_adjustment=edit2.id)
+                inventory.delete()
+                print(inventory,'inventory')
+                if len(items)==len(quantity_available)==len(new_quantity_inhand)==len(quantity_adjusted):
+                    for i in range(len(items)):
+                        item_instance=Items.objects.get(name=items[i],company=dash_details) 
+                        item_instance.current_stock += int(new_quantity_inhand[i])
+                        item_instance.save()
+                        inv_adjustment=Inventory_adjustment_items.objects.create(items=item_instance,Quantity_available=quantity_available[i],New_quantity_inhand=new_quantity_inhand[i],Quantity_adjusted=quantity_adjusted[i],company=dash_details,login_details=log_details) 
+                        inv_adjustment.save()                            
+                # for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
+                #        item = Items.objects.get(id=item_id)
+                #        edit.items=item
+                #        edit.Quantity_available=quantityavailable
+                #        edit.New_quantity_inhand=newquantity_inhand
+                #        edit.Quantity_adjusted=quantityadjusted                 
+                #        edit.save()                                                                                                                                
                 edit2.save()
                 edit3.save()
                                             
