@@ -865,22 +865,22 @@
                                 <table class="table" id="myTable">
                                     <thead>
                                         <tr>
-                                            <th class="text-warning">Item Name</th>
+                                            <th class="text-warning">Mode</th>
                                             <th class="text-warning">Reference number</th>
                                             <th class="text-warning">Reason</th>
                                             <th class="text-warning">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody >
-                                        {% for s in adjustment2 %}
+                                        {% for s in adjustment %}
                                         <tr>
                                             <td>
                                                 <a href="{% url 'itemdetail' s.id %}"
-                                                title="View details">{{s.items.item_name}}</a>
+                                                title="View details">{{s.Mode_of_adjustment}}</a>
                                             </td>
-                                            <td style="color: white;">{{s.inventory_adjustment.Reference_number}}</td>
-                                            <td style="color: white;">{{s.inventory_adjustment.Reason}}</td>
-                                            <td style="color: white;">{{s.inventory_adjustment.Status}}</td>
+                                            <td style="color: white;">{{s.Reference_number}}</td>
+                                            <td style="color: white;">{{s.Reason}}</td>
+                                            <td style="color: white;">{{s.Status}}</td>
                                            
                                         </tr>
                                         {% endfor %}
