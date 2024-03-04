@@ -5,3 +5,16 @@ if len(items)==len(quantity_available)==len(new_quantity_inhand)==len(quantity_a
                         item_instance.save()
                         inv_adjustment=Inventory_adjustment_items.objects.create(items=item_instance,Quantity_available=quantity_available[i],New_quantity_inhand=new_quantity_inhand[i],Quantity_adjusted=quantity_adjusted[i],company=dash_details,login_details=log_details) 
                         inv_adjustment.save()
+
+
+
+                        # inventory=Inventory_adjustment_items.objects.filter(inventory_adjustment=edit2.id)
+                        # inventory.delete()
+                        # print(inventory,'inventory')
+                        # if len(items)==len(quantity_available)==len(new_quantity_inhand)==len(quantity_adjusted):
+                        #     for i in range(len(items)):
+                        #         item_instance=Items.objects.get(name=items[i],company=dash_details) 
+                        #         item_instance.current_stock += int(new_quantity_inhand[i])
+                        #         item_instance.save()
+                        #         inv_adjustment=Inventory_adjustment_items.objects.create(items=item_instance,Quantity_available=quantity_available[i],New_quantity_inhand=new_quantity_inhand[i],Quantity_adjusted=quantity_adjusted[i],company=dash_details,login_details=log_details) 
+                        #         inv_adjustment.save()                         

@@ -85,7 +85,7 @@
                     <ul class="dropdown-menu" style="background-color: black;">
                         <li>
                             {% if adjustment1.id %}
-                            <a class="dropdown-item" href="{{ adjustment1.Attach_file.url }}"
+                            <a class="dropdown-item" href="{{ adjustment1.inventory_adjustment.Attach_file.url }}"
                                 download>
                                 <button class="btn btn-warning text-black">Download File</button>
                             </a>
@@ -395,13 +395,13 @@
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Mode of Adjustment:</strong>
                     <input type="text" class="form-control" name="value1" id=""
-                        value="{{ adjustment1.Mode_of_adjustment }}">
+                        value="{{ adjustment1.inventory_adjustment.Mode_of_adjustment }}" disabled>
 
                 </div>
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Reference Number:</strong>
                     <input type="number" class="form-control" name="value2" id=""
-                        value="{{ adjustment1.Reference_number }}">
+                        value="{{ adjustment1.inventory_adjustment.Reference_number }}" disabled>
 
                 </div>
             </div>
@@ -409,13 +409,13 @@
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Adjusting Date:</strong>
                     <input type="text" class="form-control" name="value3" id=""
-                        value="{{ adjustment1.Adjusting_date }}">
+                        value="{{ adjustment1.inventory_adjustment.Adjusting_date }}" disabled>
 
                 </div>
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Account:</strong>
                     <input type="text" class="form-control" name="value4" id=""
-                        value="{{ adjustment1.Account }}">
+                        value="{{ adjustment1.inventory_adjustment.Account }}" disabled>
 
                 </div>
             </div>
@@ -423,7 +423,7 @@
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Reason:</strong>
                     <input type="text" class="form-control" name="value5" id=""
-                        value="{{ adjustment1.Reason }}">
+                        value="{{ adjustment1.inventory_adjustment.Reason }}" disabled>
 
                 </div>
                 

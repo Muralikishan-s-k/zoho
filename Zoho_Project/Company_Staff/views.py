@@ -830,8 +830,8 @@ def adjustment_overview(request):
                         'details': dash_details,
                         'item':item,
                         'allmodules': allmodules,
-                        'adjustment':adjustment1,
-                        'adjustment2':adjustment2
+                        'adjustment2':adjustment1,
+                        'adjustment':adjustment2
                 }
                 
         if log_details.user_type == 'Company':
@@ -844,8 +844,8 @@ def adjustment_overview(request):
                     'details': dash_details,
                     'item': item,
                     'allmodules': allmodules,
-                    'adjustment':adjustment1,
-                    'adjustment2':adjustment2
+                    'adjustment2':adjustment1,
+                    'adjustment':adjustment2
             }
         return render(request,'zohomodules/stock_adjustment/adjustment_overview.html',context)
 
@@ -859,9 +859,10 @@ def itemdetail(request,pk):
                 dash_details = StaffDetails.objects.get(login_details=log_details)
                 item=Items.objects.filter(company=dash_details.company)
                 allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-                adjustment1=Inventory_adjustment.objects.get(id=pk)
-                adjustment2=Inventory_adjustment.objects.all()                         
-                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustment1)
+                adjustment1=Inventory_adjustment_items.objects.get(id=pk)
+                adjustment = Inventory_adjustment.objects.get(id=adjustment1.inventory_adjustment.id)
+                adjustment2=Inventory_adjustment_items.objects.all()                      
+                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustment)
             
                 context = {
                     'details': dash_details,
@@ -877,9 +878,10 @@ def itemdetail(request,pk):
             dash_details = CompanyDetails.objects.get(login_details=log_details)
             item=Items.objects.filter(company=dash_details)
             allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-            adjustment1=Inventory_adjustment.objects.get(id=pk)
-            adjustment2=Inventory_adjustment.objects.all()                      
-            adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustment1)
+            adjustment1=Inventory_adjustment_items.objects.get(id=pk)
+            adjustment = Inventory_adjustment.objects.get(id=adjustment1.inventory_adjustment.id)
+            adjustment2=Inventory_adjustment_items.objects.all()                      
+            adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustment)
             
             context = {
                     'details': dash_details,
@@ -903,8 +905,10 @@ def stockedit(request,pk):
                 dash_details = StaffDetails.objects.get(login_details=log_details)
                 item=Items.objects.filter(company=dash_details.company)
                 allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-                adjustment1=Inventory_adjustment.objects.get(id=pk)
-                adjustment2=Inventory_adjustment_items.objects.get(inventory_adjustment=adjustment1)
+                adjustment2 = Inventory_adjustment_items.objects.get(id=pk)          
+                itemz=Items.objects.filter(activation_tag='active')
+                stock_value = adjustment2.items.current_stock * adjustment2.items.purchase_price
+                accounts=Chart_of_Accounts.objects.all()
                 itemz=Items.objects.filter(activation_tag='active')
                 stock_value = adjustment2.items.current_stock * adjustment2.items.purchase_price
                 accounts=Chart_of_Accounts.objects.all()
@@ -912,23 +916,21 @@ def stockedit(request,pk):
                         'details': dash_details,
                         'item':item,
                         'itemz':itemz,
-                        'allmodules': allmodules,
-                        'adjustment1':adjustment1,
+                        'allmodules': allmodules,                       
                         'adjustment2':adjustment2,
                         'account':accounts,
                         'stock_value': stock_value,
                 }
-                if adjustment1.Mode_of_adjustment == 'Quantity adjustment':
+                if adjustment2.inventory_adjustment.Mode_of_adjustment == 'Quantity adjustment':
                     return render(request, 'zohomodules/stock_adjustment/quantityedit.html', context)
-                elif adjustment1.Mode_of_adjustment == 'Value adjustment':
+                elif adjustment2.inventory_adjustment.Mode_of_adjustment == 'Value adjustment':
                     return render(request, 'zohomodules/stock_adjustment/valueedit.html', context)
                 
         if log_details.user_type == 'Company':
             dash_details = CompanyDetails.objects.get(login_details=log_details)
             item=Items.objects.filter(company=dash_details)
-            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-            adjustment1=Inventory_adjustment.objects.get(id=pk)
-            adjustment2=Inventory_adjustment_items.objects.get(inventory_adjustment=adjustment1)
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')           
+            adjustment2 = Inventory_adjustment_items.objects.get(id=pk)          
             itemz=Items.objects.filter(activation_tag='active')
             stock_value = adjustment2.items.current_stock * adjustment2.items.purchase_price
             accounts=Chart_of_Accounts.objects.all()
@@ -936,15 +938,14 @@ def stockedit(request,pk):
                     'details': dash_details,
                     'item': item,
                     'itemz':itemz,
-                    'allmodules': allmodules,
-                    'adjustment1':adjustment1,
+                    'allmodules': allmodules,                  
                     'adjustment2':adjustment2,
                     'account':accounts,
                     'stock_value': stock_value,
             }
-            if adjustment1.Mode_of_adjustment == 'Quantity adjustment':
+            if adjustment2.inventory_adjustment.Mode_of_adjustment == 'Quantity adjustment':
                 return render(request, 'zohomodules/stock_adjustment/quantityedit.html', context)
-            elif adjustment1.Mode_of_adjustment == 'Value adjustment':
+            elif adjustment2.inventory_adjustment.Mode_of_adjustment == 'Value adjustment':
                 return render(request, 'zohomodules/stock_adjustment/valueedit.html', context)
             
         return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')
@@ -955,11 +956,8 @@ def stockdelete(request,pk):
         if 'login_id' not in request.session:
             return redirect('/')
         log_details= LoginDetails.objects.get(id=log_id)        
-        if log_details.user_type == 'Company' or log_details.user_type == 'Staff':
-            adjustment1=Inventory_adjustment.objects.get(id=pk)                        
-            adjustment2=Inventory_adjustment_items.objects.get(inventory_adjustment=adjustment1)            
-            if adjustment2.inventory_adjustment:
-                adjustment2.inventory_adjustment.delete()
+        if log_details.user_type == 'Company' or log_details.user_type == 'Staff':                                  
+            adjustment2=Inventory_adjustment_items.objects.get(id=pk)            
             adjustment2.delete()           
             return redirect('adjustment_overview')
         return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')     
@@ -975,16 +973,14 @@ def add_comment(request, pk):
             if request.method == 'POST':
                 dash_details = StaffDetails.objects.get(login_details=log_details)
                 item=Items.objects.filter(company=dash_details.company)
-                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-                adjustment1=Inventory_adjustment.objects.get(id=pk)
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')               
                 adjustment2=Inventory_adjustment.objects.all()
-                adjustments=Inventory_adjustment_items.objects.get(inventory_adjustment=adjustment1)           
+                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
                 adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)               
                 context = {
                         'details': dash_details,
                         'item': item,
-                        'allmodules': allmodules,
-                        'adjustment1':adjustment1,
+                        'allmodules': allmodules,                       
                         'adjustments':adjustments,
                         'adjustment':adjustment2,
                         'adjustment3':adjustment_history_entry
@@ -997,16 +993,14 @@ def add_comment(request, pk):
             if request.method == 'POST':
                 dash_details = CompanyDetails.objects.get(login_details=log_details)
                 item=Items.objects.filter(company=dash_details)
-                allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-                adjustment1=Inventory_adjustment.objects.get(id=pk)
+                allmodules= ZohoModules.objects.get(company=dash_details,status='New')               
                 adjustment2=Inventory_adjustment.objects.all()
-                adjustments=Inventory_adjustment_items.objects.get(inventory_adjustment=adjustment1)           
+                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
                 adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)               
                 context = {
                         'details': dash_details,
                         'item': item,
-                        'allmodules': allmodules,
-                        'adjustment1':adjustment1,
+                        'allmodules': allmodules,                       
                         'adjustments':adjustments,
                         'adjustment':adjustment2,
                         'adjustment3':adjustment_history_entry
@@ -1025,73 +1019,73 @@ def quantityedit(request,pk):
         if 'login_id' not in request.session:
             return redirect('/')
         log_details= LoginDetails.objects.get(id=log_id)
-        if log_details.user_type == 'Staff':
-            log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':           
             if request.method =='POST':
+                log_details= LoginDetails.objects.get(id=log_id)
                 edit=Inventory_adjustment_items.objects.get(id=pk)
                 dash_details = StaffDetails.objects.get(login_details=log_details)
                 item=Items.objects.filter(company=dash_details.company)
-                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-                adjustment1=Inventory_adjustment.objects.all()
+                allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')         
                 adjustment2=Inventory_adjustment_items.objects.all()
                 adjustments=Inventory_adjustment_items.objects.get(id=pk)           
-                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
-                
+                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)                              
                 context = {
                         'details': dash_details,
                         'item': item,
-                        'allmodules': allmodules,
-                        'adjustment1':adjustment1,
-                        'adjustments':adjustments,
-                        'adjustment2':adjustment2,
+                        'allmodules': allmodules,                      
+                        'adjustment1':adjustments,
+                        'adjustment':adjustment2,
                         'adjustment3':adjustment_history_entry
 
                 }
                 edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
-                edit2 = edit.inventory_adjustment
-                item=request.POST.get('item')
-                item1=Items.objects.get(id=item)
-                edit.items=item1             
+                edit2 = edit.inventory_adjustment                             
                 edit2.Mode_of_adjustment=request.POST.get('mode')
                 edit2.Reason=request.POST.get('reason')
                 edit2.Account=request.POST.get('account')
-                edit2.Description=request.POST.get('description')                                               
-                edit.Quantity_available=request.POST.get('quantity-available')
-                edit.New_quantity_inhand=request.POST.get('quantity-inhand')
-                edit.Quantity_adjusted=request.POST.get('quantity-adjusted')               
-                edit2.Status=request.POST.get('status')
+                edit2.Description=request.POST.get('description')
                 edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                                          
-                edit.save()
+                edit3.Action='edited'                                               
+                quantity_available=tuple(request.POST.getlist('quantity-available'))                
+                new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
+                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))                
+                items=tuple(request.POST.getlist('item'))                                                        
+                for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
+                       item = Items.objects.get(id=item_id)
+                       adjust2 = Inventory_adjustment_items.objects.create(
+                        items=item,
+                        company=dash_details,
+                        login_details=log_details,
+                        inventory_adjustment=edit2,
+                        Quantity_available=quantityavailable,
+                        New_quantity_inhand=newquantity_inhand,
+                        Quantity_adjusted=quantityadjusted 
+                       )                
+                       adjust2.save()                                                                                       
                 edit2.save()
                 edit3.save()
                                             
                 return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)                    
-        if log_details.user_type == 'Company':
-            edit=Inventory_adjustment_items.objects.get(id=pk)
-            dash_details = CompanyDetails.objects.get(login_details=log_details)
-            item=Items.objects.filter(company=dash_details)
-            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-            adjustment1=Inventory_adjustment.objects.all()
-            adjustment2=Inventory_adjustment_items.objects.all()
-            adjustments=Inventory_adjustment_items.objects.get(id=pk)           
-            adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)                       
+        if log_details.user_type == 'Company':                                  
             if request.method =='POST':
-                
-               
+                edit=Inventory_adjustment_items.objects.get(id=pk)
+                dash_details = CompanyDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details)
+                allmodules= ZohoModules.objects.get(company=dash_details,status='New')          
+                adjustment2=Inventory_adjustment_items.objects.all()
+                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
+                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)                               
                 context = {
                         'details': dash_details,
                         'item': item,
-                        'allmodules': allmodules,
-                        'adjustment1':adjustment1,
-                        'adjustments':adjustments,
-                        'adjustment2':adjustment2,
+                        'allmodules': allmodules,                       
+                        'adjustment1':adjustments,
+                        'adjustment':adjustment2,
                         'adjustment3':adjustment_history_entry
 
                 }
                 edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
-                edit2 = edit.inventory_adjustment 
-                                        
+                edit2 = edit.inventory_adjustment                                        
                 edit2.Mode_of_adjustment=request.POST.get('mode')
                 edit2.Reason=request.POST.get('reason')
                 edit2.Account=request.POST.get('account')
@@ -1099,27 +1093,22 @@ def quantityedit(request,pk):
                 edit2.Reference_number=request.POST.get('refno')
                 edit2.Adjusting_date=request.POST.get('date')
                 edit3.Action='edited'                                               
-                quantity_available=request.POST.getlist('quantity-available[]')                
-                new_quantity_inhand=request.POST.getlist('quantity-inhand[]')
-                quantity_adjusted=request.POST.getlist('quantity-adjusted[]')                
-                items=request.POST.getlist('item')
-                inventory=Inventory_adjustment_items.objects.filter(inventory_adjustment=edit2.id)
-                inventory.delete()
-                print(inventory,'inventory')
-                if len(items)==len(quantity_available)==len(new_quantity_inhand)==len(quantity_adjusted):
-                    for i in range(len(items)):
-                        item_instance=Items.objects.get(name=items[i],company=dash_details) 
-                        item_instance.current_stock += int(new_quantity_inhand[i])
-                        item_instance.save()
-                        inv_adjustment=Inventory_adjustment_items.objects.create(items=item_instance,Quantity_available=quantity_available[i],New_quantity_inhand=new_quantity_inhand[i],Quantity_adjusted=quantity_adjusted[i],company=dash_details,login_details=log_details) 
-                        inv_adjustment.save()                            
-                # for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
-                #        item = Items.objects.get(id=item_id)
-                #        edit.items=item
-                #        edit.Quantity_available=quantityavailable
-                #        edit.New_quantity_inhand=newquantity_inhand
-                #        edit.Quantity_adjusted=quantityadjusted                 
-                #        edit.save()                                                                                                                                
+                quantity_available=tuple(request.POST.getlist('quantity-available'))                
+                new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
+                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))                
+                items=tuple(request.POST.getlist('item'))                                                        
+                for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
+                       item = Items.objects.get(id=item_id)
+                       adjust2 = Inventory_adjustment_items.objects.create(
+                        items=item,
+                        company=dash_details,
+                        login_details=log_details,
+                        inventory_adjustment=edit2,
+                        Quantity_available=quantityavailable,
+                        New_quantity_inhand=newquantity_inhand,
+                        Quantity_adjusted=quantityadjusted 
+                       )                
+                       adjust2.save()                                                                                                                                
                 edit2.save()
                 edit3.save()
                                             
@@ -1140,7 +1129,6 @@ def valueedit(request,pk):
                 dash_details = StaffDetails.objects.get(login_details=log_details)
                 item=Items.objects.filter(company=dash_details.company)
                 allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-                adjustment1=Inventory_adjustment.objects.all()
                 adjustment2=Inventory_adjustment_items.objects.all()
                 adjustments=Inventory_adjustment_items.objects.get(id=pk)           
                 adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
@@ -1148,51 +1136,9 @@ def valueedit(request,pk):
                 context = {
                         'details': dash_details,
                         'item': item,
-                        'allmodules': allmodules,
-                        'adjustment1':adjustment1,
-                        'adjustments':adjustments,
-                        'adjustment2':adjustment2,
-                        'adjustment3':adjustment_history_entry
-
-                }
-                edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
-                edit2 = edit.inventory_adjustment
-                item=request.POST.get('item')
-                item1=Items.objects.get(id=item)
-                edit.items=item1             
-                edit2.Mode_of_adjustment=request.POST.get('mode')
-                edit2.Reason=request.POST.get('reason')
-                edit2.Account=request.POST.get('account')
-                edit2.Description=request.POST.get('description')                                                               
-                edit.Current_value=request.POST.get('currentvalue')
-                edit.Changed_value=request.POST.get('changedvalue')
-                edit.Adjusted_value=request.POST.get('adjustedvalue')
-                edit2.Status=request.POST.get('status')
-                edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                                          
-                edit.save()
-                edit2.save()
-                edit3.save()
-                                            
-                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)                    
-        if log_details.user_type == 'Company':                       
-            if request.method =='POST':
-                edit=Inventory_adjustment_items.objects.get(id=pk)
-                dash_details = CompanyDetails.objects.get(login_details=log_details)
-                item=Items.objects.filter(company=dash_details)
-                allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-                adjustment1=Inventory_adjustment.objects.all()
-                adjustment2=Inventory_adjustment_items.objects.all()
-                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
-                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
-                
-                context = {
-                        'details': dash_details,
-                        'item': item,
-                        'allmodules': allmodules,
-                        'adjustment1':adjustment1,
-                        'adjustments':adjustments,
-                        'adjustment2':adjustment2,
+                        'allmodules': allmodules,                      
+                        'adjustment1':adjustments,
+                        'adjustment':adjustment2,
                         'adjustment3':adjustment_history_entry
 
                 }
@@ -1202,20 +1148,73 @@ def valueedit(request,pk):
                 edit2.Reason=request.POST.get('reason')
                 edit2.Account=request.POST.get('account')
                 edit2.Description=request.POST.get('description')
-                edit2.Reference_number=request.POST.get('refno')                                                               
+                edit2.Reference_number=request.POST.get('refno') 
+                edit2.Adjusting_date=request.POST.get('date')
+                edit3.Action='edited'                                                               
                 current_value=tuple(request.POST.getlist('currentvalue'))
                 changed_value=tuple(request.POST.getlist('changedvalue'))
                 adjusted_value=tuple(request.POST.getlist('adjustedvalue'))
                 items=tuple(request.POST.getlist('item'))                                
                 for item_id,currentvalue,changedvalue,adjustedvalue in zip(items,current_value,changed_value,adjusted_value):
                        item = Items.objects.get(id=item_id)
-                       edit.items =item                       
-                       edit.Current_value=currentvalue
-                       edit.Changed_value=changedvalue
-                       edit.Adjusted_value=adjustedvalue
-                       edit.save()                
+                       adjust2 = Inventory_adjustment_items.objects.create(
+                            items=item,
+                            company=dash_details,
+                            login_details=log_details,
+                            inventory_adjustment=edit2,                       
+                            Current_value=currentvalue,
+                            Changed_value=changedvalue,
+                            Adjusted_value=adjustedvalue,                      
+                       )                
+                       adjust2.save()                                                                                                       
+                edit2.save()
+                edit3.save()
+                                            
+                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)                    
+        if log_details.user_type == 'Company':                       
+            if request.method =='POST':
+                edit=Inventory_adjustment_items.objects.get(id=pk)
+                dash_details = CompanyDetails.objects.get(login_details=log_details)
+                item=Items.objects.filter(company=dash_details)
+                allmodules= ZohoModules.objects.get(company=dash_details,status='New')              
+                adjustment2=Inventory_adjustment_items.objects.all()
+                adjustments=Inventory_adjustment_items.objects.get(id=pk)           
+                adjustment_history_entry = Inventory_adjustment_history.objects.get(inventory_adjustment=adjustments.inventory_adjustment)
+                
+                context = {
+                        'details': dash_details,
+                        'item': item,
+                        'allmodules': allmodules,                       
+                        'adjustment1':adjustments,
+                        'adjustment':adjustment2,
+                        'adjustment3':adjustment_history_entry
+
+                }
+                edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit.inventory_adjustment)
+                edit2 = edit.inventory_adjustment                             
+                edit2.Mode_of_adjustment=request.POST.get('mode')
+                edit2.Reason=request.POST.get('reason')
+                edit2.Account=request.POST.get('account')
+                edit2.Description=request.POST.get('description')
+                edit2.Reference_number=request.POST.get('refno') 
                 edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                                                          
+                edit3.Action='edited'                                                               
+                current_value=tuple(request.POST.getlist('currentvalue'))
+                changed_value=tuple(request.POST.getlist('changedvalue'))
+                adjusted_value=tuple(request.POST.getlist('adjustedvalue'))
+                items=tuple(request.POST.getlist('item'))                                
+                for item_id,currentvalue,changedvalue,adjustedvalue in zip(items,current_value,changed_value,adjusted_value):
+                       item = Items.objects.get(id=item_id)
+                       adjust2 = Inventory_adjustment_items.objects.create(
+                            items=item,
+                            company=dash_details,
+                            login_details=log_details,
+                            inventory_adjustment=edit2,                       
+                            Current_value=currentvalue,
+                            Changed_value=changedvalue,
+                            Adjusted_value=adjustedvalue,                      
+                       )                
+                       adjust2.save()                                                                                                       
                 edit2.save()
                 edit3.save()
                                             
@@ -1335,9 +1334,8 @@ def attach(request, pk):
         log_details = LoginDetails.objects.get(id=log_id)
         if log_details.user_type == 'Staff':
             log_details= LoginDetails.objects.get(id=log_id)
-            if request.method == 'POST':
-                adjustment2 = Inventory_adjustment.objects.get(id=pk)
-                adjustment2 = Inventory_adjustment_items.objects.get(inventory_adjustment=adjustment2)
+            if request.method == 'POST':             
+                adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
                 edit = adjustment2.inventory_adjustment
                 if request.FILES:
                     file_obj = request.FILES['file1']
@@ -1349,9 +1347,8 @@ def attach(request, pk):
                 else:
                     return JsonResponse({'error': 'No file provided'})
         if log_details.user_type == 'Company':
-            if request.method == 'POST':
-                adjustment2 = Inventory_adjustment.objects.get(id=pk)
-                adjustment2 = Inventory_adjustment_items.objects.get(inventory_adjustment=adjustment2)
+            if request.method == 'POST':               
+                adjustment2 = Inventory_adjustment_items.objects.get(id=pk)
                 edit = adjustment2.inventory_adjustment
                 if request.FILES:
                     file_obj = request.FILES['file1']
@@ -1384,8 +1381,8 @@ def email(request,pk):
                 # Retrieve form data
                     subject = request.POST.get('subject')
                     email = request.POST.get('email')
-                    adjustment2 = Inventory_adjustment.objects.get(id=pk) 
-                    message = f'Mode of adjustment: {adjustment2.Mode_of_adjustment}\nReference number: {adjustment2.Reference_number}\nAdjusting date: {adjustment2.Adjusting_date}\nAccount: {adjustment2.Account}\nReason: {adjustment2.Reason}\n'
+                    adjustment2 = Inventory_adjustment_items.objects.get(id=pk) 
+                    message = f'Mode of adjustment: {adjustment2.inventory_adjustment.Mode_of_adjustment}\nReference number: {adjustment2.inventory_adjustment.Reference_number}\nAdjusting date: {adjustment2.inventory_adjustment.Adjusting_date}\nAccount: {adjustment2.inventory_adjustment.Account}\nReason: {adjustment2.inventory_adjustment.Reason}\n'
         
                 # Send email
                     send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
@@ -1403,8 +1400,8 @@ def email(request,pk):
         # Retrieve form data
                 subject = request.POST.get('subject')
                 email = request.POST.get('email')
-                adjustment2 = Inventory_adjustment.objects.get(id=pk) 
-                message = f'Mode of adjustment: {adjustment2.Mode_of_adjustment}\nReference number: {adjustment2.Reference_number}\nAdjusting date: {adjustment2.Adjusting_date}\nAccount: {adjustment2.Account}\nReason: {adjustment2.Reason}\n'
+                adjustment2 = Inventory_adjustment_items.objects.get(id=pk) 
+                message = f'Mode of adjustment: {adjustment2.inventory_adjustment.Mode_of_adjustment}\nReference number: {adjustment2.inventory_adjustment.Reference_number}\nAdjusting date: {adjustment2.inventory_adjustment.Adjusting_date}\nAccount: {adjustment2.inventory_adjustment.Account}\nReason: {adjustment2.inventory_adjustment.Reason}\n'
         
         # Send email
                 send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
