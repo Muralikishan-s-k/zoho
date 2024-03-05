@@ -610,8 +610,9 @@ def create_adjustment_value(request):
 def get_item_price(request):
     if request.method == 'GET':
         item_id = request.GET.get('id')
-        item=Items.objects.get(id=item_id)       
-        price = item.current_stock * item.purchase_price
+        item=Items.objects.get(id=item_id) 
+        print('item',item)      
+        price = int(item.current_stock) * int(item.purchase_price)
         return JsonResponse({'price': price})
     return JsonResponse({'error': 'Invalid request'})
 
@@ -1045,7 +1046,13 @@ def quantityedit(request,pk):
                 edit2.Account=request.POST.get('account')
                 edit2.Description=request.POST.get('description')
                 edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                               
+                edit3.Action='edited'
+                if 'draft' in request.POST:
+                    edit2.Status = 'draft'
+                else:
+                    edit2.Status = 'saved'  
+                edit2.save()
+                edit3.save()                                                 
                 quantity_available=tuple(request.POST.getlist('quantity-available'))                
                 new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
                 quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))                
@@ -1061,11 +1068,9 @@ def quantityedit(request,pk):
                         New_quantity_inhand=newquantity_inhand,
                         Quantity_adjusted=quantityadjusted 
                        )                
-                       adjust2.save()                                                                                       
-                edit2.save()
-                edit3.save()
+                       adjust2.save()                                                                                                                   
                                             
-                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)                    
+                return redirect('itemdetail',pk=adjustments.id)                    
         if log_details.user_type == 'Company':                                  
             if request.method =='POST':
                 edit=Inventory_adjustment_items.objects.get(id=pk)
@@ -1092,7 +1097,13 @@ def quantityedit(request,pk):
                 edit2.Description=request.POST.get('description')
                 edit2.Reference_number=request.POST.get('refno')
                 edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                               
+                edit3.Action='edited'
+                if 'draft' in request.POST:
+                    edit2.Status = 'draft'
+                else:
+                    edit2.Status = 'saved'  
+                edit2.save()
+                edit3.save()                                               
                 quantity_available=tuple(request.POST.getlist('quantity-available'))                
                 new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
                 quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))                
@@ -1109,10 +1120,9 @@ def quantityedit(request,pk):
                         Quantity_adjusted=quantityadjusted 
                        )                
                        adjust2.save()                                                                                                                                
-                edit2.save()
-                edit3.save()
+                
                                             
-                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
+                return redirect('itemdetail',pk=adjustments.id)
             return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
      
@@ -1150,7 +1160,13 @@ def valueedit(request,pk):
                 edit2.Description=request.POST.get('description')
                 edit2.Reference_number=request.POST.get('refno') 
                 edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                                               
+                edit3.Action='edited'
+                if 'draft' in request.POST:
+                    edit2.Status = 'draft'
+                else:
+                    edit2.Status = 'saved'  
+                edit2.save()
+                edit3.save()                                                               
                 current_value=tuple(request.POST.getlist('currentvalue'))
                 changed_value=tuple(request.POST.getlist('changedvalue'))
                 adjusted_value=tuple(request.POST.getlist('adjustedvalue'))
@@ -1167,10 +1183,9 @@ def valueedit(request,pk):
                             Adjusted_value=adjustedvalue,                      
                        )                
                        adjust2.save()                                                                                                       
-                edit2.save()
-                edit3.save()
+                
                                             
-                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)                    
+                return redirect('itemdetail',pk=adjustments.id)                    
         if log_details.user_type == 'Company':                       
             if request.method =='POST':
                 edit=Inventory_adjustment_items.objects.get(id=pk)
@@ -1198,7 +1213,13 @@ def valueedit(request,pk):
                 edit2.Description=request.POST.get('description')
                 edit2.Reference_number=request.POST.get('refno') 
                 edit2.Adjusting_date=request.POST.get('date')
-                edit3.Action='edited'                                                               
+                edit3.Action='edited' 
+                if 'draft' in request.POST:
+                    edit2.Status = 'draft'
+                else:
+                    edit2.Status = 'saved'  
+                edit2.save()
+                edit3.save()                                                              
                 current_value=tuple(request.POST.getlist('currentvalue'))
                 changed_value=tuple(request.POST.getlist('changedvalue'))
                 adjusted_value=tuple(request.POST.getlist('adjustedvalue'))
@@ -1215,10 +1236,9 @@ def valueedit(request,pk):
                             Adjusted_value=adjustedvalue,                      
                        )                
                        adjust2.save()                                                                                                       
-                edit2.save()
-                edit3.save()
+               
                                             
-                return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
+                return redirect('itemdetail',pk=adjustments.id)
             return render(request,"zohomodules/stock_adjustment/adjustment_overview.html",context)
         return render(request,'zohomodules/stock_adjustment/create_adjustment.html')
      
