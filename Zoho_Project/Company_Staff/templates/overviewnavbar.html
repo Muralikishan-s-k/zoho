@@ -874,13 +874,10 @@
                                     <tbody >
                                         {% for s in adjustment2 %}
                                         <tr>
-                                            <td>
-                                                <a href="{% url 'itemdetail' s.id %}"
-                                                title="View details">{{s.Mode_of_adjustment}}</a>
-                                            </td>
-                                            <td style="color: white;">{{s.Reference_number}}</td>
-                                            <td style="color: white;">{{s.Reason}}</td>
-                                            <td style="color: white;">{{s.Status}}</td>
+                                            <td><a href="{% url 'itemdetail' s.id %}" style="color: white;">{{s.Mode_of_adjustment}}</a>                                           </td>
+                                            <td><a href="{% url 'itemdetail' s.id %}" style="color: white;">{{s.Reference_number}}</a></td>
+                                            <td><a href="{% url 'itemdetail' s.id %}" style="color: white;">{{s.Reason}}</a></td>
+                                            <td><a href="{% url 'itemdetail' s.id %}" style="color: white;">{{s.Status}}</a></td>
                                            
                                         </tr>
                                         {% endfor %}

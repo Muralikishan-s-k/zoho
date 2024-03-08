@@ -268,8 +268,8 @@
                         </div>
                         <div class="modal-body">
                             <!-- Display existing comments here -->
-                            {% if adjustment1.id %}
-                            <form id="commentForm" method="post" action="{% url 'add_comment' adjustment1.id %}">
+                            {% if adjustment.id %}
+                            <form id="commentForm" method="post" action="{% url 'add_comment' adjustment.id %}">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label for="commentText" class="form-label" style="color: white;">Add
@@ -420,14 +420,24 @@
                 </div>
             </div>
             <div class="row mt-3" style="margin-left: 40px;">
-                <div class="col-md-6" style="margin-top: 30px;color: black;">
+                <div class="col-md-4" style="margin-top: 30px;color: black;">
                     <strong>Reason:</strong>
                     <input type="text" class="form-control" name="value5" id=""
                         value="{{ adjustment.Reason }}" disabled>
 
                 </div>
+                <div class="col-md-4" style="margin-top: 30px;color: black;">
+                    <strong>Status:</strong>
+                    <input type="text" class="form-control" name="value5" id=""
+                        value="{{ adjustment.Status }}" disabled>
+
+                </div>
+                <div class="col-md-4 whatsapp-this" style="margin-top: 30px;color: black;">
+                    <strong>Share:</strong>
+                    <a href="{% url 'send_whatsapp_message' %}" class="" target="_blank">{% post_to_whatsapp object_or_url "WhatsApp" %}</a>
+
+                </div>
                 
-                <a href="{% url 'send_whatsapp_message' %}" class="" target="_blank">{% post_to_whatsapp object_or_url "WhatsApp" %}</a>
 
 
             </div>
