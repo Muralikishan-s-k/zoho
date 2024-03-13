@@ -19,6 +19,9 @@
         width: 600px;
 
     }
+    .modal-content {
+            border: 1px solid white;
+        }
 
     @media screen and (max-width: 768px) {
         .container.mt-3.p-4 {
@@ -66,10 +69,8 @@
             margin-top: -100px;
         }
 
-        
-    }
 
-   
+    }
 </style>
 <div class="col-md-7" style="background-color: black;">
 
@@ -85,8 +86,7 @@
                     <ul class="dropdown-menu" style="background-color: black;">
                         <li>
                             {% if adjustment.id %}
-                            <a class="dropdown-item" href="{{ adjustment.Attach_file.url }}"
-                                download>
+                            <a class="dropdown-item" href="{{ adjustment.Attach_file.url }}" download>
                                 <button class="btn btn-warning text-black">Download File</button>
                             </a>
                             {% endif %}
@@ -180,14 +180,14 @@
             <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
-                    <div class="modal-content bg-dark">
+                    <div class="modal-content bg-black">
                         <div class="modal-header">
                             <h5 class="modal-title text-light" id="emailModalLabel">Send Email</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        {% if adjustment1.id %}
+                        {% if adjustment.id %}
                         <form id="commentForm" method="post" action="{% url 'email' adjustment.id %}">
                             {% csrf_token %}
                             <div class="modal-body">
@@ -206,6 +206,8 @@
 
                                 <button type="button" id="sendEmailBtn" class="btn btn-outline-warning"
                                     data-bs-dismiss="modal">Send</button>
+                                <button type="button"  class="btn btn-danger text-black"
+                                    data-bs-dismiss="modal">close</button>
                             </div>
                         </form>
                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -220,7 +222,7 @@
                                     // Send AJAX request
                                     $.ajax({
                                         type: 'POST',
-                                        url: '{% url "email" adjustment1.id %}',
+                                        url: '{% url "email" adjustment.id %}',
                                         data: formData,
 
                                         error: function (xhr, status, error) {
@@ -259,7 +261,7 @@
             <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content bg-dark">
+                    <div class="modal-content bg-black">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="commentModalLabel" style="color: white;">
                                 <strong>Comments</strong>
@@ -274,7 +276,7 @@
                                 <div class="mb-3">
                                     <label for="commentText" class="form-label" style="color: white;">Add
                                         Comment:</label>
-                                    <textarea class="form-control" id="commentText" name="commentText" rows="3"
+                                    <textarea class="form-control text-light" id="commentText" name="commentText" rows="3"
                                         style="color: white;"></textarea>
                                 </div>
                                 <button type="submit" id="addCommentBtn"
@@ -294,7 +296,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-warning text-black" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -352,7 +354,7 @@
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content bg-dark">
+                    <div class="modal-content bg-black">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5 text-light" id="exampleModalLabel"><strong>History</strong></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -380,7 +382,7 @@
                             </table>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-danger text-black" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -408,42 +410,42 @@
             <div class="row mt-3" style="margin-left: 40px;">
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Adjusting Date:</strong>
-                    <input type="text" class="form-control" name="value3" id=""
-                        value="{{ adjustment.Adjusting_date }}" disabled>
+                    <input type="text" class="form-control" name="value3" id="" value="{{ adjustment.Adjusting_date }}"
+                        disabled>
 
                 </div>
                 <div class="col-md-6" style="margin-top: 30px;color: black;">
                     <strong>Account:</strong>
-                    <input type="text" class="form-control" name="value4" id=""
-                        value="{{ adjustment.Account }}" disabled>
+                    <input type="text" class="form-control" name="value4" id="" value="{{ adjustment.Account }}"
+                        disabled>
 
                 </div>
             </div>
             <div class="row mt-3" style="margin-left: 40px;">
                 <div class="col-md-4" style="margin-top: 30px;color: black;">
                     <strong>Reason:</strong>
-                    <input type="text" class="form-control" name="value5" id=""
-                        value="{{ adjustment.Reason }}" disabled>
+                    <input type="text" class="form-control" name="value5" id="" value="{{ adjustment.Reason }}"
+                        disabled>
 
                 </div>
                 <div class="col-md-4" style="margin-top: 30px;color: black;">
                     <strong>Status:</strong>
-                    <input type="text" class="form-control" name="value5" id=""
-                        value="{{ adjustment.Status }}" disabled>
+                    <input type="text" class="form-control" name="value5" id="" value="{{ adjustment.Status }}"
+                        disabled>
+                        
 
                 </div>
-                <div class="col-md-4 whatsapp-this" style="margin-top: 30px;color: black;">
-                    <strong>Share:</strong>
-                    <a href="{% url 'send_whatsapp_message' %}" class="" target="_blank">{% post_to_whatsapp object_or_url "WhatsApp" %}</a>
-
+                <div class="col-md-4" style="margin-top: 50px;color: black;">
+                    {% if adjustment.Status == 'draft' %}
+                    <a href="{% url 'convert' adjustment.id %}">
+                    <button id="convertButton" class="btn btn-warning btn-lg text-black" title="Save">Convert</button>
+                </a>
+                    {% endif %}
                 </div>
-                
-
-
             </div>
         </div>
 
-        
+
 
         <script>
             function printContent() {

@@ -17,4 +17,12 @@ if len(items)==len(quantity_available)==len(new_quantity_inhand)==len(quantity_a
                         #         item_instance.current_stock += int(new_quantity_inhand[i])
                         #         item_instance.save()
                         #         inv_adjustment=Inventory_adjustment_items.objects.create(items=item_instance,Quantity_available=quantity_available[i],New_quantity_inhand=new_quantity_inhand[i],Quantity_adjusted=quantity_adjusted[i],company=dash_details,login_details=log_details) 
-                        #         inv_adjustment.save()                         
+                        #         inv_adjustment.save() 
+                      
+    
+                        <div class="col-md-4 whatsapp-this" style="margin-top: 30px;color: black;">
+                            <strong>Share:</strong>
+                            <a href="{% url 'send_whatsapp_message' %}" class="" target="_blank"><button class="btn btn-outline-warning btn-sm"><i class="fab fa-whatsapp text-warning"></i>{% post_to_whatsapp object_or_url "whatsapp" %}</button></a>
+        
+                        </div>                        
+                        

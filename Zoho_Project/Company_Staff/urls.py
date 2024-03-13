@@ -53,6 +53,7 @@ urlpatterns = [
     path('itemadd1',views.itemadd1,name='itemadd1'),
     path('attach/<int:pk>',views.attach,name='attach'),
     path('email/<int:pk>',views.email,name='email'),
+    path('convert/<int:pk>',views.convert,name='convert'),
     path('send-whatsapp/', views.send_whatsapp_message, name='send_whatsapp_message')
     
     

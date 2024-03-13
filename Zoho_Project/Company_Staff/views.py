@@ -641,7 +641,9 @@ def quantity(request):
                 account1=request.POST.get('account1')
                 reason1=request.POST.get('reason1')
                 desc1=request.POST.get('desc1')
-                items=tuple(request.POST.getlist('item1'))                              
+                items=tuple(request.POST.getlist('item1'))
+                print(items) 
+                                            
                 currentstock=tuple(request.POST.getlist('current_stock'))                
                 newquantity=tuple(request.POST.getlist('new-quantity'))
                 quantityadjusted=tuple(request.POST.getlist('quantity-adjusted'))
@@ -655,6 +657,13 @@ def quantity(request):
                                              Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=company_details,
                                              login_details=log_details)
                 adjustment1.save()
+
+                for item_id, stock_value in zip(items, newquantity):
+                    item = Items.objects.get(id=item_id)
+                    print(item,stock_value) 
+                    item.current_stock = stock_value
+                    item.save()
+                
                 for item_id, stock_value, changed_value, adjusted_value in zip(items, currentstock, newquantity, quantityadjusted):
                        item = Items.objects.get(id=item_id)
                        adjustment2 = Inventory_adjustment_items.objects.create(
@@ -684,10 +693,14 @@ def quantity(request):
                 account1=request.POST.get('account1')
                 reason1=request.POST.get('reason1')
                 desc1=request.POST.get('desc1')
-                items=tuple(request.POST.getlist('item1'))                              
-                currentstock=tuple(request.POST.getlist('current_stock'))                
+                items=tuple(request.POST.getlist('item1'))
+                print(items)                              
+                currentstock=tuple(request.POST.getlist('current_stock'))
+                # print(currentstock)                
                 newquantity=tuple(request.POST.getlist('new-quantity'))
+                # print(newquantity)
                 quantityadjusted=tuple(request.POST.getlist('quantity-adjusted'))
+                # print(quantityadjusted)
                 file1 = request.FILES.get('file1')
                 
                 if 'draft' in request.POST:
@@ -698,6 +711,15 @@ def quantity(request):
                                              Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
                                              login_details=log_details)
                 adjustment1.save()
+
+                for item_id, stock_value in zip(items, newquantity):
+                    item = Items.objects.get(id=item_id)
+                    print(item,stock_value) 
+                    item.current_stock = stock_value
+                    item.save()
+
+                
+
                 for item_id, stock_value, changed_value, adjusted_value in zip(items, currentstock, newquantity, quantityadjusted):
                        item = Items.objects.get(id=item_id)
                        adjustment2 = Inventory_adjustment_items.objects.create(
@@ -961,7 +983,20 @@ def stockdelete(request,pk):
             adjustment2=Inventory_adjustment.objects.get(id=pk)            
             adjustment2.delete()           
             return redirect('adjustment_overview')
-        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')     
+        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html') 
+
+def convert(request,pk):
+     if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)        
+        if log_details.user_type == 'Company' or log_details.user_type == 'Staff':                                  
+            adjustment2=Inventory_adjustment.objects.get(id=pk)            
+            adjustment2.Status='saved'
+            adjustment2.save()           
+            return redirect('itemdetail',pk=adjustment2.id)
+        return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')         
 
 
 def add_comment(request, pk):
@@ -1049,23 +1084,37 @@ def quantityedit(request,pk):
                         'adjustment3':adjustment_history_entry
 
                 }
-                edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit2)                            
+                edit3 = Inventory_adjustment_history.objects.get(inventory_adjustment=edit2)                                                   
                 edit2.Mode_of_adjustment=request.POST.get('mode')
                 edit2.Reason=request.POST.get('reason')
                 edit2.Account=request.POST.get('account')
                 edit2.Description=request.POST.get('description')
+                edit2.Reference_number=request.POST.get('refno')
                 edit2.Adjusting_date=request.POST.get('date')
+                edit3.Date=request.POST.get('date')
                 edit3.Action='edited'
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'
                 else:
                     edit2.Status = 'saved'  
                 edit2.save()
-                edit3.save()                                                 
-                quantity_available=tuple(request.POST.getlist('quantity-available'))                
+                edit3.save()
+                edit.delete() 
+
+                items=request.POST.getlist('item') 
+                                                             
+                quantity_available=tuple(request.POST.getlist('quantity-available'))
+                                
                 new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
-                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))                
-                items=tuple(request.POST.getlist('item'))                                                        
+                 
+                quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))
+
+                for item_id, stock_value in zip(items, new_quantity_inhand):
+                    item = Items.objects.get(id=item_id)                  
+                    item.current_stock = stock_value
+                    item.save()
+                                
+                                                                                     
                 for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
                        item = Items.objects.get(id=item_id)
                        adjust2 = Inventory_adjustment_items.objects.create(
@@ -1075,13 +1124,14 @@ def quantityedit(request,pk):
                         inventory_adjustment=edit2,
                         Quantity_available=quantityavailable,
                         New_quantity_inhand=newquantity_inhand,
-                        Quantity_adjusted=quantityadjusted 
+                        Quantity_adjusted=quantityadjusted                       
                        )                
-                       adjust2.save()                                                                                                                   
+                       adjust2.save()                                                                                                                  
                                             
                 return redirect('itemdetail',pk=edit2.id)                    
         if log_details.user_type == 'Company':                                  
             if request.method =='POST':
+                
                 edit2=Inventory_adjustment.objects.get(id=pk)
                 edit=Inventory_adjustment_items.objects.filter(inventory_adjustment=edit2)
                 dash_details = CompanyDetails.objects.get(login_details=log_details)
@@ -1107,6 +1157,7 @@ def quantityedit(request,pk):
                 edit2.Description=request.POST.get('description')
                 edit2.Reference_number=request.POST.get('refno')
                 edit2.Adjusting_date=request.POST.get('date')
+                edit3.Date=request.POST.get('date')
                 edit3.Action='edited'
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'
@@ -1114,14 +1165,22 @@ def quantityedit(request,pk):
                     edit2.Status = 'saved'  
                 edit2.save()
                 edit3.save()
-                edit.delete()                                               
+                edit.delete() 
+
+                items=request.POST.getlist('item') 
+
                 quantity_available=tuple(request.POST.getlist('quantity-available'))
-                print(quantity_available)                
+                                
                 new_quantity_inhand=tuple(request.POST.getlist('quantity-inhand'))
-                print(new_quantity_inhand) 
+                 
                 quantity_adjusted=tuple(request.POST.getlist('quantity-adjusted'))
-                print(quantity_adjusted)                 
-                items=tuple(request.POST.getlist('item'))                                                        
+
+                for item_id, stock_value in zip(items, new_quantity_inhand):
+                    item = Items.objects.get(id=item_id)                  
+                    item.current_stock = stock_value
+                    item.save()
+                                
+                                                                                     
                 for item_id, quantityavailable, newquantity_inhand, quantityadjusted in zip(items, quantity_available,new_quantity_inhand, quantity_adjusted):
                        item = Items.objects.get(id=item_id)
                        adjust2 = Inventory_adjustment_items.objects.create(
@@ -1174,6 +1233,7 @@ def valueedit(request,pk):
                 edit2.Description=request.POST.get('description')
                 edit2.Reference_number=request.POST.get('refno') 
                 edit2.Adjusting_date=request.POST.get('date')
+                edit3.Date=request.POST.get('date')
                 edit3.Action='edited'
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'
@@ -1228,6 +1288,7 @@ def valueedit(request,pk):
                 edit2.Description=request.POST.get('description')
                 edit2.Reference_number=request.POST.get('refno') 
                 edit2.Adjusting_date=request.POST.get('date')
+                edit3.Date=request.POST.get('date')
                 edit3.Action='edited' 
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'

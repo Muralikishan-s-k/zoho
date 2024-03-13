@@ -196,6 +196,7 @@
                                     </thead>
                                     <tbody>
 
+                                        
                                         {% for item in adjust %}
                                         <tr>
                                             <td class="index">1</td>
@@ -206,7 +207,7 @@
                                                             <select class="form-control item-dropdown select2"
                                                                 name="item" style="background-color: white;"
                                                                 id="itemDropdown">
-                                                                <option value="{{item.items.id}}" selected disabled>{{ item.items.item_name }}</option>                                                              
+                                                                <option value="{{item.items.id}}"selected>{{ item.items.item_name }}</option>                                                              
                                                             </select>
                                                         </div>
                                                     </div>
@@ -239,53 +240,6 @@
                                             </td>
                                         </tr>
                                         {% endfor %}
-
-                                        <tr>
-                                            <td class="index">1</td>
-                                            <td class="item-details">
-                                                <div class="row">
-                                                    <div class="col-md-8">
-                                                        <div class="dropdown">
-                                                            <select class="form-control item-dropdown select2"
-                                                                name="item" style="background-color: white;"
-                                                                id="itemDropdown">
-                                                                <option value="" selected disabled>Select item</option>
-                                                                {% for c in item %}
-                                                                <option value="{{c.id}}" style="color: black;">
-                                                                    {{c.item_name}}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <button type="button" class="btn btn-warning"
-                                                            data-bs-toggle="modal" data-bs-target="#itemModal"
-                                                            style="color: white;margin-left: -16px;"><i
-                                                                class="fas fa-plus"></i></button>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="quantity-available">
-                                                <input type="number" name="quantity-available"
-                                                    class="form-control item-quantity" value="" style="color: white;">
-                                            </td>
-                                            <td class="new-quantity">
-                                                <input type="number" name="quantity-inhand" class="form-control"
-                                                    id="newQuantity" oninput="updateQuantityAdjusted()"
-                                                    style="color: white;" >
-                                            </td>
-                                            <td class="quantity-adjusted">
-                                                <input type="number" name="quantity-adjusted" class="form-control"
-                                                    id="quantityAdjusted" style="color: white;">
-                                            </td>
-                                            <td>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-danger remove-row"><i
-                                                            class="fas fa-minus"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-
 
                                     </tbody>
 
@@ -383,7 +337,7 @@
                                                 <select  class="form-control item-dropdown select3"
                                                     name="item" style="background-color: white;"
                                                     id="itemDropdown${newIndex}">
-                                                    <option value="" selected disabled>Select item</option>
+                                                    <option value="" selected>Select item</option>
                                                     {% for c in item %}
                                                     <option value="{{c.id}}" style="color: black;">
                                                         {{c.item_name}}</option>
