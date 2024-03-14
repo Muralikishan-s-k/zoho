@@ -19,9 +19,10 @@
         width: 600px;
 
     }
+
     .modal-content {
-            border: 1px solid white;
-        }
+        border: 1px solid white;
+    }
 
     @media screen and (max-width: 768px) {
         .container.mt-3.p-4 {
@@ -164,12 +165,14 @@
                             class="fas fa-pencil-alt text-warning"></i></button>
                 </a>
             </div>
+            <!---------------------- whatsap -------------------------->
             <div class="col-md-1 text-center">
                 <button type="button" class="btn btn-outline-warning btn-sm whatsapp" onclick="shareOnWhatsApp()"
                     title="Whatsapp">
                     <i class="fab fa-whatsapp text-warning"></i>
                 </button>
             </div>
+            <!---------------------- email -------------------------->
             <div class="col-md-1 text-center">
                 <button type="button" class="btn btn-outline-warning btn-sm email" data-bs-toggle="modal"
                     data-bs-target="#emailModal" title="Email">
@@ -206,7 +209,7 @@
 
                                 <button type="button" id="sendEmailBtn" class="btn btn-outline-warning"
                                     data-bs-dismiss="modal">Send</button>
-                                <button type="button"  class="btn btn-danger text-black"
+                                <button type="button" class="btn btn-danger text-black"
                                     data-bs-dismiss="modal">close</button>
                             </div>
                         </form>
@@ -276,8 +279,8 @@
                                 <div class="mb-3">
                                     <label for="commentText" class="form-label" style="color: white;">Add
                                         Comment:</label>
-                                    <textarea class="form-control text-light" id="commentText" name="commentText" rows="3"
-                                        style="color: white;"></textarea>
+                                    <textarea class="form-control text-light" id="commentText" name="commentText"
+                                        rows="3" style="color: white;"></textarea>
                                 </div>
                                 <button type="submit" id="addCommentBtn"
                                     class="btn btn-outline-warning btn-sm">Add</button>
@@ -296,7 +299,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-warning text-black" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-warning text-black"
+                                data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -382,7 +386,8 @@
                             </table>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger text-black" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-danger text-black"
+                                data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -432,14 +437,15 @@
                     <strong>Status:</strong>
                     <input type="text" class="form-control" name="value5" id="" value="{{ adjustment.Status }}"
                         disabled>
-                        
+
 
                 </div>
                 <div class="col-md-4" style="margin-top: 50px;color: black;">
                     {% if adjustment.Status == 'draft' %}
                     <a href="{% url 'convert' adjustment.id %}">
-                    <button id="convertButton" class="btn btn-warning btn-lg text-black" title="Save">Convert</button>
-                </a>
+                        <button id="convertButton" class="btn btn-warning btn-lg text-black"
+                            title="Save">Convert</button>
+                    </a>
                     {% endif %}
                 </div>
             </div>
@@ -459,8 +465,26 @@
                 document.body.innerHTML = originalContents;
             }
         </script>
+
         <script>
             function shareOnWhatsApp() {
+                // Get the current page URL
+                var currentPageUrl = window.location.href;
+
+                // Encode the URL
+                var encodedUrl = encodeURIComponent(currentPageUrl);
+
+                // Create the WhatsApp share link
+                var whatsappLink = 'https://api.whatsapp.com/send?text=' + encodedUrl;
+
+                // Open WhatsApp with the share link
+                window.open(whatsappLink, '_blank');
+            }
+        </script>
+
+
+        <script>
+            function  {
                 var modeOfAdjustment = document.getElementsByName('value1')[0].value;
                 var referenceNumber = document.getElementsByName('value2')[0].value;
                 var adjustingDate = document.getElementsByName('value3')[0].value;

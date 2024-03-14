@@ -652,7 +652,7 @@ def quantity(request):
                 if 'draft' in request.POST:
                     status = 'draft'
                 else:
-                    status = 'saved'
+                    status = 'adjusted'
                 adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
                                              Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=company_details,
                                              login_details=log_details)
@@ -706,7 +706,7 @@ def quantity(request):
                 if 'draft' in request.POST:
                     status = 'draft'
                 else:
-                    status = 'saved'
+                    status = 'adjusted'
                 adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
                                              Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
                                              login_details=log_details)
@@ -774,7 +774,7 @@ def value(request):
                    if 'draft' in request.POST:
                        status = 'draft'
                    else:
-                       status = 'saved'
+                       status = 'adjusted'
                    adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
                                                 Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=company_details,
                                                 login_details=log_details)
@@ -812,7 +812,7 @@ def value(request):
                    if 'draft' in request.POST:
                        status = 'draft'
                    else:
-                       status = 'saved'
+                       status = 'adjusted'
                    adjustment1=Inventory_adjustment(Mode_of_adjustment=mode1,Reference_number=ref1,Adjusting_date=date1,Account=account1,
                                                 Reason=reason1,Description=desc1,Attach_file=file1,Status=status,company=dash_details,
                                                 login_details=log_details)
@@ -993,7 +993,7 @@ def convert(request,pk):
         log_details= LoginDetails.objects.get(id=log_id)        
         if log_details.user_type == 'Company' or log_details.user_type == 'Staff':                                  
             adjustment2=Inventory_adjustment.objects.get(id=pk)            
-            adjustment2.Status='saved'
+            adjustment2.Status='adjusted'
             adjustment2.save()           
             return redirect('itemdetail',pk=adjustment2.id)
         return render(request,'zohomodules/stock_adjustment/adjustment_overview.html')         
@@ -1096,7 +1096,7 @@ def quantityedit(request,pk):
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'
                 else:
-                    edit2.Status = 'saved'  
+                    edit2.Status = 'adjusted'  
                 edit2.save()
                 edit3.save()
                 edit.delete() 
@@ -1162,7 +1162,7 @@ def quantityedit(request,pk):
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'
                 else:
-                    edit2.Status = 'saved'  
+                    edit2.Status = 'adjusted'  
                 edit2.save()
                 edit3.save()
                 edit.delete() 
@@ -1238,7 +1238,7 @@ def valueedit(request,pk):
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'
                 else:
-                    edit2.Status = 'saved'  
+                    edit2.Status = 'adjusted'  
                 edit2.save()
                 edit3.save()
                 edit.delete()                                                               
@@ -1293,7 +1293,7 @@ def valueedit(request,pk):
                 if 'draft' in request.POST:
                     edit2.Status = 'draft'
                 else:
-                    edit2.Status = 'saved'  
+                    edit2.Status = 'adjusted'  
                 edit2.save()
                 edit3.save()
                 edit.delete()                                                              

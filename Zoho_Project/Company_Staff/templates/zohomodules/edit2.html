@@ -1,101 +1,23 @@
-<tr>
-        <td class="index">1</td>
-        <td class="item-details">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="dropdown">
-                        <select class="form-control item-dropdown select2"
-                            name="item" style="background-color: white;"
-                            id="itemDropdown">
-                            <option value="" selected disabled>Select item</option>
-                            {% for c in item %}
-                            <option value="{{c.id}}" style="color: black;">
-                                {{c.item_name}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <button type="button" class="btn btn-warning"
-                        data-bs-toggle="modal" data-bs-target="#itemModal"
-                        style="color: white;margin-left: -16px;"><i
-                            class="fas fa-plus"></i></button>
-                </div>
-            </div>
-        </td>
-        <td class="quantity-available">
-            <input type="number" name="quantity-available"
-                class="form-control item-quantity" value="" style="color: white;">
-        </td>
-        <td class="new-quantity">
-            <input type="number" name="quantity-inhand" class="form-control"
-                id="newQuantity" oninput="updateQuantityAdjusted()"
-                style="color: white;" >
-        </td>
-        <td class="quantity-adjusted">
-            <input type="number" name="quantity-adjusted" class="form-control"
-                id="quantityAdjusted" style="color: white;">
-        </td>
-        <td>
-            <div class="col-md-1">
-                <button type="button" class="btn btn-danger remove-row"><i
-                        class="fas fa-minus"></i></button>
-            </div>
-        </td>
-    </tr>
+<script>
+        function shareOnWhatsApp() {
+            var modeOfAdjustment = document.getElementsByName('value1')[0].value;
+            var referenceNumber = document.getElementsByName('value2')[0].value;
+            var adjustingDate = document.getElementsByName('value3')[0].value;
+            var account = document.getElementsByName('value4')[0].value;
+            var reason = document.getElementsByName('value5')[0].value;
 
+            // Get the current page URL
+            var pageUrl = window.location.href;
 
+            var message = "Page URL: " + pageUrl + "\n" +
+                "Mode of Adjustment: " + modeOfAdjustment + "\n" +
+                "Reference Number: " + referenceNumber + "\n" +
+                "Adjusting Date: " + adjustingDate + "\n" +
+                "Account: " + account + "\n" +
+                "Reason: " + reason;
 
-
-
-
-
-
-
-
-    <tr>
-        <td class="index">1</td>
-        <td class="item-details">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="dropdown">
-                        <select class="form-control item-dropdown select2"
-                            name="item" style="background-color: white;"
-                            id="itemDropdown">
-                            <option value="" selected disabled>Select item</option>
-                            {% for c in item %}
-                            <option value="{{c.id}}" style="color: black;">
-                                {{c.item_name}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                </div>
-                <div class="col-md-4">
-                    <button type="button" class="btn btn-warning"
-                        data-bs-toggle="modal" data-bs-target="#itemModal"
-                        style="color: white;margin-left: -10px;"><i
-                            class="fas fa-plus"></i></button>
-                </div>
-            </div>
-        </td>                                           
-        <td class="quantity-available">
-            <input type="number" name="currentvalue"
-                class="form-control item-quantity" value="" style="color: white;">
-        </td>
-        <td class="new-quantity">
-            <input type="number" name="changedvalue" class="form-control"
-                id="changedValue" oninput="updateAdjustedValue()"
-                style="color: white;" >
-        </td>
-        <td class="quantity-adjusted">
-            <input type="number" name="adjustedvalue" class="form-control"
-                id="adjustedValue" style="color: white;" >
-        </td>
-        <td>
-            <div class="col-md-1">
-                <button type="button" class="btn btn-danger remove-row"><i
-                        class="fas fa-minus"></i></button>
-            </div>
-        </td>
-    </tr>    
+            // Encode the message for URL
+            var whatsappUrl = "https://wa.me/?text=" + encodeURIComponent(message);
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>

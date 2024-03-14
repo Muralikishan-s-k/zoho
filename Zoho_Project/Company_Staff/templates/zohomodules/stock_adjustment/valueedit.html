@@ -21,6 +21,9 @@
     input[type="date"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
+    .modal-content {
+            border: 1px solid white;
+        }
 
     @media screen and (max-width: 768px) {
         .item-dropdown {
@@ -142,22 +145,59 @@
                                 <option value="Stock on Fire" style="color:black ;">Stock on Fire</option>
                                 <!-- Add more options as needed -->
                             </select>
-                            <button type="button" class="btn btn-warning" id="addReasonBtn" style="color: white;"><i
-                                    class="fas fa-plus"></i></button>
+                            <button type="button" class="btn btn-warning" id="" data-bs-toggle="modal"
+                                data-bs-target="#addreason" style="color: white;"><i class="fas fa-plus"></i></button>
                         </div>
                     </div>
 
+                    <div class="modal fade" id="addreason" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content bg-black">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5 text-light" id="exampleModalLabel">Add New Reason</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group text-light">
+                                        <label for="newReason">New Reason:</label>
+                                        <input type="text" class="form-control text-light" id="newReason">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger text-black"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-outline-warning" id="addReasonBtn" data-bs-dismiss="modal">Add Reason</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+                    <!-- Bootstrap Bundle with Popper -->
+                    <script
+                        src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+                    <!-- Script for adding new reason -->
                     <script>
                         $(document).ready(function () {
                             // Add new reason on button click
                             $('#addReasonBtn').on('click', function () {
-                                var newReason = prompt("Enter the new reason:");
-                                if (newReason) {
+                                var newReason = $('#newReason').val();
+                                if (newReason.trim() !== '') {
                                     // Create a new option and append it to the dropdown
                                     $('#reasonDropdown').append($('<option>', {
                                         value: newReason,
                                         text: newReason
                                     }));
+                                    // Clear input field
+                                    $('#newReason').val('');
+                                    // Hide modal
+                                    $('#exampleModal').modal('hide');
+                                } else {
+                                    // Show alert if input is empty
+                                    alert('Please enter a valid reason.');
                                 }
                             });
                         });
@@ -408,7 +448,7 @@
 
             <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content bg-dark">
+                    <div class="modal-content bg-black">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5 text-light" id="exampleModalLabel">Add
                                 Item:</h1>
@@ -418,12 +458,14 @@
                             {% csrf_token %}
                             <div class="modal-body">
                                 <label for="newItemName" style="color: white;">Item Name:</label>
-                                <input type="text" id="newItemName" name="items" class="form-control bg-light">
+                                <input type="text" id="newItemName" name="items" class="form-control bg-black text-light">
                             </div>
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-outline-warning" data-bs-dismiss="modal">Add
                                     Item</button>
+                                <button type="button" class="btn btn-danger text-black" data-bs-dismiss="modal">close
+                                    </button>    
 
                             </div>
                         </form>
