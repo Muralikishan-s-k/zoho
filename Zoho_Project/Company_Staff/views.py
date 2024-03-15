@@ -16,6 +16,11 @@ import os
 from django.core.mail import send_mail
 import requests
 from io import BytesIO
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
+from django.contrib.auth.decorators import login_required
+from django.template import Context
+from xhtml2pdf import pisa
 
 
 # Create your views here.
