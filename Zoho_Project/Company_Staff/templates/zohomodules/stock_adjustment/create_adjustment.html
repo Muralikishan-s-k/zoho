@@ -535,9 +535,9 @@
                                 <div class="col-sm-10 col-md-7 col-9" style="margin-left: -2.2rem;">
                                     <div class="d-flex align-items-center">
                                         <select name="unit" class="form-select bg-white" id="selunit"  style="background-color: black; color: rgb(0, 0, 0);border-radius: 5px;"  >
-                                          <!-- {% for i in units %}
+                                          {% for i in unit %}
                                             <option value={{i.id}}>{{i.unit_name}}</option>
-                                          {% endfor %} -->
+                                          {% endfor %}
                                         </select>
                                         <script>
                                           $(document).ready(function() {
@@ -674,32 +674,32 @@
                                               <option value="">--Select Account--</option>
                                               <optgroup id="expensesel" label="Expense">
                                          
-                                              <!-- {% for i in accounts %}
+                                              {% for i in account %}
                     
                                               {% if i.account_type == 'Expense' %}
                                             
                                                 <option value="{{i.account_name}}">{{i.account_name}}</option>
                                         
                                               {% endif %}
-                                              {% endfor %} -->
+                                              {% endfor %}
                                             </optgroup>
                                             <optgroup id="costofgoods" label="Cost Of Goods Sold">
-                                              <!-- {% for i in accounts %}
+                                              {% for i in account %}
                                               {% if i.account_type == 'Cost Of Goods Sold' %}
                                         
                                                 <option value="{{i.account_name}}">{{i.account_name}}</option>
                                                 
                                                 {% endif %}
-                                                {% endfor %} -->
+                                                {% endfor %}
                                               </optgroup>
                                               <optgroup id="otherexpensesel" label="Other Expense">
-                                              <!-- {% for i in accounts %}
+                                              {% for i in account %}
                                               {% if i.account_type == 'Other Expense' %}
                                         
                                                 <option value="{{i.account_name}}">{{i.account_name}}</option>
                                                 
                                                 {% endif %}
-                                                {% endfor %} -->
+                                                {% endfor %}
                                               </optgroup>
                                   
                                              
@@ -743,7 +743,7 @@
                                   <div class="col-md-10">
                                     {% comment %} <label style="color: aliceblue;"><input type="checkbox" value="trackstate" name="trackstate" onclick="toggleForm()" style="display: none;">
                                    Track Inventory for this item</label> {% endcomment %}
-                                    <!-- {% comment %} <input type="checkbox" name="trackState" id="trackStateCheckbox">{% endcomment %} -->
+                                    {% comment %} <input type="checkbox" name="trackState" id="trackStateCheckbox">{% endcomment %}
                                     <label style="color: aliceblue;">
                                    
                                       <input type="checkbox" name="trackstate" class=" "  onclick="toggleFormFields()">
